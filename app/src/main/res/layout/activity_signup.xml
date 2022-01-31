@@ -91,8 +91,10 @@
         app:layout_constraintVertical_bias="0.025" />
 
     <RadioGroup
-        android:layout_width="170dp"
-        android:layout_height="207dp"
+        android:id="@+id/userTypeRadioGroup"
+        android:layout_width="175dp"
+        android:layout_height="96dp"
+        android:checkedButton="@+id/radioButtonEmployee"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -111,6 +113,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Employer" />
+
     </RadioGroup>
+
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SIGN UP"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/userTypeRadioGroup" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

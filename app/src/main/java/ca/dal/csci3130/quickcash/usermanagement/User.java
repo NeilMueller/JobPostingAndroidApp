@@ -5,19 +5,17 @@ public class User implements UserInterface {
     private String firstName;
     private String lastName;
     private String email;
-    private String phone;
+    private int phone;
     private String password;
-    private String confirmPassword;
-    private String isEmployee; // Values y = yes, n= no.
+    private boolean isEmployee; // true or false.
 
-    public User(String firstName, String lastName, String email, String phone, String password,
-                String confirmPassword, String isEmployee) {
+    public User(String firstName, String lastName, String email, int phone, String password,
+                boolean isEmployee) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.password = password;
-        this.confirmPassword = confirmPassword;
         this.isEmployee = isEmployee;
     }
 
@@ -55,12 +53,12 @@ public class User implements UserInterface {
     }
 
     @Override
-    public String getPhone() {
+    public int getPhone() {
         return phone;
     }
 
     @Override
-    public void setPhone(String phone) {
+    public void setPhone(int phone) {
         this.phone = phone;
     }
 
@@ -75,22 +73,12 @@ public class User implements UserInterface {
     }
 
     @Override
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    @Override
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
-
-    @Override
-    public String getIsEmployee() {
+    public boolean getIsEmployee() {
         return isEmployee;
     }
 
     @Override
-    public void setIsEmployee(String isEmployee) {
+    public void setIsEmployee(boolean isEmployee) {
         this.isEmployee = isEmployee;
     }
 

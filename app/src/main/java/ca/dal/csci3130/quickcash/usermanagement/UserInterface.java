@@ -14,20 +14,16 @@ public interface UserInterface {
 
     void setEmail(String email);
 
-    String getPhone();
+    int getPhone();
 
-    void setPhone(String phone);
+    void setPhone(int phone);
 
     String getPassword();
 
     void setPassword(String password);
 
-    String getConfirmPassword();
+    boolean getIsEmployee();
 
-    void setConfirmPassword(String confirmPassword);
-
-    String getIsEmployee();
-
-    void setIsEmployee(String isEmployee);
+    void setIsEmployee(boolean isEmployee);
 }
 
