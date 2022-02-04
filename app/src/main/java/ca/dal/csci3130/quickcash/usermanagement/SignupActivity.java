@@ -10,7 +10,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Pattern;
 
@@ -65,9 +71,15 @@ public class SignupActivity extends AppCompatActivity {
                 .getText().toString().equals("Employee");
 
         // validate all data
-        boolean isUserDataValid = validateUserData(firstName, lastName, email, phone, password, confirmPassword);
+        isEmpty(firstName, lastName, email, phone, password, confirmPassword);
+        isValidEmail(email);
+        passwordLength(password);
+        passwordConfirmation(confirmPassword, password);
+        phoneLength(phone);
+        accountExists(email);
 
-        if(!isUserDataValid) return null;
+
+
 
         // encrypt user password
         password = encryptUserPassword(password);
@@ -86,56 +98,98 @@ public class SignupActivity extends AppCompatActivity {
      * @param confirmPassword
      * @return true or false
      */
-    private boolean validateUserData(String firstName, String lastName, String email, int phone,
-                                     String password, String confirmPassword){
-        // validation goes here
-        // check if something is entered in all the fields
+
+    // validation goes here
+    // check if something is entered in all the fields
+    private boolean isEmpty (String firstName, String lastName, String email, int phone, String password, String confirmPassword) {
         boolean anyFieldsEmpty = firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
                 || phone == 0 || password.isEmpty() || confirmPassword.isEmpty();
-        if(anyFieldsEmpty){
+        if (anyFieldsEmpty) {
             Toast.makeText(getApplicationContext(),
                     "Please enter data in all the fields!", Toast.LENGTH_LONG).show();
             return false;
         }
+        else
+            return true;
+    }
 
-        // check if the email pattern is correct
+    // check if the email pattern is correct
+    private boolean isValidEmail(String email) {
         boolean isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches();
-        if(!isEmailValid){
+        if (!isEmailValid) {
             Toast.makeText(getApplicationContext(),
                     "Please enter a valid email address!", Toast.LENGTH_LONG).show();
             return false;
         }
+        else
+            return true;
+    }
 
-        // ET3: check if an account already exists with this email, throw a toast, and redirect to login
 
-        // check if the password is at least 8 characters
-        final String passwordPattern = "^.{8,}$";
+    // check if the password is at least 8 characters
+    private boolean passwordLength(String password) {
+        final String passwordPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
         boolean passwordPatternMatches = Pattern.compile(passwordPattern).matcher(password).matches();
-        if(!passwordPatternMatches){
+        if (!passwordPatternMatches) {
             Toast.makeText(getApplicationContext(),
-                    "Password needs to be at least 8 characters!", Toast.LENGTH_LONG).show();
+                    "Password: at least 1 digit, 1 uppercase, 1 lowercase,and 1 special character!", Toast.LENGTH_LONG).show();
             return false;
         }
+        else
+            return true;
+    }
 
-        // check if the password and the confirmed password are the same
+    // check if the password and the confirmed password are the same
+    private boolean passwordConfirmation(String confirmPassword, String password) {
         boolean passwordMatches = password.equals(confirmPassword);
-        if(!passwordMatches){
+        if (!passwordMatches) {
             Toast.makeText(getApplicationContext(),
                     "Passwords do not match!", Toast.LENGTH_LONG).show();
             return false;
         }
+        else
+            return true;
+    }
 
 
-        // check if the phone number is 10 digits
+
+
+     // check if the phone number is 10 digits
+    private boolean phoneLength(int phone) {
+        final String phonePattern = "^[0-9]{10}$";
         boolean isPhoneNumberValid = Patterns.PHONE.matcher("" + phone).matches();
-        if(!isPhoneNumberValid){
-            Toast.makeText(getApplicationContext(),
+            if (!isPhoneNumberValid) {
+                Toast.makeText(getApplicationContext(),
                     "Please enter a valid phone number!", Toast.LENGTH_LONG).show();
             return false;
         }
-
-        return true;
+        else
+            return true;
     }
+
+
+        private void accountExists(String email){
+            UserDAO databaseReference = new UserDAO();
+            DatabaseReference dataBase= databaseReference.getDatabaseReference();
+
+            dataBase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    final String extract = snapshot.getValue(String.class);
+                    if (extract.equals(email)){
+                        Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
+                        //redirect to login page
+                    }
+
+                }
+                @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    final String errorRead= error.getMessage();
+                }
+            })
+
+
+        }
 
     /**
      * Encrypts user password and returns and the encrypted password.
