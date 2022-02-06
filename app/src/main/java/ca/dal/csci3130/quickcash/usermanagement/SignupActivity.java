@@ -71,11 +71,15 @@ public class SignupActivity extends AppCompatActivity {
                 .getText().toString().equals("Employee");
 
         // validate all data
-        isEmpty(firstName, lastName, email, phone, password, confirmPassword);
-        isValidEmail(email);
-        passwordLength(password);
-        passwordConfirmation(confirmPassword, password);
-        phoneLength(phone);
+        boolean Empty = isEmpty(firstName, lastName, email, phone, password, confirmPassword);
+        boolean validEmail = isValidEmail(email);
+        boolean passwordLen =  passwordLength(password);
+        boolean passwordCon = passwordConfirmation(confirmPassword, password);
+        boolean phoneLen = phoneLength(phone);
+
+        if(Empty || validEmail || passwordLen || passwordCon || phoneLen)
+            return null;
+
         accountExists(email);
 
 
@@ -175,10 +179,14 @@ public class SignupActivity extends AppCompatActivity {
             dataBase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    final String extract = snapshot.getValue(String.class);
-                    if (extract.equals(email)){
-                        Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
-                        //redirect to login page
+                    for(DataSnapshot postSnapshot: snapshot.getChildren()) {
+                        User user = postSnapshot.getValue(User.class);
+                        if (user.getEmail().equals(email)) {
+                            Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            intent.putExtra("Email", email);
+                            startActivity(intent);
+                        }
                     }
 
                 }
@@ -186,7 +194,7 @@ public class SignupActivity extends AppCompatActivity {
                     public void onCancelled(@NonNull DatabaseError error) {
                     final String errorRead= error.getMessage();
                 }
-            })
+            });
 
 
         }
