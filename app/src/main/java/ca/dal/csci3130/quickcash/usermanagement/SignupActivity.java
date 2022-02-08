@@ -24,14 +24,12 @@ import java.util.regex.Pattern;
 import ca.dal.csci3130.quickcash.R;
 
 public class SignupActivity extends AppCompatActivity {
-    boolean newAccount = true;
-    public static Activity SignUpActivityContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        SignUpActivityContext = this;
+
 
         // logic for signup
         Button signUpButton = (Button) findViewById(R.id.signUpButton);
@@ -41,7 +39,7 @@ public class SignupActivity extends AppCompatActivity {
             public void onClick(View view) {
                 User newUser = getUserData();
                 if (newUser != null) {
-                    addUser(newUser);// push to DB if data is valid
+                    checkAndPush(newUser);// push to DB if data is valid
                     // ET7: redirect to successful registration page
                 }
             }
@@ -49,6 +47,11 @@ public class SignupActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * method to add user data to Data Base
+     *
+     * @param user
+     */
     protected void addUser(UserInterface user) {
         UserDAO userDAO = new UserDAO();
         userDAO.add(user);
@@ -86,11 +89,8 @@ public class SignupActivity extends AppCompatActivity {
                 if (isPasswordValid(password)) {
                     if (passwordMatcher(confirmPassword, password)) {
                         if (isPhoneValid(phone)) {
-                            accountExists(email);
-                            if (newAccount) {
-                                password = encryptUserPassword(password);
-                                return new User(firstName, lastName, email, phone, password, isEmployee);
-                            }
+                            password = encryptUserPassword(password);
+                            return new User(firstName, lastName, email, phone, password, isEmployee);
                         }
                     }
 
@@ -105,8 +105,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     /**
-     * Validates all data and throws appropriate errors
-     * Return true if all data is valid, else it returns false
+     * Check if any field is empty
      *
      * @param firstName
      * @param lastName
@@ -116,9 +115,6 @@ public class SignupActivity extends AppCompatActivity {
      * @param confirmPassword
      * @return true or false
      */
-
-    // validation goes here
-    // check if something is entered in all the fields
     private boolean isEmpty(String firstName, String lastName, String email, int phone, String password, String confirmPassword) {
         boolean anyFieldsEmpty = firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
                 || phone == 0 || password.isEmpty() || confirmPassword.isEmpty();
@@ -130,7 +126,12 @@ public class SignupActivity extends AppCompatActivity {
         return false;
     }
 
-    // check if the email pattern is correct
+    /**
+     * method to validate if the email entered is valid
+     *
+     * @param email
+     * @return true or false
+     */
     private boolean isValidEmail(String email) {
         boolean isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches();
         if (!isEmailValid) {
@@ -142,7 +143,12 @@ public class SignupActivity extends AppCompatActivity {
     }
 
 
-    // check if the password is at least 8 characters
+    /**
+     * method to validate if the password matches the requirements from length to pattern
+     *
+     * @param password
+     * @return true or false
+     */
     private boolean isPasswordValid(String password) {
         final String passwordPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
         boolean passwordPatternMatches = Pattern.compile(passwordPattern).matcher(password).matches();
@@ -154,7 +160,12 @@ public class SignupActivity extends AppCompatActivity {
         return true;
     }
 
-    // check if the password and the confirmed password are the same
+    /**
+     * method to validate if the password matches the confirm password
+     *
+     * @param password
+     * @return true or false
+     */
     private boolean passwordMatcher(String confirmPassword, String password) {
         boolean passwordMatches = password.equals(confirmPassword);
         if (!passwordMatches) {
@@ -166,7 +177,12 @@ public class SignupActivity extends AppCompatActivity {
     }
 
 
-    // check if the phone number is 10 digits
+    /**
+     * method to validate if the number entered is 10 digits long
+     *
+     * @param phone
+     * @return true or false
+     */
     private boolean isPhoneValid(int phone) {
         final String numberPattern = "^[0-9]{10}$";
         boolean isPhoneNumberValid = Pattern.compile(numberPattern).matcher("" + phone).matches();
@@ -180,29 +196,30 @@ public class SignupActivity extends AppCompatActivity {
 
     /**
      * method to validate if the user is already in the data base
+     * if not in the data base it adds a new user to the data base
      *
-     * @param email
-     * @return takes you to login page if you already exists
+     * @param newUser
      */
-    private void accountExists(String email) {
+    private void checkAndPush(User newUser) {
         UserDAO databaseReference = new UserDAO();
         DatabaseReference dataBase = databaseReference.getDatabaseReference();
 
         dataBase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean newAccount = true;
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
-                    if (user.getEmail().equals(email)) {
+                    if (user != null && user.getEmail().equals(newUser.getEmail())) {
                         Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
-                        SignupActivity.SignUpActivityContext.finish();
-                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         newAccount = false;
-                        intent.putExtra("Email", email);
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        intent.putExtra("Email", newUser.getEmail());
                         startActivity(intent);
                     }
                 }
-
+                if (newAccount)
+                    addUser(newUser);
             }
 
             @Override
