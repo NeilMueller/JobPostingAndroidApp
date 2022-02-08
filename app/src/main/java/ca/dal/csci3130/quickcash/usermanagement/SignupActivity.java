@@ -38,7 +38,7 @@ public class SignupActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newUser = getUserData();
+                newUser = getUserData();      //DON'T CREATE NEW USER HERE ADD NEW METHOD
                 if(newUser != null) {
                     userDAO.add(newUser); // push to DB if data is valid
                     // ET7: redirect to successful registration page
@@ -47,6 +47,9 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
+    public void addUser(UserInterface user){
+        userDAO.add(user);
+    }
     /**
      * Gets all the user Data from the UI. Validates it.
      * If the data is valid, returns a User Object created from that data
@@ -105,12 +108,12 @@ public class SignupActivity extends AppCompatActivity {
 
     // validation goes here
     // check if something is entered in all the fields
-    private boolean isEmpty (String firstName, String lastName, String email, int phone, String password, String confirmPassword) {
+    protected boolean isEmpty (String firstName, String lastName, String email, int phone, String password, String confirmPassword) {
         boolean anyFieldsEmpty = firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
                 || phone == 0 || password.isEmpty() || confirmPassword.isEmpty();
         if (anyFieldsEmpty) {
             Toast.makeText(getApplicationContext(),
-                    "Please enter data in all the fields!", Toast.LENGTH_LONG).show();
+                    R.string.toast_missing_component, Toast.LENGTH_LONG).show();
             return false;
         }
         else
@@ -118,11 +121,11 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     // check if the email pattern is correct
-    private boolean isValidEmail(String email) {
+    protected boolean isValidEmail(String email) {
         boolean isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches();
         if (!isEmailValid) {
             Toast.makeText(getApplicationContext(),
-                    "Please enter a valid email address!", Toast.LENGTH_LONG).show();
+                    R.string.toast_invalid_email, Toast.LENGTH_LONG).show();
             return false;
         }
         else
@@ -131,12 +134,12 @@ public class SignupActivity extends AppCompatActivity {
 
 
     // check if the password is at least 8 characters
-    private boolean passwordLength(String password) {
+    protected boolean passwordLength(String password) {
         final String passwordPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
         boolean passwordPatternMatches = Pattern.compile(passwordPattern).matcher(password).matches();
         if (!passwordPatternMatches) {
             Toast.makeText(getApplicationContext(),
-                    "Password: at least 1 digit, 1 uppercase, 1 lowercase,and 1 special character!", Toast.LENGTH_LONG).show();
+                    R.string.toast_invalid_password, Toast.LENGTH_LONG).show();
             return false;
         }
         else
@@ -144,11 +147,11 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     // check if the password and the confirmed password are the same
-    private boolean passwordConfirmation(String confirmPassword, String password) {
+    protected boolean passwordConfirmation(String confirmPassword, String password) {
         boolean passwordMatches = password.equals(confirmPassword);
         if (!passwordMatches) {
             Toast.makeText(getApplicationContext(),
-                    "Passwords do not match!", Toast.LENGTH_LONG).show();
+                    R.string.toast_password_mismatch, Toast.LENGTH_LONG).show();
             return false;
         }
         else
@@ -159,12 +162,12 @@ public class SignupActivity extends AppCompatActivity {
 
 
      // check if the phone number is 10 digits
-    private boolean phoneLength(int phone) {
+    protected boolean phoneLength(int phone) {
         final String phonePattern = "^[0-9]{10}$";
         boolean isPhoneNumberValid = Patterns.PHONE.matcher("" + phone).matches();
             if (!isPhoneNumberValid) {
                 Toast.makeText(getApplicationContext(),
-                    "Please enter a valid phone number!", Toast.LENGTH_LONG).show();
+                    R.string.toast_invalid_phone, Toast.LENGTH_LONG).show();
             return false;
         }
         else
