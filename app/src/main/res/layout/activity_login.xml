@@ -47,7 +47,7 @@
         app:layout_constraintVertical_bias="0.048" />
 
     <TextView
-        android:id="@+id/idTVNewUser"
+        android:id="@+id/newUserRedirect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New User ? Register Here"

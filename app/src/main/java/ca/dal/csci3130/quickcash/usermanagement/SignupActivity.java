@@ -8,7 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,15 +28,26 @@ public class SignupActivity extends AppCompatActivity {
 
     UserDAO userDAO = new UserDAO();
     User newUser;
+    private TextView loginRedirect;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        // Redirect to Login Page if user selects 'Already Registered'
+        loginRedirect = (TextView) findViewById(R.id.existingUserRedirect);
+        loginRedirect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
         // logic for signup
         Button signUpButton = (Button) findViewById(R.id.signUpButton);
-
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
