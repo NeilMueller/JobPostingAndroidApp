@@ -1,5 +1,6 @@
 package ca.dal.csci3130.quickcash.usermanagement;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -24,11 +25,13 @@ import ca.dal.csci3130.quickcash.R;
 
 public class SignupActivity extends AppCompatActivity {
     boolean newAccount = true;
+    public static Activity SignUpActivityContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        SignUpActivityContext = this;
 
         // logic for signup
         Button signUpButton = (Button) findViewById(R.id.signUpButton);
@@ -192,7 +195,7 @@ public class SignupActivity extends AppCompatActivity {
                     User user = postSnapshot.getValue(User.class);
                     if (user.getEmail().equals(email)) {
                         Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
-                        finishAndRemoveTask();
+                        SignupActivity.SignUpActivityContext.finish();
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         newAccount = false;
                         intent.putExtra("Email", email);
