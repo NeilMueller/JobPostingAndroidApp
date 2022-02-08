@@ -78,36 +78,36 @@ public class SignupActivityJUnitTest {
 
     /*** isValidPassword()**/
     @Test
-    public void checkIfPasswordIsValid() { assertTrue(signupActivityMock.passwordLength("Abc1d9G!")); }
+    public void checkIfPasswordIsValid() { assertTrue(signupActivityMock.isPasswordValid("Abc1d9G!")); }
 
     @Test
     public void checkIfPasswordIsInvalid() {
-        assertFalse(signupActivityMock.passwordLength("abc1de9fg!"));
-        assertFalse(signupActivityMock.passwordLength("ABC1DE9FG!"));
-        assertFalse(signupActivityMock.passwordLength("Abc1ef!"));
-        assertFalse(signupActivityMock.passwordLength("Abc1de9fg"));
+        assertFalse(signupActivityMock.isPasswordValid("abc1de9fg!"));
+        assertFalse(signupActivityMock.isPasswordValid("ABC1DE9FG!"));
+        assertFalse(signupActivityMock.isPasswordValid("Abc1ef!"));
+        assertFalse(signupActivityMock.isPasswordValid("Abc1de9fg"));
     }
 
     /*** passwordConfirmation()**/
     @Test
-    public void checkIfPasswordsMatch() { assertTrue(signupActivityMock.passwordConfirmation("Abc1de9fG!", "Abc1de9fG!")); }
+    public void checkIfPasswordsMatch() { assertTrue(signupActivityMock.passwordMatcher("Abc1de9fG!", "Abc1de9fG!")); }
 
     @Test
     public void checkIfPasswordsDontMatch() {
-        assertFalse(signupActivityMock.passwordConfirmation("Abc1de9fG!", "abc1de9fg!"));
-        assertFalse(signupActivityMock.passwordConfirmation("Abc1de9fG!", "Abc1e9fG!"));
-        assertFalse(signupActivityMock.passwordConfirmation("Abc1de9fG!", "Abcde9fG!"));
-        assertFalse(signupActivityMock.passwordConfirmation("Abc1de9fG!", "Abc1de9fG"));
+        assertFalse(signupActivityMock.passwordMatcher("Abc1de9fG!", "abc1de9fg!"));
+        assertFalse(signupActivityMock.passwordMatcher("Abc1de9fG!", "Abc1e9fG!"));
+        assertFalse(signupActivityMock.passwordMatcher("Abc1de9fG!", "Abcde9fG!"));
+        assertFalse(signupActivityMock.passwordMatcher("Abc1de9fG!", "Abc1de9fG"));
     }
 
 
     /*** phoneLength()**/
     @Test
-    public void checkIfPhoneValid() { assertTrue(signupActivityMock.phoneLength(1234567890)); }
+    public void checkIfPhoneValid() { assertTrue(signupActivityMock.isPhoneValid(1234567890)); }
 
     @Test
     public void checkIfPhoneInvalid() {
-        assertFalse(signupActivityMock.phoneLength(123456789));
-        assertFalse(signupActivityMock.phoneLength(10000));       //FIX THIS IT SHOULD BE ABLE TO HANDLE A TEST OF TOO LARGE
+        assertFalse(signupActivityMock.isPhoneValid(123456789));
+        assertFalse(signupActivityMock.isPhoneValid(10000));       //FIX THIS IT SHOULD BE ABLE TO HANDLE A TEST OF TOO LARGE
     }
 }
