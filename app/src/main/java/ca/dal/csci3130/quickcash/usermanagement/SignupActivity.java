@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,10 +25,22 @@ import ca.dal.csci3130.quickcash.R;
 
 public class SignupActivity extends AppCompatActivity {
 
+    private TextView loginRedirect;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
+        //Existing user Redirect hyperlink
+        loginRedirect = (TextView) findViewById(R.id.existingUserRedirect);
+        loginRedirect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // logic for signup
         Button signUpButton = (Button) findViewById(R.id.signUpButton);
