@@ -45,4 +45,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPassword"
         app:layout_constraintVertical_bias="0.048" />
+
+    <TextView
+        android:id="@+id/newUserRedirect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New User ? Register Here"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginButtonCheckInfo"
+        app:layout_constraintVertical_bias="0.048" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
