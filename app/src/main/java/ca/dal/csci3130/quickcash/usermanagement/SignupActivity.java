@@ -23,9 +23,7 @@ import java.util.regex.Pattern;
 import ca.dal.csci3130.quickcash.R;
 
 public class SignupActivity extends AppCompatActivity {
-
-    UserDAO userDAO = new UserDAO();
-    User newUser;
+    boolean newAccount = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,22 +36,31 @@ public class SignupActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newUser = getUserData();
-                if(newUser != null) {
-                    userDAO.add(newUser); // push to DB if data is valid
+                User newUser = getUserData();
+                if (newUser != null) {
+                    addUser(newUser);// push to DB if data is valid
                     // ET7: redirect to successful registration page
                 }
             }
         });
     }
 
+
+    protected void addUser(UserInterface user) {
+        UserDAO userDAO = new UserDAO();
+        userDAO.add(user);
+
+    }
+
+
     /**
      * Gets all the user Data from the UI. Validates it.
      * If the data is valid, returns a User Object created from that data
      * else it will return null
+     *
      * @return UserObject or null
      */
-    private User getUserData(){
+    private User getUserData() {
 
         // get all data
         String firstName = ((EditText) findViewById(R.id.etFirstName)).getText().toString();
@@ -71,29 +78,33 @@ public class SignupActivity extends AppCompatActivity {
                 .getText().toString().equals("Employee");
 
         // validate all data
-        boolean Empty = isEmpty(firstName, lastName, email, phone, password, confirmPassword);
-        boolean validEmail = isValidEmail(email);
-        boolean passwordLen =  passwordLength(password);
-        boolean passwordCon = passwordConfirmation(confirmPassword, password);
-        boolean phoneLen = phoneLength(phone);
+        if (!isEmpty(firstName, lastName, email, phone, password, confirmPassword)) {
+            if (isValidEmail(email)) {
+                if (isPasswordValid(password)) {
+                    if (passwordMatcher(confirmPassword, password)) {
+                        if (isPhoneValid(phone)) {
+                            accountExists(email);
+                            if (newAccount) {
+                                password = encryptUserPassword(password);
+                                return new User(firstName, lastName, email, phone, password, isEmployee);
+                            }
+                        }
+                    }
 
-        if(Empty || validEmail || passwordLen || passwordCon || phoneLen)
-            return null;
+                }
 
-        accountExists(email);
+            }
 
+        }
 
+        return null;
 
-
-        // encrypt user password
-        password = encryptUserPassword(password);
-
-        return new User(firstName, lastName, email, phone, password, isEmployee);
     }
 
     /**
      * Validates all data and throws appropriate errors
      * Return true if all data is valid, else it returns false
+     *
      * @param firstName
      * @param lastName
      * @param email
@@ -105,16 +116,15 @@ public class SignupActivity extends AppCompatActivity {
 
     // validation goes here
     // check if something is entered in all the fields
-    private boolean isEmpty (String firstName, String lastName, String email, int phone, String password, String confirmPassword) {
+    private boolean isEmpty(String firstName, String lastName, String email, int phone, String password, String confirmPassword) {
         boolean anyFieldsEmpty = firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
                 || phone == 0 || password.isEmpty() || confirmPassword.isEmpty();
         if (anyFieldsEmpty) {
             Toast.makeText(getApplicationContext(),
                     "Please enter data in all the fields!", Toast.LENGTH_LONG).show();
-            return false;
-        }
-        else
             return true;
+        }
+        return false;
     }
 
     // check if the email pattern is correct
@@ -125,13 +135,12 @@ public class SignupActivity extends AppCompatActivity {
                     "Please enter a valid email address!", Toast.LENGTH_LONG).show();
             return false;
         }
-        else
-            return true;
+        return true;
     }
 
 
     // check if the password is at least 8 characters
-    private boolean passwordLength(String password) {
+    private boolean isPasswordValid(String password) {
         final String passwordPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
         boolean passwordPatternMatches = Pattern.compile(passwordPattern).matcher(password).matches();
         if (!passwordPatternMatches) {
@@ -139,72 +148,76 @@ public class SignupActivity extends AppCompatActivity {
                     "Password: at least 1 digit, 1 uppercase, 1 lowercase,and 1 special character!", Toast.LENGTH_LONG).show();
             return false;
         }
-        else
-            return true;
+        return true;
     }
 
     // check if the password and the confirmed password are the same
-    private boolean passwordConfirmation(String confirmPassword, String password) {
+    private boolean passwordMatcher(String confirmPassword, String password) {
         boolean passwordMatches = password.equals(confirmPassword);
         if (!passwordMatches) {
             Toast.makeText(getApplicationContext(),
                     "Passwords do not match!", Toast.LENGTH_LONG).show();
             return false;
         }
-        else
-            return true;
+        return true;
     }
 
 
-
-
-     // check if the phone number is 10 digits
-    private boolean phoneLength(int phone) {
-        final String phonePattern = "^[0-9]{10}$";
-        boolean isPhoneNumberValid = Patterns.PHONE.matcher("" + phone).matches();
-            if (!isPhoneNumberValid) {
-                Toast.makeText(getApplicationContext(),
+    // check if the phone number is 10 digits
+    private boolean isPhoneValid(int phone) {
+        final String numberPattern = "^[0-9]{10}$";
+        boolean isPhoneNumberValid = Pattern.compile(numberPattern).matcher("" + phone).matches();
+        if (!isPhoneNumberValid) {
+            Toast.makeText(getApplicationContext(),
                     "Please enter a valid phone number!", Toast.LENGTH_LONG).show();
             return false;
         }
-        else
-            return true;
+        return true;
     }
 
+    /**
+     * method to validate if the user is already in the data base
+     *
+     * @param email
+     * @return takes you to login page if you already exists
+     */
+    private void accountExists(String email) {
+        UserDAO databaseReference = new UserDAO();
+        DatabaseReference dataBase = databaseReference.getDatabaseReference();
 
-        private void accountExists(String email){
-            UserDAO databaseReference = new UserDAO();
-            DatabaseReference dataBase= databaseReference.getDatabaseReference();
-
-            dataBase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for(DataSnapshot postSnapshot: snapshot.getChildren()) {
-                        User user = postSnapshot.getValue(User.class);
-                        if (user.getEmail().equals(email)) {
-                            Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                            intent.putExtra("Email", email);
-                            startActivity(intent);
-                        }
+        dataBase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    User user = postSnapshot.getValue(User.class);
+                    if (user.getEmail().equals(email)) {
+                        Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
+                        finishAndRemoveTask();
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        newAccount = false;
+                        intent.putExtra("Email", email);
+                        startActivity(intent);
                     }
-
                 }
-                @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    final String errorRead= error.getMessage();
-                }
-            });
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String errorRead = error.getMessage();
+            }
+        });
 
 
-        }
+    }
 
     /**
-     * Encrypts user password and returns and the encrypted password.
+     * Encrypts user password and returns the encrypted password.
+     *
      * @param password
      * @return encryptedPassword
      */
-    private String encryptUserPassword(String password){
+    private String encryptUserPassword(String password) {
         // ET5: encrypt user password here
         return password;
     }
