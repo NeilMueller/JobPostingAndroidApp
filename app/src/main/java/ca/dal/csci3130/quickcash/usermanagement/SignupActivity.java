@@ -41,6 +41,8 @@ public class SignupActivity extends AppCompatActivity {
                 if (newUser != null) {
                     checkAndPush(newUser);// push to DB if data is valid
                     // ET7: redirect to successful registration page
+                    Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
+                    startActivity(intent);
                 }
             }
         });
