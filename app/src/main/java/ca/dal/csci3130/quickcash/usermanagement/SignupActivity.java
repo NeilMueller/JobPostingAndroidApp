@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.PatternsCompat;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -65,6 +66,15 @@ public class SignupActivity extends AppCompatActivity {
     protected void addUser(UserInterface user) {
         UserDAO userDAO = new UserDAO();
         userDAO.add(user);
+    }
+
+    /**
+     * method to create Toast message upon error
+     * @param messageId
+     */
+
+    protected void createToast(int messageId){
+        Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -127,8 +137,7 @@ public class SignupActivity extends AppCompatActivity {
         boolean anyFieldsEmpty = firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
                 || phone == 0 || password.isEmpty() || confirmPassword.isEmpty();
         if (anyFieldsEmpty) {
-            Toast.makeText(getApplicationContext(),
-                    R.string.toast_missing_component, Toast.LENGTH_LONG).show();
+            createToast(R.string.toast_missing_component);
             return true;
         }
         return false;
@@ -141,10 +150,9 @@ public class SignupActivity extends AppCompatActivity {
      * @return true or false
      */
     protected boolean isValidEmail(String email) {
-        boolean isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        boolean isEmailValid = PatternsCompat.EMAIL_ADDRESS.matcher(email).matches();
         if (!isEmailValid) {
-            Toast.makeText(getApplicationContext(),
-                    R.string.toast_invalid_email, Toast.LENGTH_LONG).show();
+            createToast(R.string.toast_invalid_email);
             return false;
         }
         return true;
@@ -162,8 +170,7 @@ public class SignupActivity extends AppCompatActivity {
         final String passwordPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
         boolean passwordPatternMatches = Pattern.compile(passwordPattern).matcher(password).matches();
         if (!passwordPatternMatches) {
-            Toast.makeText(getApplicationContext(),
-                    R.string.toast_invalid_password, Toast.LENGTH_LONG).show();
+            createToast(R.string.toast_invalid_password);
             return false;
         }
         return true;
@@ -178,8 +185,7 @@ public class SignupActivity extends AppCompatActivity {
     protected boolean passwordMatcher(String confirmPassword, String password) {
         boolean passwordMatches = password.equals(confirmPassword);
         if (!passwordMatches) {
-            Toast.makeText(getApplicationContext(),
-                    R.string.toast_password_mismatch, Toast.LENGTH_LONG).show();
+            createToast(R.string.toast_password_mismatch);
             return false;
         }
         return true;
@@ -194,10 +200,9 @@ public class SignupActivity extends AppCompatActivity {
      */
     protected boolean isPhoneValid(int phone) {
         final String phonePattern = "^[0-9]{10}$";
-        boolean isPhoneNumberValid = Patterns.PHONE.matcher("" + phone).matches();
+        boolean isPhoneNumberValid = Pattern.compile(phonePattern).matcher("" + phone).matches();
         if (!isPhoneNumberValid) {
-            Toast.makeText(getApplicationContext(),
-                    R.string.toast_invalid_phone, Toast.LENGTH_LONG).show();
+            createToast(R.string.toast_invalid_phone);
             return false;
         } else
             return true;
