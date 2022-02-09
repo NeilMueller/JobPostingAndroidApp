@@ -25,7 +25,7 @@ import ca.dal.csci3130.quickcash.R;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private TextView loginRedirect;
+    boolean signUpChange = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
 
         //Existing user Redirect hyperlink
-        loginRedirect = (TextView) findViewById(R.id.existingUserRedirect);
+        TextView loginRedirect = (TextView) findViewById(R.id.existingUserRedirect);
         loginRedirect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -221,15 +221,18 @@ public class SignupActivity extends AppCompatActivity {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
                     String email = newUser.getEmail();
-                    if (user.getEmail().equals(email)) {
+                    if (user.getEmail().equals(email) && !signUpChange) {
                         Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        newAccount = false;
                         intent.putExtra("Email", email);
                         startActivity(intent);
                     }
                 }
-                if (newAccount)
+                if (newAccount && !signUpChange) {
+                    signUpChange = true;
                     addUser(newUser);
+                }
 
             }
 
