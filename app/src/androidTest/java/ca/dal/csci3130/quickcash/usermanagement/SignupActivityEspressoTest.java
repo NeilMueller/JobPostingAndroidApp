@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.not;
 
 import android.view.WindowManager;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.Root;
 import androidx.test.rule.ActivityTestRule;
 
@@ -43,12 +44,7 @@ public class SignupActivityEspressoTest {
 
     /*** isValidEmail()**/
 
-    @Test
-    public void isValidEmail(){
-        fillFields("Joe", "Smith", "js123456@dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_invalid_email)).inRoot(new ToastMatcher()).check(matches(not(isDisplayed())));
-    }
+
 
     @Test
     public void notValidEmail(){
@@ -62,88 +58,60 @@ public class SignupActivityEspressoTest {
 
     @Test
     public void shortPassword() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "A1e9fG!", "A1e9fG!");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "A1e9fG!", "A1e9fG!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
     @Test
     public void noUpperCase() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "abc1de9fg!", "abc1de9fg!");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "abc1de9fg!", "abc1de9fg!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
     @Test
     public void noLowerCase() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "ABC1DE9FG!", "ABC1DE9FG!");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "ABC1DE9FG!", "ABC1DE9FG!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
     @Test
     public void noSpecialChar() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "Abc1de9fG", "Abc1de9fG");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "Abc1de9fG", "Abc1de9fG");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void validPassword() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(not(isDisplayed())));
-    }
 
     /*** passwordConfirmation()**/
 
     @Test
     public void mismatch() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890","Abc1de9fG!", "Abc1de9FG!");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890","Abc1de9fG!", "Abc1de9FG!");
         onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_password_mismatch)).inRoot(new ToastMatcher()).check(matches(not(isDisplayed())));
+        onView(withText(R.string.toast_password_mismatch)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void passwordMatch() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_password_mismatch)).inRoot(new ToastMatcher()).check(matches(not(isDisplayed())));
-    }
+
 
     /*** phoneLength()**/
 
-
-    /***  demonstration() ONLY FOR DEMONSTRATION PURPOSES REMOVE**/
-    @Test
-    public void demonstration(){
-        fillFields("", "", "", "", "", "");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_invalid_phone)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
-    }
-
-    /***  demonstration() ONLY FOR DEMONSTRATION PURPOSES REMOVE**/
-
     @Test
     public void shortPhone(){
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "123456789", "Abc1de9fG!", "Abc1de9fG!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_phone)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
     @Test
     public void longPhone() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "Abc1de9fG!", "12345678909","Abc1de9fG!");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "12345678909", "Abc1de9fG!","Abc1de9fG!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_phone)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void validPhone() {
-        fillFields("Joe", "Smith", "js12345dal.ca", "1234567890",  "Abc1de9fG!", "Abc1de9fG!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_invalid_phone)).inRoot(new ToastMatcher()).check(matches(not(isDisplayed())));
-    }
 
     public void fillFields(String fName, String lName, String email, String phoneNum, String password, String cPassword){
 
@@ -153,7 +121,7 @@ public class SignupActivityEspressoTest {
         onView(withId(R.id.etPhoneNumber)).perform(typeText(phoneNum));
         onView(withId(R.id.etPasswordSignUp)).perform(typeText(password));
         onView(withId(R.id.etConfirmPasswordSignUp)).perform(typeText(cPassword));
-        onView(withId(R.id.radioButtonEmployee)).perform(click());
+        Espresso.pressBack();
 
     }
 
