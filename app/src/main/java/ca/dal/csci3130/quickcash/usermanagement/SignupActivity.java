@@ -52,7 +52,8 @@ public class SignupActivity extends AppCompatActivity {
                 User newUser = getUserData();      //DON'T CREATE NEW USER HERE ADD NEW METHOD
                 if (newUser != null) {
                     checkAndPush(newUser); // push to DB if data is valid
-                    // ET7: redirect to successful registration page
+                    Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
+                    startActivity(intent);
                 }
             }
         });
