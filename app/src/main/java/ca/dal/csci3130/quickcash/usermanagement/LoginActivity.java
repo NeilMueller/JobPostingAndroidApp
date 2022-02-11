@@ -16,12 +16,15 @@ import androidx.core.util.PatternsCompat;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Pattern;
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
+import ca.dal.csci3130.quickcash.common.AbstractDAO;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -62,31 +65,59 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String[] loginDetails = getLoginData();
+                if(loginDetails!=null){
+                    AbstractDAO userDAO = new UserDAO();
+                    DatabaseReference databaseReference = userDAO.getDatabaseReference();
+                    databaseReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.exists()){
+                                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                    UserInterface user = dataSnapshot.getValue(User.class);
+                                    if(user.getEmail().toLowerCase().equals(loginDetails[0].
+                                            toLowerCase())){
+                                        //pull and decrypt password tbd
+                                        if(user.getPassword().equals(loginDetails[1])){
+                                            // create session
+                                            // move to the home page based on the type
+                                            createToast(R.string.toast_login_successful);
+
+                                        }
+                                    }
+                                }
+                                // If no emailID or password match throw an error to the user
+                                createToast(R.string.toast_invalid_email_and_or_password);
+                            }
+                            else{
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            //TBD error correction
+                        }
+                    });
+                    //user
+                }
             }
         });
-
-//        String intentEmail = getIntent().getStringExtra("Email");
-//        EditText email = (EditText) findViewById(R.id.etEmailId);
-//        if(!intentEmail.isEmpty()){
-//            email.append(intentEmail);
-//        }
-
-
     }
 
     /**
      * Gets loginEmail and loginPassword attempted by the UI. Validates input.
-     * If the data is valid, returns a String[] array containing [0]loginEmail, [1]loinPassword
+     * If the data is valid, returns a String[] array containing [0]loginEmail, [1]loginPassword
      * else it will return null
      *
      * @return String[] loginDetails
      */
     private String[] getLoginData() {
-        String[] loginDetails = new String[2];
+        String[] loginDetails;
         String loginEmail = ((EditText) findViewById(R.id.etEmailId)).getText().toString();
         String loginPassword = ((EditText) findViewById(R.id.etPassword)).getText().toString();
         if (!isEmpty(loginEmail, loginPassword)) {
             if(isValidEmail(loginEmail)) {
+                loginDetails = new String[]{loginEmail, loginPassword};
                 return loginDetails;
             }
         }
