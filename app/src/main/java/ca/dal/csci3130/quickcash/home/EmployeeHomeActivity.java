@@ -14,6 +14,11 @@ import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 public class EmployeeHomeActivity extends AppCompatActivity {
 
     @Override
+    //Prevent user from using back button once logged in
+    public void onBackPressed () {
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_home);
