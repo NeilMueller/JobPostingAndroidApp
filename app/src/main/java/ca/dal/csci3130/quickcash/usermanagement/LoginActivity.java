@@ -2,7 +2,6 @@ package ca.dal.csci3130.quickcash.usermanagement;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,12 +15,11 @@ import androidx.core.util.PatternsCompat;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.regex.Pattern;
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
+import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
 import ca.dal.csci3130.quickcash.common.AbstractDAO;
 
 public class LoginActivity extends AppCompatActivity {
@@ -30,6 +28,17 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed () {
+    }
+
+    /**
+     * Checks if user is logged in
+     */
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        checkSession();
     }
 
     @Override
@@ -65,9 +74,9 @@ public class LoginActivity extends AppCompatActivity {
                                             toLowerCase())){
                                         //pull and decrypt password tbd
                                         if(user.getPassword().equals(loginDetails[1])){
-                                            // create session
-                                            // move to the home page based on the type
-                                            createToast(R.string.toast_login_successful);
+                                            // create session and redirect to home page
+                                            login(user);
+                                            //createToast(R.string.toast_login_successful);
 
                                         }
                                     }
@@ -148,5 +157,64 @@ public class LoginActivity extends AppCompatActivity {
      */
     protected void createToast(int messageId){
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     *
+     * @param
+     */
+    public void login(UserInterface user){
+        SessionManager session = new SessionManager(LoginActivity.this);
+
+        session.createLoginSession(user.getEmail(), user.getPassword(), user.getFirstName(), user.getIsEmployee());
+
+        boolean isEmployee = user.getIsEmployee();
+
+        if (isEmployee){
+            moveToEmployeePage();
+        } else {
+            moveToEmployerPage();
+        }
+    }
+
+    /**
+     *
+     *
+     *
+     */
+    private void moveToEmployeePage(){
+
+        Intent intentEmployee = new Intent(LoginActivity.this, EmployeeHomeActivity.class);
+        intentEmployee.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intentEmployee);
+
+    }
+
+    private void moveToEmployerPage(){
+
+        Intent intentEmployer = new Intent(LoginActivity.this, EmployerHomeActivity.class);
+        intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intentEmployer);
+
+    }
+
+    /**
+     * Checks if session already exists and moves user to home page session exists
+     *
+     */
+
+    private void checkSession(){
+        SessionManager session = new SessionManager(LoginActivity.this);
+
+        boolean isLoggedIn = session.isLoggedIn();
+
+        if(isLoggedIn){
+            boolean isEmployee = session.getIsEmployee();
+            if(isEmployee){
+                moveToEmployeePage();
+            } else {
+                moveToEmployerPage();
+            }
+        }
     }
 }
