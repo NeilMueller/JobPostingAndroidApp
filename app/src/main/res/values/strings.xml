@@ -6,4 +6,6 @@
     <string name="toast_invalid_password">Password: at least 1 digit, 1 uppercase, 1 lowercase,and 1 special character!</string>
     <string name="toast_password_mismatch">Passwords do not match!</string>
     <string name="toast_invalid_phone">Please enter a valid phone number!</string>
+    <string name="toast_invalid_email_and_or_password">Invalid Email and/or Password, please try again.</string>
+    <string name="toast_login_successful">Login Successful.  Redirecting to Home Page.</string>
 </resources>
