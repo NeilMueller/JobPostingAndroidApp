@@ -1,10 +1,14 @@
 package ca.dal.csci3130.quickcash.home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
 public class EmployerHomeActivity extends AppCompatActivity {
 
@@ -12,5 +16,17 @@ public class EmployerHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employer_home);
+    }
+
+    public void logout(View view) {
+        SessionManager session = new SessionManager(EmployerHomeActivity.this);
+        session.logoutUser();
+
+        moveToLoginActivity();
+    }
+
+    private void moveToLoginActivity() {
+        Intent intent = new Intent(EmployerHomeActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 }

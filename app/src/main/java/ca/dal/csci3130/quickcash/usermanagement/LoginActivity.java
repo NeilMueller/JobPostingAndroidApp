@@ -20,6 +20,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Pattern;
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
+import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -27,6 +29,17 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed () {
+    }
+
+    /**
+     * Checks if user is logged in
+     */
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        checkSession();
     }
 
     @Override
@@ -57,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
 //        if(!intentEmail.isEmpty()){
 //            email.append(intentEmail);
 //        }
+
 
     }
 
@@ -116,5 +130,48 @@ public class LoginActivity extends AppCompatActivity {
      */
     protected void createToast(int messageId){
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     *
+     * @param
+     */
+    public void login(String email, String password, String name){
+        SessionManager session = new SessionManager(LoginActivity.this);
+
+        session.createLoginSession(email, password, name);
+
+        moveToHomePage("employee");    //CHANGE TO USER
+
+    }
+
+    /**
+     *
+     *
+     */
+    private void moveToHomePage(String userType){
+        if(userType.equals("employee")){
+            Intent intentEmployee = new Intent(LoginActivity.this, EmployeeHomeActivity.class);
+            startActivity(intentEmployee);
+        } else if (userType.equals("employer")){
+            Intent intentEmployer = new Intent(LoginActivity.this, EmployerHomeActivity.class);
+            startActivity(intentEmployer);
+        }
+
+    }
+
+    /**
+     * Checks if session already exists and moves user to home page session exists
+     *
+     */
+
+    private void checkSession(){
+        SessionManager session = new SessionManager(LoginActivity.this);
+
+        boolean isLoggedIn = session.isLoggedIn();
+
+        if(isLoggedIn){
+            moveToHomePage("employee");        //CHANGE TO USER
+        }
     }
 }
