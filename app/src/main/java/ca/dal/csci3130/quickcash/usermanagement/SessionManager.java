@@ -19,12 +19,12 @@ public class SessionManager implements SessionManagerInterface {
 
 
     @Override
-    public void createLoginSession(String email, String password, String name) {
+    public void createLoginSession(String email, String password, String name, boolean isEmployee) {
 
         editor.putString("email", email).commit();
         editor.putString("password", password).commit();
         editor.putString("name", name).commit();
-
+        editor.putBoolean("isEmployee", isEmployee).commit();
 
     }
 
@@ -35,7 +35,11 @@ public class SessionManager implements SessionManagerInterface {
 
     @Override
     public void logoutUser() {
-        editor.clear();
+
+        editor.putString("email", "").commit();
+        editor.putString("name", "").commit();
+
+        //editor.clear();
     }
 
     @Override
@@ -57,5 +61,11 @@ public class SessionManager implements SessionManagerInterface {
     public String getKeyEmail() {
         String email = pref.getString("email","");
         return email;
+    }
+
+    @Override
+    public boolean getIsEmployee() {
+        boolean isEmployee = pref.getBoolean("isEmployee", false);
+        return isEmployee;
     }
 }
