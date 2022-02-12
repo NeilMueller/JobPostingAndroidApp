@@ -82,17 +82,16 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 }
                                 // If no emailID or password match throw an error to the user
-                                createToast(R.string.toast_invalid_email_and_or_password);
+
                             }
                             else{
-
+                                createToast(R.string.toast_invalid_email_and_or_password);
                             }
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
-                            //TBD error correction
-                        }
+                            final String errorRead = error.getMessage();                        }
                     });
                     //user
                 }
