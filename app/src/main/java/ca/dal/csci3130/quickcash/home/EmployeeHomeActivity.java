@@ -24,10 +24,13 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_home);
 
-        String fullName = getIntent().getStringExtra("fullName");
+        SessionManager sessionManager = new SessionManager(getApplicationContext());
+        //Gets the name from the session
+        String fullName = sessionManager.getKeyName();
+
         // printing welcome message
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
-        welcomeMessage.setText(String.format("Welcome Employee, %s", fullName));
+        welcomeMessage.setText(String.format("Welcome Employer, %s", fullName));
     }
 
     /**
