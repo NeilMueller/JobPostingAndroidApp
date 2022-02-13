@@ -27,10 +27,12 @@ import ca.dal.csci3130.quickcash.R;
 public class SignupActivity extends AppCompatActivity {
 
     boolean signUpChange = false;
+    public static boolean newUser = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_signup);
 
         //Existing user Redirect hyperlink
@@ -217,10 +219,12 @@ public class SignupActivity extends AppCompatActivity {
      * @param newUser
      */
     private void checkAndPush(User newUser) {
+
         UserDAO databaseReference = new UserDAO();
         DatabaseReference dataBase = databaseReference.getDatabaseReference();
 
         dataBase.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean newAccount = true;
@@ -247,18 +251,77 @@ public class SignupActivity extends AppCompatActivity {
                 final String errorRead = error.getMessage();
             }
         });
+    }
 
 
+
+    protected boolean checkIfUserExists(User user) {
+        UserDAO databaseReference = new UserDAO();
+        DatabaseReference dataBase = databaseReference.getDatabaseReference();
+
+        dataBase.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean newAccount = true;
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    User user = postSnapshot.getValue(User.class);
+                    String email = user.getEmail();
+                    if (user.getEmail().equals(email)) {
+                        newUser = false;
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String errorRead = error.getMessage();
+            }
+        });
+        return newUser;
     }
 
     /**
-     * Encrypts user password and returns and the encrypted password.
+     * Encrypts user password and returns the encrypted password.
      *
      * @param password
      * @return encryptedPassword
      */
+
     private String encryptUserPassword(String password) {
+
         // ET5: encrypt user password here
-        return password;
+        String result = "";
+        int key = 3;
+        for(int x = 0; x< password.length(); x++){
+            char letter = password.charAt(x);
+            if(Character.isLowerCase(letter)){
+                char new_letter = (char)(letter+key);
+
+                if(new_letter > 'z'){
+                    result+= (char)(letter -(26-key));
+
+                }else{
+                    result += new_letter;}
+
+            }
+            else if(Character.isUpperCase(letter)){
+                char new_letter = (char)(letter+key);
+
+                if(new_letter > 'Z'){
+                    result+= (char)(letter - (26-key));
+
+                }else{
+                    result += new_letter;}
+
+            }
+            else{
+                result +=letter;
+            }
+
+        }
+        return result;
     }
+
 }

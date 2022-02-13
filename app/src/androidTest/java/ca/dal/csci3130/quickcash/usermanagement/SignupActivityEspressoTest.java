@@ -2,6 +2,7 @@ package ca.dal.csci3130.quickcash.usermanagement;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
@@ -13,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
 
 import android.view.WindowManager;
 
@@ -115,16 +117,24 @@ public class SignupActivityEspressoTest {
 
     public void fillFields(String fName, String lName, String email, String phoneNum, String password, String cPassword){
 
-        onView(withId(R.id.etFirstName)).perform(typeText(fName));
-        onView(withId(R.id.etLastName)).perform(typeText(lName));
-        onView(withId(R.id.etEmailIdSignUp)).perform(typeText(email));
-        onView(withId(R.id.etPhoneNumber)).perform(typeText(phoneNum));
-        onView(withId(R.id.etPasswordSignUp)).perform(typeText(password));
-        onView(withId(R.id.etConfirmPasswordSignUp)).perform(typeText(cPassword));
-        Espresso.pressBack();
+        onView(withId(R.id.etFirstName)).perform(typeText(fName), closeSoftKeyboard());
+        onView(withId(R.id.etLastName)).perform(typeText(lName), closeSoftKeyboard());
+        onView(withId(R.id.etEmailIdSignUp)).perform(typeText(email), closeSoftKeyboard());
+        onView(withId(R.id.etPhoneNumber)).perform(typeText(phoneNum), closeSoftKeyboard());
+        onView(withId(R.id.etPasswordSignUp)).perform(typeText(password), closeSoftKeyboard());
+        onView(withId(R.id.etConfirmPasswordSignUp)).perform(typeText(cPassword), closeSoftKeyboard());
+        //Espresso.pressBack();
 
     }
 
+    @Test
+    public void CheckIfUserExists() {
 
+        User user = new User();
+        user.setEmail("test@a.com");
+        fillFields("Joe", "Smith", "test@a.com", "1234567890", "Abc1de9fG!","Abc1de9fG!");
+        onView(withId(R.id.signUpButton)).perform(click());
+        onView(withText("email already exists please login")).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
+    }
 
 }

@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                                     if(user.getEmail().toLowerCase().equals(loginDetails[0].
                                             toLowerCase())){
                                         //pull and decrypt password tbd
-                                        if(user.getPassword().equals(loginDetails[1])){
+                                        if(decryptUserPassword(user.getPassword()).equals(loginDetails[1])){
                                             // create session and redirect to home page
                                             login(user);
                                             //createToast(R.string.toast_login_successful);
@@ -215,5 +215,39 @@ public class LoginActivity extends AppCompatActivity {
                 moveToEmployerPage();
             }
         }
+    }
+    //Decrypt
+    private String decryptUserPassword(String password){
+
+        String result = "";
+        int key = 3;
+        for(int x = 0; x< password.length(); x++){
+            char letter = password.charAt(x);
+            if(Character.isLowerCase(letter)){
+                char new_letter = (char)(letter-key);
+
+                if(new_letter > 'z'){
+                    result+= (char)(letter -(26+key));
+
+                }else{
+                    result += new_letter;}
+
+            }
+            else if(Character.isUpperCase(letter)){
+                char new_letter = (char)(letter-key);
+
+                if(new_letter > 'Z'){
+                    result+= (char)(letter - (26+key));
+
+                }else{
+                    result += new_letter;}
+
+            }
+            else{
+                result +=letter;
+            }
+
+        }
+        return result;
     }
 }

@@ -4,11 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
+
+import android.widget.Toast;
 
 public class SignupActivityJUnitTest {
 
@@ -104,4 +107,5 @@ public class SignupActivityJUnitTest {
         assertFalse(signupActivityMock.isPhoneValid(123456789));
         assertFalse(signupActivityMock.isPhoneValid(10000));       //FIX THIS IT SHOULD BE ABLE TO HANDLE A TEST OF TOO LARGE
     }
+
 }
