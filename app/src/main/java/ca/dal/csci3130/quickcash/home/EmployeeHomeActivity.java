@@ -3,6 +3,7 @@ package ca.dal.csci3130.quickcash.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,6 +23,11 @@ public class EmployeeHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_home);
+
+        String fullName = getIntent().getStringExtra("fullName");
+        // printing welcome message
+        TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
+        welcomeMessage.setText(String.format("Welcome Employer, %s", fullName));
     }
 
     /**
