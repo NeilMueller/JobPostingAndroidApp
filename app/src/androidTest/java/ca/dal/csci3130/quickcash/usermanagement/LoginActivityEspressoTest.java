@@ -112,6 +112,22 @@ public class LoginActivityEspressoTest {
         onView(withId(R.id.btn_logout_employer)).perform(click());
     }
 
+    @Test
+    public void invalidEmployerCredentials(){
+        // add employee to the db
+        // NOTE/to-do: passing a user object with the same email makes it fail when all the tests of this class
+        // are run together. If ran in isolation, still passes. Temporary workaround: send object with new
+        // email
+        testEmployer.setEmail("testEmployer2@dal.ca");
+        databaseReference.child(userObjectKey).setValue(testEmployer);
+
+        fillFields("invalidEmployer@dal.ca", "invalidEmployer@1");
+        onView(withId(R.id.loginButtonCheckInfo)).perform(click());
+
+        onView(withText(R.string.toast_invalid_email_and_or_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
+    }
+
+
     private void fillFields(String email, String password) {
         onView(withId(R.id.etEmailId)).perform(typeText(email));
         onView(withId(R.id.etPassword)).perform(typeText(password), closeSoftKeyboard());
