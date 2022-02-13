@@ -4,16 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/School/CSCI 3130/Project/csci-3130-group-16/app/src/main/res/layout/activity_login.xml" value="0.12360688956433637" />
-        <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_employee_home.xml" value="0.20520833333333333" />
-        <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_employer_home.xml" value="0.20520833333333333" />
-        <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_login.xml" value="0.20520833333333333" />
-        <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_main.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_employee_home.xml" value="0.18642350557244175" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_login.xml" value="0.22" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_signup.xml" value="0.18" />
         <entry key="app/src/main/res/layout/activity_employee_home.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_employer_home.xml" value="0.16210739614994935" />
+        <entry key="app/src/main/res/layout/activity_employer_home.xml" value="0.22327898550724637" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.5091853463261048" />

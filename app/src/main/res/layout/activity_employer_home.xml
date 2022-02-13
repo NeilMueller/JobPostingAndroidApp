@@ -17,4 +17,14 @@
         app:layout_constraintStart_toStartOf="parent"
         android:onClick="logout"/>
 
+    <TextView
+        android:id="@+id/welcomeEmployer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/btn_logout_employer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
