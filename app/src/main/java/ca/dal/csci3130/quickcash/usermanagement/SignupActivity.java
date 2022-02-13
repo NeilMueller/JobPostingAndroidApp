@@ -257,8 +257,39 @@ public class SignupActivity extends AppCompatActivity {
      * @param password
      * @return encryptedPassword
      */
-    private String encryptUserPassword(String password) {
+    protected String encryptUserPassword(String password) {
+
         // ET5: encrypt user password here
-        return password;
+        String result = "";
+        int key = 3;
+        for(int x = 0; x< password.length(); x++){
+            char letter = password.charAt(x);
+            if(Character.isLowerCase(letter)){
+                char new_letter = (char)(letter+key);
+
+                if(new_letter > 'z'){
+                    result+= (char)(letter -(26-key));
+
+                }else{
+                    result += new_letter;}
+
+            }
+            else if(Character.isUpperCase(letter)){
+                char new_letter = (char)(letter+key);
+
+                if(new_letter > 'Z'){
+                    result+= (char)(letter - (26-key));
+
+                }else{
+                    result += new_letter;}
+
+            }
+            else{
+                result +=letter;
+            }
+
+        }
+        return result;
     }
+
 }

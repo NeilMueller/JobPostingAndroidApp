@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,10 +14,12 @@ import static org.mockito.Mockito.doNothing;
 public class SignupActivityJUnitTest {
 
     SignupActivity signupActivityMock;
+    LoginActivity loginActivityMock;
 
     @Before
     public void setup () {
         signupActivityMock = Mockito.mock(SignupActivity.class, Mockito.CALLS_REAL_METHODS);
+        loginActivityMock = Mockito.mock(LoginActivity.class, Mockito.CALLS_REAL_METHODS);
         doNothing().when(signupActivityMock).addUser(any());
         doNothing().when(signupActivityMock).createToast(anyInt());
     }
@@ -104,4 +107,16 @@ public class SignupActivityJUnitTest {
         assertFalse(signupActivityMock.isPhoneValid(123456789));
         assertFalse(signupActivityMock.isPhoneValid(10000));       //FIX THIS IT SHOULD BE ABLE TO HANDLE A TEST OF TOO LARGE
     }
+
+    @Test
+    public void checkEncryption() {
+        String allASCII = "";
+        for (int i = 32; i <= 126; i++) {
+            allASCII += (char)i;
+        }
+        String encryptedPassword = signupActivityMock.encryptUserPassword(allASCII);
+        String decryptedPassword = loginActivityMock.decryptUserPassword(encryptedPassword);
+        assertEquals(allASCII, decryptedPassword);
+    }
+
 }

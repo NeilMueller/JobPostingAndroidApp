@@ -168,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     protected boolean checkCredentials(String[] loginDetails, UserInterface user){
         if (user != null && user.getEmail().equalsIgnoreCase(loginDetails[0])) {
-            String decryptedPassword = decryptPassword(user.getPassword());
+            String decryptedPassword = decryptUserPassword(user.getPassword()); //test
             if(decryptedPassword.equals(loginDetails[1]))
                 return true;
         }
@@ -179,14 +179,37 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Decrypts user password and returns that string.
      *
-     * @param encryptedPassword
+     * @param password
      * @return decryptedPassword
      */
-    protected String decryptPassword(String encryptedPassword) {
-        // ET5: encrypt user password here
-        String decryptedPassword = encryptedPassword; // replace with decryption logic
-        return decryptedPassword;
+    //Decrypt
+    protected String decryptUserPassword(String password){
+
+        String result = "";
+        int key = 3; // can make key variable in the future
+        for (int x = 0; x < password.length(); x++) {
+            char letter = password.charAt(x);
+            if (Character.isLowerCase(letter)) {
+                char new_letter = (char) (letter - key);
+                if (letter < ('a' + key)) {
+                    result += (char) (letter + (26 - key));
+                } else {
+                    result += new_letter;
+                }
+            } else if (Character.isUpperCase(letter)) {
+                char new_letter = (char) (letter - key);
+                if (letter < ('A' + key)) {
+                    result += (char) (letter + (26 - key));
+                } else {
+                    result += new_letter;
+                }
+            } else {
+                result += letter;
+            }
+        }
+        return result;
     }
+
 
     /**
      * Creates a session for the user and redirects them to their respective home page
@@ -204,7 +227,7 @@ public class LoginActivity extends AppCompatActivity {
         if (isEmployee) {
             moveToEmployeePage(fullName);
         } else {
-            moveToEmployerPage(fullName);
+            moveToEmployerPage();
         }
     }
 
@@ -223,15 +246,17 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Shift to the Employer home page
      *
-     * @param fullName
+     *
      */
-    private void moveToEmployerPage(String fullName) {
+    private void moveToEmployerPage() {
 
         Intent intentEmployer = new Intent(LoginActivity.this, EmployerHomeActivity.class);
         intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intentEmployer.putExtra("fullName", fullName);
+
         startActivity(intentEmployer);
     }
+
+
 
     /**
      * Checks if session already exists and moves user to home page session exists
@@ -246,8 +271,10 @@ public class LoginActivity extends AppCompatActivity {
             if (isEmployee) {
                 moveToEmployeePage(session.getKeyName());
             } else {
-                moveToEmployerPage(session.getKeyName());
+                moveToEmployerPage();
             }
         }
     }
+
+
 }
