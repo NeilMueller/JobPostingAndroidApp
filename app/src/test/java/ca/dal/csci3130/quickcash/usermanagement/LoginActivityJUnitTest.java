@@ -18,8 +18,12 @@ public class LoginActivityJUnitTest {
 
     final String[] invalidCredentials = {"invalidCreds@dal.ca", "Invalidcreds@1"};
     final String[] validEmployeeCredentials = {"employee1@dal.ca", "Employee@1"};
-    final UserInterface registeredEmployee = new User("Employee", "1", "employee1@dal.ca", 1234567890,
+    final String[] validEmployerCredentials = {"employer1@dal.ca", "Employer@1"};
+
+    final UserInterface registeredEmployee = new User("Employee", "1", "employee1@dal.ca", "1234567890",
             "Employee@1", true);
+    final UserInterface registeredEmployer = new User("Employer", "1", "employer1@dal.ca", "1234567890",
+            "Employer@1", false);
 
     @Before
     public void setup () {
@@ -46,6 +50,16 @@ public class LoginActivityJUnitTest {
         assertTrue(loginActivityMock.checkCredentials(validEmployeeCredentials, registeredEmployee));
     }
 
+    // Invalid Employer Credentials
+    @Test
+    public void invalidEmployerCredentials(){
+        assertFalse(loginActivityMock.checkCredentials(invalidCredentials, registeredEmployer));
+    }
 
-
+    // Valid Employer Credentials
+    @Test
+    public void validEmployerCredentials(){
+        registeredEmployer.setPassword(signupActivityMock.encryptUserPassword(registeredEmployer.getPassword()));
+        assertTrue(loginActivityMock.checkCredentials(validEmployerCredentials, registeredEmployer));
+    }
 }

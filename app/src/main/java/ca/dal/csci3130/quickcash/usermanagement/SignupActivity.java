@@ -49,7 +49,7 @@ public class SignupActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                User newUser = getUserData();      //DON'T CREATE NEW USER HERE ADD NEW METHOD
+                User newUser = getUserData();
                 if (newUser != null) {
                     checkAndPush(newUser); // push to DB if data is valid
                     Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
@@ -92,8 +92,7 @@ public class SignupActivity extends AppCompatActivity {
         String lastName = ((EditText) findViewById(R.id.etLastName)).getText().toString();
         String email = ((EditText) findViewById(R.id.etEmailIdSignUp)).getText().toString();
 
-        String phoneStr = ((EditText) findViewById(R.id.etPhoneNumber)).getText().toString();
-        int phone = phoneStr.isEmpty() ? 0 : Integer.parseInt(phoneStr);
+        String phone = ((EditText) findViewById(R.id.etPhoneNumber)).getText().toString();
 
         String password = ((EditText) findViewById(R.id.etPasswordSignUp)).getText().toString();
         String confirmPassword = ((EditText) findViewById(R.id.etConfirmPasswordSignUp)).getText().toString();
@@ -134,9 +133,9 @@ public class SignupActivity extends AppCompatActivity {
      * @param confirmPassword
      * @return true or false
      */
-    protected boolean isEmpty(String firstName, String lastName, String email, int phone, String password, String confirmPassword) {
+    protected boolean isEmpty(String firstName, String lastName, String email, String phone, String password, String confirmPassword) {
         boolean anyFieldsEmpty = firstName.isEmpty() || lastName.isEmpty() || email.isEmpty()
-                || phone == 0 || password.isEmpty() || confirmPassword.isEmpty();
+                || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty();
         if (anyFieldsEmpty) {
             createToast(R.string.toast_missing_component);
             return true;
@@ -199,7 +198,7 @@ public class SignupActivity extends AppCompatActivity {
      * @param phone
      * @return true or false
      */
-    protected boolean isPhoneValid(int phone) {
+    protected boolean isPhoneValid(String phone) {
         final String phonePattern = "^[0-9]{10}$";
         boolean isPhoneNumberValid = Pattern.compile(phonePattern).matcher("" + phone).matches();
         if (!isPhoneNumberValid) {
@@ -258,7 +257,6 @@ public class SignupActivity extends AppCompatActivity {
      * @return encryptedPassword
      */
     protected String encryptUserPassword(String password) {
-
         // ET5: encrypt user password here
         String result = "";
         int key = 3;

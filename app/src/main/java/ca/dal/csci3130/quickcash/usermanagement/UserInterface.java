@@ -14,9 +14,9 @@ public interface UserInterface {
 
     void setEmail(String email);
 
-    int getPhone();
+    String getPhone();
 
-    void setPhone(int phone);
+    void setPhone(String phone);
 
     String getPassword();
 

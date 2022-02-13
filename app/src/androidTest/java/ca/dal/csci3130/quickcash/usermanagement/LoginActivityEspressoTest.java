@@ -35,10 +35,10 @@ public class LoginActivityEspressoTest {
     static DatabaseReference databaseReference;
     String userObjectKey;
 
-    final UserInterface testEmployee = new User("Test", "Employee", "testEmployee@dal.ca", 1234567890,
-            "TestEmployee@1", true);
-    final UserInterface testEmployer = new User("Test", "Employer", "testEmployer@dal.ca", 1234567890,
-            "TestEmployer@1", false);
+    final UserInterface testEmployee = new User("Test", "Employee", "testEmployee@dal.ca", "1234567890",
+            "WhvwHpsorbhh@1", true);
+    final UserInterface testEmployer = new User("Test", "Employer", "testEmployer@dal.ca", "1234567890",
+            "WhvwHpsorbhu@1", false);
 
     @Rule
     public ActivityTestRule<LoginActivity> loginActivityTestRule =
@@ -51,7 +51,8 @@ public class LoginActivityEspressoTest {
     }
 
     @Before
-    public void setup(){
+    public void setup() throws InterruptedException {
+        Thread.sleep(1000);
         Intents.init();
 
         userObjectKey = databaseReference.push().getKey();

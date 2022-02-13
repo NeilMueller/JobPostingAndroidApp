@@ -7,18 +7,11 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import android.view.WindowManager;
-
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.Root;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.rule.ActivityTestRule;
 
@@ -54,10 +47,6 @@ public class SignupActivityEspressoTest {
     @Before
     public void setup(){
         Intents.init();
-
-        userObjectKey = databaseReference.push().getKey();
-        if(userObjectKey == null)
-            throw new NullPointerException("User Object Key is null!");
     }
 
     /*** isEmpty()**/
@@ -71,9 +60,6 @@ public class SignupActivityEspressoTest {
     }
 
     /*** isValidEmail()**/
-
-
-
     @Test
     public void notValidEmail(){
         fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!");
@@ -140,6 +126,17 @@ public class SignupActivityEspressoTest {
         onView(withText(R.string.toast_invalid_phone)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void CheckIfUserExists() {
+        addUserToDB(new User("Joe", "Smith", "test@a.com", "1234567890", "Abc1de9fG!", true));
+
+        fillFields("Joe", "Smith", "test@a.com", "1234567890", "Abc1de9fG!","Abc1de9fG!");
+        onView(withId(R.id.signUpButton)).perform(click());
+        onView(withText("email already exists please login")).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
+
+        // remove the added user from the db to avoid clutter
+        databaseReference.child(userObjectKey).removeValue();
+    }
 
     public void fillFields(String fName, String lName, String email, String phoneNum, String password, String cPassword){
 
@@ -149,18 +146,13 @@ public class SignupActivityEspressoTest {
         onView(withId(R.id.etPhoneNumber)).perform(typeText(phoneNum));
         onView(withId(R.id.etPasswordSignUp)).perform(typeText(password));
         onView(withId(R.id.etConfirmPasswordSignUp)).perform(typeText(cPassword), closeSoftKeyboard());
-        Espresso.pressBack();
-
     }
 
-    @Test
-    public void CheckIfUserExists() {
-        databaseReference.child(userObjectKey).setValue(new User("Joe", "Smith", "test@a.com", 1234567890, "Abc1de9fG!", true));
-        fillFields("Joe", "Smith", "test@a.com", "1234567890", "Abc1de9fG!","Abc1de9fG!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText("email already exists please login")).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
-        // remove the added user from the db to avoid clutter
-        databaseReference.child(userObjectKey).removeValue();
+    private void addUserToDB(UserInterface user){
+        userObjectKey = databaseReference.push().getKey();
+        if(userObjectKey == null)
+            throw new NullPointerException("User Object Key is null!");
+        databaseReference.child(userObjectKey).setValue(user);
     }
 
     @After
