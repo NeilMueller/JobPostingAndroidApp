@@ -30,7 +30,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
 
         // printing welcome message
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
-        welcomeMessage.setText(String.format("Welcome Employer, %s", fullName));
+        welcomeMessage.setText(String.format("Welcome Employee, %s", fullName));
     }
 
     /**
