@@ -35,11 +35,7 @@ public class SessionManager implements SessionManagerInterface {
 
     @Override
     public void logoutUser() {
-
-        editor.putString("email", "").commit();
-        editor.putString("name", "").commit();
-
-        //editor.clear();
+        editor.clear().commit();
     }
 
     @Override
