@@ -53,7 +53,7 @@ public class LoginActivityEspressoTest {
     @Before
     public void setup(){
         Intents.init();
-        // add the testEmployee to the db
+
         userObjectKey = databaseReference.push().getKey();
         if(userObjectKey == null)
             throw new NullPointerException("User Object Key is null!");
@@ -80,9 +80,13 @@ public class LoginActivityEspressoTest {
     @Test
     public void invalidEmployeeCredentials(){
         // add employee to the db
+        // NOTE/to-do: passing a user object with the same email makes it fail when all the tests of this class
+        // are run together. If ran in isolation, still passes. Temporary workaround: send object with new
+        // email
+        testEmployee.setEmail("testEmployee2@dal.ca");
         databaseReference.child(userObjectKey).setValue(testEmployee);
 
-        fillFields("testEmployee@dal.ca", "TestEmployee@2");
+        fillFields("invalidEmployee@dal.ca", "invalidEmployee@1");
         onView(withId(R.id.loginButtonCheckInfo)).perform(click());
 
         onView(withText(R.string.toast_invalid_email_and_or_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
