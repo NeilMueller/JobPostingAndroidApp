@@ -67,26 +67,23 @@ public class LoginActivity extends AppCompatActivity {
                     databaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if(snapshot.exists()){
-                                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                    UserInterface user = dataSnapshot.getValue(User.class);
-                                    if(user.getEmail().toLowerCase().equals(loginDetails[0].
-                                            toLowerCase())){
-                                        //pull and decrypt password tbd
-                                        if(user.getPassword().equals(loginDetails[1])){
-                                            // create session and redirect to home page
-                                            login(user);
-                                            //createToast(R.string.toast_login_successful);
+                            boolean loggedIn = false;
+                            for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                UserInterface user = dataSnapshot.getValue(User.class);
+                                if(user != null && user.getEmail().equalsIgnoreCase(loginDetails[0])){
+                                    //pull and decrypt password tbd
 
-                                        }
+                                    if(user.getPassword().equals(loginDetails[1])){
+                                        // create session and redirect to home page
+                                        loggedIn = true;
+                                        createToast(R.string.toast_login_successful);
+                                        login(user);
                                     }
                                 }
-                                // If no emailID or password match throw an error to the user
-
                             }
-                            else{
+                            // If no emailID or password match throw an error to the user
+                            if(!loggedIn)
                                 createToast(R.string.toast_invalid_email_and_or_password);
-                            }
                         }
 
                         @Override
@@ -159,27 +156,26 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * Creates a session for the user and redirects them to their respective home page
      * @param
      */
     public void login(UserInterface user){
         SessionManager session = new SessionManager(LoginActivity.this);
+        String fullName = user.getFirstName() + " " + user.getLastName();
 
-        session.createLoginSession(user.getEmail(), user.getPassword(), user.getFirstName(), user.getIsEmployee());
+        session.createLoginSession(user.getEmail(), user.getPassword(), fullName, user.getIsEmployee());
 
         boolean isEmployee = user.getIsEmployee();
 
         if (isEmployee){
             moveToEmployeePage();
         } else {
-            moveToEmployerPage();
+            moveToEmployerPage(fullName);
         }
     }
 
     /**
-     *
-     *
-     *
+     * Shift to the Employee home page
      */
     private void moveToEmployeePage(){
 
@@ -189,19 +185,21 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void moveToEmployerPage(){
+    /**
+     * Shift to the Employer home page
+     * @param fullName
+     */
+    private void moveToEmployerPage(String fullName){
 
         Intent intentEmployer = new Intent(LoginActivity.this, EmployerHomeActivity.class);
         intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intentEmployer.putExtra("fullName", fullName);
         startActivity(intentEmployer);
-
     }
 
     /**
      * Checks if session already exists and moves user to home page session exists
-     *
      */
-
     private void checkSession(){
         SessionManager session = new SessionManager(LoginActivity.this);
 
@@ -212,7 +210,7 @@ public class LoginActivity extends AppCompatActivity {
             if(isEmployee){
                 moveToEmployeePage();
             } else {
-                moveToEmployerPage();
+                moveToEmployerPage(session.getKeyName());
             }
         }
     }
