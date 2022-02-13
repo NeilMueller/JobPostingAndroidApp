@@ -26,8 +26,6 @@ import ca.dal.csci3130.quickcash.R;
 
 public class SignupActivity extends AppCompatActivity {
 
-    boolean signUpChange = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,14 +217,14 @@ public class SignupActivity extends AppCompatActivity {
         UserDAO databaseReference = new UserDAO();
         DatabaseReference dataBase = databaseReference.getDatabaseReference();
 
-        dataBase.addValueEventListener(new ValueEventListener() {
+        dataBase.addListenerForSingleValueEvent( new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean newAccount = true;
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     User user = postSnapshot.getValue(User.class);
                     String email = newUser.getEmail();
-                    if (user.getEmail().equals(email) && !signUpChange) {
+                    if (user != null && user.getEmail().equals(email)) {
                         Toast.makeText(getApplicationContext(), "email already exists please login", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         newAccount = false;
@@ -234,10 +232,8 @@ public class SignupActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 }
-                if (newAccount && !signUpChange) {
-                    signUpChange = true;
+                if (newAccount)
                     addUser(newUser);
-                }
 
             }
 
