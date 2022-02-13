@@ -257,7 +257,7 @@ public class SignupActivity extends AppCompatActivity {
      * @param password
      * @return encryptedPassword
      */
-    private String encryptUserPassword(String password) {
+    protected String encryptUserPassword(String password) {
 
         // ET5: encrypt user password here
         String result = "";

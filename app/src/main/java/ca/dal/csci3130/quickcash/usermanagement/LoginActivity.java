@@ -168,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     protected boolean checkCredentials(String[] loginDetails, UserInterface user){
         if (user != null && user.getEmail().equalsIgnoreCase(loginDetails[0])) {
-            String decryptedPassword = decryptUserPassword(user.getPassword());
+            String decryptedPassword = decryptUserPassword(user.getPassword()); //test
             if(decryptedPassword.equals(loginDetails[1]))
                 return true;
         }
@@ -183,36 +183,29 @@ public class LoginActivity extends AppCompatActivity {
      * @return decryptedPassword
      */
     //Decrypt
-    private String decryptUserPassword(String password){
+    protected String decryptUserPassword(String password){
 
         String result = "";
-        int key = 3;
-        for(int x = 0; x< password.length(); x++){
+        int key = 3; // can make key variable in the future
+        for (int x = 0; x < password.length(); x++) {
             char letter = password.charAt(x);
-            if(Character.isLowerCase(letter)){
-                char new_letter = (char)(letter-key);
-
-                if(new_letter > 'z'){
-                    result+= (char)(letter -(26+key));
-
-                }else{
-                    result += new_letter;}
-
+            if (Character.isLowerCase(letter)) {
+                char new_letter = (char) (letter - key);
+                if (letter < ('a' + key)) {
+                    result += (char) (letter + (26 - key));
+                } else {
+                    result += new_letter;
+                }
+            } else if (Character.isUpperCase(letter)) {
+                char new_letter = (char) (letter - key);
+                if (letter < ('A' + key)) {
+                    result += (char) (letter + (26 - key));
+                } else {
+                    result += new_letter;
+                }
+            } else {
+                result += letter;
             }
-            else if(Character.isUpperCase(letter)){
-                char new_letter = (char)(letter-key);
-
-                if(new_letter > 'Z'){
-                    result+= (char)(letter - (26+key));
-
-                }else{
-                    result += new_letter;}
-
-            }
-            else{
-                result +=letter;
-            }
-
         }
         return result;
     }

@@ -6,9 +6,15 @@ import org.mockito.Mockito;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
 
 public class LoginActivityJUnitTest {
+
+
     LoginActivity loginActivityMock;
+    SignupActivity signupActivityMock;
 
     final String[] invalidCredentials = {"invalidCreds@dal.ca", "Invalidcreds@1"};
     final String[] validEmployeeCredentials = {"employee1@dal.ca", "Employee@1"};
@@ -18,6 +24,7 @@ public class LoginActivityJUnitTest {
     @Before
     public void setup () {
         loginActivityMock = Mockito.mock(LoginActivity.class, Mockito.CALLS_REAL_METHODS);
+        signupActivityMock = Mockito.mock(SignupActivity.class, Mockito.CALLS_REAL_METHODS);
     }
 
     // No users present
@@ -35,6 +42,10 @@ public class LoginActivityJUnitTest {
     // Valid Employee Credentials
     @Test
     public void validEmployeeCredentials(){
+        registeredEmployee.setPassword(signupActivityMock.encryptUserPassword(registeredEmployee.getPassword()));
         assertTrue(loginActivityMock.checkCredentials(validEmployeeCredentials, registeredEmployee));
     }
+
+
+
 }
