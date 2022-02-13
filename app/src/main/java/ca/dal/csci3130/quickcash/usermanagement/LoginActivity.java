@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView registerRedirect;
 
     @Override
-    public void onBackPressed () {
+    public void onBackPressed() {
     }
 
     /**
@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         registerRedirect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this,SignupActivity.class);
+                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                 startActivity(intent);
             }
         });
@@ -61,37 +61,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String[] loginDetails = getLoginData();
-                if(loginDetails!=null){
-                    AbstractDAO userDAO = new UserDAO();
-                    DatabaseReference databaseReference = userDAO.getDatabaseReference();
-                    databaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            boolean loggedIn = false;
-                            for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                UserInterface user = dataSnapshot.getValue(User.class);
-                                if(user != null && user.getEmail().equalsIgnoreCase(loginDetails[0])){
-                                    //pull and decrypt password tbd
-
-                                    if(user.getPassword().equals(loginDetails[1])){
-                                        // create session and redirect to home page
-                                        loggedIn = true;
-                                        createToast(R.string.toast_login_successful);
-                                        login(user);
-                                    }
-                                }
-                            }
-                            // If no emailID or password match throw an error to the user
-                            if(!loggedIn)
-                                createToast(R.string.toast_invalid_email_and_or_password);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            final String errorRead = error.getMessage();                        }
-                    });
-                    //user
-                }
+                if (loginDetails != null)
+                    checkCredentialsAndLogin(loginDetails);
             }
         });
     }
@@ -108,12 +79,45 @@ public class LoginActivity extends AppCompatActivity {
         String loginEmail = ((EditText) findViewById(R.id.etEmailId)).getText().toString();
         String loginPassword = ((EditText) findViewById(R.id.etPassword)).getText().toString();
         if (!isEmpty(loginEmail, loginPassword)) {
-            if(isValidEmail(loginEmail)) {
+            if (isValidEmail(loginEmail)) {
                 loginDetails = new String[]{loginEmail, loginPassword};
                 return loginDetails;
             }
         }
         return null;
+    }
+
+    /**
+     * checks the credentials and redirects to the respective home page
+     * @param loginDetails
+     */
+    protected void checkCredentialsAndLogin(String[] loginDetails) {
+        AbstractDAO userDAO = new UserDAO();
+        DatabaseReference databaseReference = userDAO.getDatabaseReference();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean loggedIn = false;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    UserInterface user = dataSnapshot.getValue(User.class);
+                    if(checkCredentials(loginDetails, user)){
+                        // create session and redirect to home page
+                        loggedIn = true;
+                        createToast(R.string.toast_login_successful);
+                        login(user);
+                        break;
+                    }
+                }
+                // If no emailID or password match throw an error to the user
+                if (!loggedIn)
+                    createToast(R.string.toast_invalid_email_and_or_password);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String errorRead = error.getMessage();
+            }
+        });
     }
 
     /**
@@ -149,17 +153,47 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * method to create Toast message upon error
+     *
      * @param messageId
      */
-    protected void createToast(int messageId){
+    protected void createToast(int messageId) {
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
     }
 
     /**
+     * Returns true or false based on whether credentials are valid or not
+     * @param loginDetails
+     * @param user
+     * @return true or false
+     */
+    protected boolean checkCredentials(String[] loginDetails, UserInterface user){
+        if (user != null && user.getEmail().equalsIgnoreCase(loginDetails[0])) {
+            String decryptedPassword = decryptPassword(user.getPassword());
+            if(decryptedPassword.equals(loginDetails[1]))
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Decrypts user password and returns that string.
+     *
+     * @param encryptedPassword
+     * @return decryptedPassword
+     */
+    protected String decryptPassword(String encryptedPassword) {
+        // ET5: encrypt user password here
+        String decryptedPassword = encryptedPassword; // replace with decryption logic
+        return decryptedPassword;
+    }
+
+    /**
      * Creates a session for the user and redirects them to their respective home page
+     *
      * @param
      */
-    public void login(UserInterface user){
+    public void login(UserInterface user) {
         SessionManager session = new SessionManager(LoginActivity.this);
         String fullName = user.getFirstName() + " " + user.getLastName();
 
@@ -167,7 +201,7 @@ public class LoginActivity extends AppCompatActivity {
 
         boolean isEmployee = user.getIsEmployee();
 
-        if (isEmployee){
+        if (isEmployee) {
             moveToEmployeePage();
         } else {
             moveToEmployerPage(fullName);
@@ -177,22 +211,23 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Shift to the Employee home page
      */
-    private void moveToEmployeePage(){
+    private void moveToEmployeePage() {
 
         Intent intentEmployee = new Intent(LoginActivity.this, EmployeeHomeActivity.class);
-        intentEmployee.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intentEmployee.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentEmployee);
 
     }
 
     /**
      * Shift to the Employer home page
+     *
      * @param fullName
      */
-    private void moveToEmployerPage(String fullName){
+    private void moveToEmployerPage(String fullName) {
 
         Intent intentEmployer = new Intent(LoginActivity.this, EmployerHomeActivity.class);
-        intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intentEmployer.putExtra("fullName", fullName);
         startActivity(intentEmployer);
     }
@@ -200,14 +235,14 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Checks if session already exists and moves user to home page session exists
      */
-    private void checkSession(){
+    private void checkSession() {
         SessionManager session = new SessionManager(LoginActivity.this);
 
         boolean isLoggedIn = session.isLoggedIn();
 
-        if(isLoggedIn){
+        if (isLoggedIn) {
             boolean isEmployee = session.getIsEmployee();
-            if(isEmployee){
+            if (isEmployee) {
                 moveToEmployeePage();
             } else {
                 moveToEmployerPage(session.getKeyName());
