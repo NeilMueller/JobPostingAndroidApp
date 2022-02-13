@@ -5,11 +5,11 @@ public class User implements UserInterface {
     private String firstName;
     private String lastName;
     private String email;
-    private int phone;
+    private String phone;
     private String password;
     private boolean isEmployee; // true or false.
 
-    public User(String firstName, String lastName, String email, int phone, String password,
+    public User(String firstName, String lastName, String email, String phone, String password,
                 boolean isEmployee) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -53,12 +53,12 @@ public class User implements UserInterface {
     }
 
     @Override
-    public int getPhone() {
+    public String getPhone() {
         return phone;
     }
 
     @Override
-    public void setPhone(int phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 

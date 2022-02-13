@@ -225,7 +225,7 @@ public class LoginActivity extends AppCompatActivity {
         boolean isEmployee = user.getIsEmployee();
 
         if (isEmployee) {
-            moveToEmployeePage(fullName);
+            moveToEmployeePage();
         } else {
             moveToEmployerPage();
         }
@@ -234,13 +234,11 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Shift to the Employee home page
      */
-    private void moveToEmployeePage(String fullName) {
+    private void moveToEmployeePage() {
 
         Intent intentEmployee = new Intent(LoginActivity.this, EmployeeHomeActivity.class);
         intentEmployee.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intentEmployee.putExtra("fullName", fullName);
         startActivity(intentEmployee);
-
     }
 
     /**
@@ -269,7 +267,7 @@ public class LoginActivity extends AppCompatActivity {
         if (isLoggedIn) {
             boolean isEmployee = session.getIsEmployee();
             if (isEmployee) {
-                moveToEmployeePage(session.getKeyName());
+                moveToEmployeePage();
             } else {
                 moveToEmployerPage();
             }

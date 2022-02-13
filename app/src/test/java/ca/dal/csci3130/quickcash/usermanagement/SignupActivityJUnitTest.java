@@ -28,37 +28,37 @@ public class SignupActivityJUnitTest {
     /*** isEmpty()**/
     @Test
     public void emptyFName() {
-        assertTrue(signupActivityMock.isEmpty("", "Smith", "js12345@dal.ca", 1234567890, "Abc1de9fG!", "Abc1de9fG!"));
+        assertTrue(signupActivityMock.isEmpty("", "Smith", "js12345@dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!"));
     }
 
     @Test
     public void emptyLName() {
-        assertTrue(signupActivityMock.isEmpty("Smith", "", "js12345@dal.ca", 1234567890, "Abc1de9fG!", "Abc1de9fG!"));
+        assertTrue(signupActivityMock.isEmpty("Smith", "", "js12345@dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!"));
     }
 
     @Test
     public void emptyEmail() {
-        assertTrue(signupActivityMock.isEmpty("Smith", "Smith", "", 1234567890, "Abc1de9fG!", "Abc1de9fG!"));
+        assertTrue(signupActivityMock.isEmpty("Smith", "Smith", "", "1234567890", "Abc1de9fG!", "Abc1de9fG!"));
     }
 
     @Test
     public void emptyPhone() {
-        assertTrue(signupActivityMock.isEmpty("Smith", "Smith", "js12345@dal.ca", 0, "Abc1de9fG!", "Abc1de9fG!"));
+        assertTrue(signupActivityMock.isEmpty("Smith", "Smith", "js12345@dal.ca", "", "Abc1de9fG!", "Abc1de9fG!"));
     }
 
     @Test
     public void emptyPassword() {
-        assertTrue(signupActivityMock.isEmpty("Smith", "Smith", "js12345@dal.ca", 1234567890, "", "Abc1de9fG!"));
+        assertTrue(signupActivityMock.isEmpty("Smith", "Smith", "js12345@dal.ca", "1234567890", "", "Abc1de9fG!"));
     }
 
     @Test
     public void emptyCPassword() {
-        assertTrue(signupActivityMock.isEmpty("Smith", "Smith", "js12345@dal.ca", 1234567890, "Abc1de9fG!", ""));
+        assertTrue(signupActivityMock.isEmpty("Smith", "Smith", "js12345@dal.ca", "1234567890", "Abc1de9fG!", ""));
     }
 
     @Test
     public void notEmpty() {
-        assertFalse(signupActivityMock.isEmpty("Joe", "Smith", "js12345@dal.ca", 1234567890, "Abc1de9fG!", "Abc1de9fG!"));
+        assertFalse(signupActivityMock.isEmpty("Joe", "Smith", "js12345@dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!"));
     }
 
     /*** isValidEmail()**/
@@ -100,12 +100,12 @@ public class SignupActivityJUnitTest {
 
     /*** phoneLength()**/
     @Test
-    public void checkIfPhoneValid() { assertTrue(signupActivityMock.isPhoneValid(1234567890)); }
+    public void checkIfPhoneValid() { assertTrue(signupActivityMock.isPhoneValid("1234567890")); }
 
     @Test
     public void checkIfPhoneInvalid() {
-        assertFalse(signupActivityMock.isPhoneValid(123456789));
-        assertFalse(signupActivityMock.isPhoneValid(10000));       //FIX THIS IT SHOULD BE ABLE TO HANDLE A TEST OF TOO LARGE
+        assertFalse(signupActivityMock.isPhoneValid("123456789"));
+        assertFalse(signupActivityMock.isPhoneValid("12345678909"));
     }
 
     @Test

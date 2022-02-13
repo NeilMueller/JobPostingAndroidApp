@@ -7,18 +7,11 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import android.view.WindowManager;
-
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.Root;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.rule.ActivityTestRule;
 
@@ -37,32 +30,21 @@ import ca.dal.csci3130.quickcash.common.Constants;
 
 public class SignupActivityEspressoTest {
 
-    static FirebaseDatabase db;
-    static DatabaseReference databaseReference;
+    DatabaseReference databaseReference;
     String userObjectKey;
 
     @Rule
     public ActivityTestRule<SignupActivity> activityTestRule =
             new ActivityTestRule<>(SignupActivity.class);
 
-    @BeforeClass
-    public static void init(){
-        db = FirebaseDatabase.getInstance(Constants.FIREBASE_URL);
-        databaseReference = db.getReference(User.class.getSimpleName());
-    }
-
     @Before
-    public void setup(){
+    public void setup() {
         Intents.init();
-
-        userObjectKey = databaseReference.push().getKey();
-        if(userObjectKey == null)
-            throw new NullPointerException("User Object Key is null!");
     }
 
     /*** isEmpty()**/
     @Test
-    public void firstNameEmpty(){
+    public void firstNameEmpty() {
 
         fillFields("", "Smith", "js123456@dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!");
         onView(withId(R.id.signUpButton)).perform(click());
@@ -71,11 +53,8 @@ public class SignupActivityEspressoTest {
     }
 
     /*** isValidEmail()**/
-
-
-
     @Test
-    public void notValidEmail(){
+    public void notValidEmail() {
         fillFields("Joe", "Smith", "js12345dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9fG!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_email)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
@@ -117,17 +96,15 @@ public class SignupActivityEspressoTest {
 
     @Test
     public void mismatch() {
-        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890","Abc1de9fG!", "Abc1de9FG!");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "Abc1de9fG!", "Abc1de9FG!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_password_mismatch)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
-
-
     /*** phoneLength()**/
 
     @Test
-    public void shortPhone(){
+    public void shortPhone() {
         fillFields("Joe", "Smith", "js12345@dal.ca", "123456789", "Abc1de9fG!", "Abc1de9fG!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_phone)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
@@ -135,13 +112,24 @@ public class SignupActivityEspressoTest {
 
     @Test
     public void longPhone() {
-        fillFields("Joe", "Smith", "js12345@dal.ca", "12345678909", "Abc1de9fG!","Abc1de9fG!");
+        fillFields("Joe", "Smith", "js12345@dal.ca", "12345678909", "Abc1de9fG!", "Abc1de9fG!");
         onView(withId(R.id.signUpButton)).perform(click());
         onView(withText(R.string.toast_invalid_phone)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void CheckIfUserExists() throws InterruptedException {
+        addUserToDB(new User("Joe", "Smith", "test@a.com", "1234567890", "Abc1de9fG!", true));
 
-    public void fillFields(String fName, String lName, String email, String phoneNum, String password, String cPassword){
+        fillFields("Joe", "Smith", "test@a.com", "1234567890", "Abc1de9fG!", "Abc1de9fG!");
+        onView(withId(R.id.signUpButton)).perform(click());
+        onView(withText("email already exists please login")).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
+
+        // remove the added user from the db to avoid clutter
+        databaseReference.child(userObjectKey).removeValue();
+    }
+
+    public void fillFields(String fName, String lName, String email, String phoneNum, String password, String cPassword) {
 
         onView(withId(R.id.etFirstName)).perform(typeText(fName));
         onView(withId(R.id.etLastName)).perform(typeText(lName));
@@ -149,22 +137,20 @@ public class SignupActivityEspressoTest {
         onView(withId(R.id.etPhoneNumber)).perform(typeText(phoneNum));
         onView(withId(R.id.etPasswordSignUp)).perform(typeText(password));
         onView(withId(R.id.etConfirmPasswordSignUp)).perform(typeText(cPassword), closeSoftKeyboard());
-        Espresso.pressBack();
-
     }
 
-    @Test
-    public void CheckIfUserExists() {
-        databaseReference.child(userObjectKey).setValue(new User("Joe", "Smith", "test@a.com", 1234567890, "Abc1de9fG!", true));
-        fillFields("Joe", "Smith", "test@a.com", "1234567890", "Abc1de9fG!","Abc1de9fG!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText("email already exists please login")).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
-        // remove the added user from the db to avoid clutter
-        databaseReference.child(userObjectKey).removeValue();
+    public void addUserToDB(UserInterface user) {
+        FirebaseDatabase db = FirebaseDatabase.getInstance(Constants.FIREBASE_URL);
+        databaseReference = db.getReference(User.class.getSimpleName());
+
+        userObjectKey = databaseReference.push().getKey();
+        if (userObjectKey == null)
+            throw new NullPointerException("User Object Key is null!");
+        databaseReference.child(userObjectKey).setValue(user);
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         Intents.release();
     }
 }
