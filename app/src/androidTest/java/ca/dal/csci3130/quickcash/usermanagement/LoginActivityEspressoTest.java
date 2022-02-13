@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.widget.TextView;
+
 import androidx.test.espresso.intent.Intents;
 import androidx.test.rule.ActivityTestRule;
 
@@ -73,6 +75,7 @@ public class LoginActivityEspressoTest {
         Thread.sleep(1000);
 
         intended(hasComponent(EmployeeHomeActivity.class.getName()));
+        onView(withId(R.id.welcomeEmployee)).check(matches(withText("Welcome Employee, Test Employee")));
 
         // logout before closing to close the session
         onView(withId(R.id.btn_logout_employee)).perform(click());
@@ -108,6 +111,7 @@ public class LoginActivityEspressoTest {
         Thread.sleep(1000);
 
         intended(hasComponent(EmployerHomeActivity.class.getName()));
+        onView(withId(R.id.welcomeEmployer)).check(matches(withText("Welcome Employer, Test Employer")));
 
         // logout before closing to close the session
         onView(withId(R.id.btn_logout_employer)).perform(click());
