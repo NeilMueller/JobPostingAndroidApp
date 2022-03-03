@@ -3,7 +3,9 @@ package ca.dal.csci3130.quickcash.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,6 +34,15 @@ public class EmployerHomeActivity extends AppCompatActivity {
         // printing welcome message
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployer);
         welcomeMessage.setText(String.format("Welcome Employer, %s", fullName));
+
+        Button jobFormButton = findViewById(R.id.job_Form);
+        jobFormButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), JobFormActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
