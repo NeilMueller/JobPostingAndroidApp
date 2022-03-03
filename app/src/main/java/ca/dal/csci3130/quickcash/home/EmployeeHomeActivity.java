@@ -3,6 +3,7 @@ package ca.dal.csci3130.quickcash.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
 public class EmployeeHomeActivity extends AppCompatActivity {
+
 
     @Override
     //Prevent user from using back button once logged in
@@ -31,7 +33,10 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         // printing welcome message
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
         welcomeMessage.setText(String.format("Welcome Employee, %s", fullName));
+
+
     }
+
 
     /**
      * Deletes session and opens login screen
