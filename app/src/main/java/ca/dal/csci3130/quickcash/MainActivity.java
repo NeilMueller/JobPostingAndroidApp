@@ -54,17 +54,16 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Checks if session already exists and moves user to home page session exists
-     *
      */
 
-    private void checkSession(){
+    private void checkSession() {
         SessionManager session = new SessionManager(MainActivity.this);
 
         boolean isLoggedIn = session.isLoggedIn();
 
-        if(isLoggedIn){
+        if (isLoggedIn) {
             boolean isEmployee = session.getIsEmployee();
-            if(isEmployee){
+            if (isEmployee) {
                 moveToEmployeePage();
             } else {
                 moveToEmployerPage();
@@ -72,18 +71,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void moveToEmployeePage(){
+    private void moveToEmployeePage() {
 
         Intent intentEmployee = new Intent(MainActivity.this, EmployeeHomeActivity.class);
-        intentEmployee.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intentEmployee.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentEmployee);
 
     }
 
-    private void moveToEmployerPage(){
+    private void moveToEmployerPage() {
 
         Intent intentEmployer = new Intent(MainActivity.this, EmployerHomeActivity.class);
-        intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentEmployer);
 
     }
