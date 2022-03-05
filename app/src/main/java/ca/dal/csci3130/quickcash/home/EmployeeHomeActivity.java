@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import ca.dal.csci3130.quickcash.MainActivity;
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
 public class EmployeeHomeActivity extends AppCompatActivity {
 
+    private Button availableJobs;
 
     @Override
     //Prevent user from using back button once logged in
@@ -25,6 +25,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_home);
+        availableJobs = findViewById(R.id.btn_seeAvailableJobs);
 
         SessionManager sessionManager = new SessionManager(getApplicationContext());
         //Gets the name from the session
@@ -34,6 +35,13 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
         welcomeMessage.setText(String.format("Welcome Employee, %s", fullName));
 
+        availableJobs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EmployeeHomeActivity.this, AvailableJobsActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -54,6 +62,11 @@ public class EmployeeHomeActivity extends AppCompatActivity {
     private void moveToLoginActivity() {
         Intent intent = new Intent(EmployeeHomeActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    private void moveToAvailableJobsActivity() {
+        Intent intent = new Intent(EmployeeHomeActivity.this, AvailableJobsActivity.class);
         startActivity(intent);
     }
 }
