@@ -23,7 +23,7 @@ public class UserDAO extends AbstractDAO {
     }
 
     @Override
-    public Task<Void> add(UserInterface user) {
+    public Task<Void> addUser(UserInterface user) {
         return databaseReference.push().setValue(user);
     }
 

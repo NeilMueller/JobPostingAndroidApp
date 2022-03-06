@@ -64,7 +64,7 @@ public class SignupActivity extends AppCompatActivity {
      */
     protected void addUser(UserInterface user) {
         UserDAO userDAO = new UserDAO();
-        userDAO.add(user);
+        userDAO.addUser(user);
     }
 
     /**

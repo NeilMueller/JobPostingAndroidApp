@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:ems="7"
-        android:hint="Duration"
+        android:hint="Duration (weeks)"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
