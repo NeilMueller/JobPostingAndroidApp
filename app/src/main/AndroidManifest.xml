@@ -22,8 +22,6 @@
             android:name=".usermanagement.PreferenceActivity"
             android:exported="false" />
         <activity
-            android:name=".home.JobFormActivity"
-            android:exported="false" />
             android:name=".jobmanagement.AvailableJobsActivity"
             android:exported="false"
             android:label="@string/title_activity_available_jobs" />
