@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ca.dal.csci3130.quickcash.MainActivity;
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.jobmanagement.JobFormActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
