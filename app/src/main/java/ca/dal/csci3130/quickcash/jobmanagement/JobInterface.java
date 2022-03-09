@@ -1,5 +1,7 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public interface JobInterface {
     String getJobTitle();
 
@@ -18,12 +20,19 @@ public interface JobInterface {
 
     void setDuration(int duration);
 
-    int getPayRate();
+    double getPayRate();
 
-    void setPayRate(int payRate);
+    void setPayRate(double payRate);
 
     String getJobID();
 
     void setJobID(String jobID);
 
+    double getLatitude();
+
+    void setLatitude(double latitude);
+
+    double getLongitude();
+
+    void setLongitude(double longitude);
 }
