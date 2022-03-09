@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.dal.csci3130.quickcash">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,15 +13,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickCash">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
         <activity
             android:name=".usermanagement.PreferenceActivity"
             android:exported="false" />
         <activity
             android:name=".home.JobFormActivity"
             android:exported="false" />
+            android:name=".jobmanagement.AvailableJobsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_available_jobs" />
         <activity
-            android:name=".home.AvailableJobsActivity"
-            android:exported="false" />
+            android:name=".jobmanagement.JobFormActivity"
+            android:exported="false"
+            android:label="@string/title_activity_job_form" />
         <activity
             android:name=".home.EmployerHomeActivity"
             android:exported="false" />
