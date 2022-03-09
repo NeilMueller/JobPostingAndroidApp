@@ -10,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
+import ca.dal.csci3130.quickcash.usermanagement.PreferenceActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
 public class EmployeeHomeActivity extends AppCompatActivity {
 
     private Button availableJobs;
+    private Button preferencesButton;
 
     @Override
     //Prevent user from using back button once logged in
@@ -26,6 +28,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_home);
         availableJobs = findViewById(R.id.btn_seeAvailableJobs);
+        preferencesButton = findViewById(R.id.buttonToPref);
 
         SessionManager sessionManager = new SessionManager(getApplicationContext());
         //Gets the name from the session
@@ -43,6 +46,12 @@ public class EmployeeHomeActivity extends AppCompatActivity {
             }
         });
 
+        preferencesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToPreferenceActivity();
+            }
+        });
     }
 
 
@@ -67,6 +76,11 @@ public class EmployeeHomeActivity extends AppCompatActivity {
 
     private void moveToAvailableJobsActivity() {
         Intent intent = new Intent(EmployeeHomeActivity.this, AvailableJobsActivity.class);
+        startActivity(intent);
+    }
+
+    private void moveToPreferenceActivity() {
+        Intent intent = new Intent(EmployeeHomeActivity.this, PreferenceActivity.class);
         startActivity(intent);
     }
 }
