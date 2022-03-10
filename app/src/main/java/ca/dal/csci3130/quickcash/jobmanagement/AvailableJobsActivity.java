@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,11 @@ import java.util.List;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
+import ca.dal.csci3130.quickcash.usermanagement.PreferenceActivity;
+import ca.dal.csci3130.quickcash.usermanagement.PreferenceDAO;
+import ca.dal.csci3130.quickcash.usermanagement.PreferenceInterface;
+import ca.dal.csci3130.quickcash.usermanagement.Preferences;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
 public class AvailableJobsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -65,6 +71,15 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
             public void onClick(View view) {
                 Intent intent = new Intent(AvailableJobsActivity.this, EmployeeHomeActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        //import Preference logic
+        Button importButton = (Button) findViewById(R.id.buttonImportPreferences);
+        importButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                importPref();
             }
         });
 
@@ -203,5 +218,73 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
 
             // **can add marker links here**
         }
+    }
+
+    /**
+     * Imports filter settings into edit text
+     */
+    private void importPref(){
+        EditText jobTypeEdit = (EditText) findViewById(R.id.editTextSearchJobType);
+        EditText payRateEdit = (EditText) findViewById(R.id.editTextSearchPayRate);
+        EditText durationEdit = (EditText) findViewById(R.id.editTextSearchDuration);
+
+        PreferenceDAO prefDAO = new PreferenceDAO();
+        DatabaseReference databaseReference = prefDAO.getDatabaseReference();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean noPref = true;
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    PreferenceInterface preferenceItem = dataSnapshot.getValue(Preferences.class);
+                    if(checkID(preferenceItem)){
+                        jobTypeEdit.setText(preferenceItem.getJobType());
+                        payRateEdit.setText(String.valueOf(preferenceItem.getPayRate()));
+                        durationEdit.setText(String.valueOf(preferenceItem.getDuration()));
+                        noPref = false;
+                        break;
+                    }
+                }
+                //if no preferences found
+                if(noPref){
+                    createToast(R.string.toast_no_preference_found);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String errorRead = error.getMessage();
+            }
+        });
+    }
+
+    private boolean checkID(PreferenceInterface preference){
+        String id = grabEmail();
+        return id.equals(preference.getUserID());
+    }
+
+    /**
+     * Returns the email of the user signed in
+     * @return
+     */
+
+    private String grabEmail() {
+
+        SessionManager session = new SessionManager(AvailableJobsActivity.this);
+
+        boolean isLoggedIn = session.isLoggedIn();
+
+        if (isLoggedIn){
+            return  session.getKeyEmail();
+        }
+        return null;
+    }
+
+    /**
+     * method to create Toast message upon error
+     *
+     * @param messageId
+     */
+    protected void createToast(int messageId) {
+        Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
     }
 }
