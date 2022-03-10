@@ -5,13 +5,11 @@ public class Preferences implements PreferenceInterface {
     private String userID;
     private String jobType;
     private double payRate;
-    private int distance;
-    private int duration;
+    private double duration;
 
-    public Preferences(String jobType, double payRate, int distance, int duration) {
+    public Preferences(String jobType, double payRate, double duration) {
         this.jobType = jobType;
         this.payRate = payRate;
-        this.distance = distance;
         this.duration = duration;
     }
 
@@ -48,22 +46,12 @@ public class Preferences implements PreferenceInterface {
     }
 
     @Override
-    public int getDistance() {
-        return distance;
-    }
-
-    @Override
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
-
-    @Override
-    public int getDuration() {
+    public double getDuration() {
         return duration;
     }
 
     @Override
-    public void setDuration(int duration) {
+    public void setDuration(double duration) {
         this.duration = duration;
     }
 }
