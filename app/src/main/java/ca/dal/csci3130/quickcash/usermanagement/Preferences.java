@@ -15,6 +15,8 @@ public class Preferences implements PreferenceInterface {
         this.duration = duration;
     }
 
+    public Preferences(){}
+
     @Override
     public String getUserID() {
         return userID;

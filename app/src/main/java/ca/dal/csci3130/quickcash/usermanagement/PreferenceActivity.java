@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +15,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
@@ -115,7 +119,13 @@ public class PreferenceActivity extends AppCompatActivity {
                     Preferences preferences = postSnapshot.getValue(Preferences.class);
                     String userID = newPreferences.getUserID();
                     if (preferences != null && preferences.getUserID().equals(userID)) {
-                        Toast.makeText(getApplicationContext(), "Preferences already set", Toast.LENGTH_SHORT).show();
+                        DatabaseReference prefRef = postSnapshot.getRef();
+                        Map<String, Object> prefUpdates = new HashMap<>();
+                        prefUpdates.put("jobType", newPreferences.getJobType());
+                        prefUpdates.put("duration", newPreferences.getDuration());
+                        prefUpdates.put("payRate", newPreferences.getPayRate());
+                        prefRef.updateChildren(prefUpdates);
+                        Toast.makeText(getApplicationContext(), "Preferences Updated", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(), EmployeeHomeActivity.class);
                         newPreference = false;
                         startActivity(intent);
