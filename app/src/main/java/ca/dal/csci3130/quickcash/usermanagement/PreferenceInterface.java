@@ -14,8 +14,8 @@ public interface PreferenceInterface {
 
     void setPayRate(double payRate);
 
-    int getDuration();
+    double getDuration();
 
-    void setDuration(int duration);
+    void setDuration(double duration);
 
 }

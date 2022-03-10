@@ -71,12 +71,26 @@ public class PreferenceActivity extends AppCompatActivity {
         String payRateS = ((EditText) findViewById(R.id.editTextPayRate)).getText().toString();
         String durationS = ((EditText) findViewById(R.id.editTextDuration)).getText().toString();
 
-        if(isEmpty(jobType, payRateS, durationS)){
-            return null;
-        }
+        double payRate;
+        double duration;
 
-        double payRate = Double.valueOf(payRateS);
-        int duration = Integer.valueOf(durationS);
+        if(isEmpty(jobType, payRateS, durationS)){
+            //Default payrate is 0
+            if (payRateS.isEmpty()){
+                payRate = 0;
+            } else {
+                payRate = Double.valueOf(payRateS);
+            }
+            //Default duration is 100
+            if (durationS.isEmpty()){
+                duration = 100;
+            } else {
+                duration = Double.valueOf(durationS);
+            }
+        } else {
+            payRate = Double.valueOf(payRateS);
+            duration = Double.valueOf(durationS);
+        }
 
         return new Preferences(jobType, payRate, duration);
     }
