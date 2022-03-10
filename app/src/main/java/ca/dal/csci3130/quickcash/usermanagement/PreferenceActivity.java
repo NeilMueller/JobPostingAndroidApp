@@ -69,18 +69,16 @@ public class PreferenceActivity extends AppCompatActivity {
         //Grab data
         String jobType = ((EditText) findViewById(R.id.editTextJobType)).getText().toString();
         String payRateS = ((EditText) findViewById(R.id.editTextPayRate)).getText().toString();
-        String distanceS = ((EditText) findViewById(R.id.editTextDistance)).getText().toString();
         String durationS = ((EditText) findViewById(R.id.editTextDuration)).getText().toString();
 
-        if(isEmpty(jobType, payRateS, distanceS, durationS)){
+        if(isEmpty(jobType, payRateS, durationS)){
             return null;
         }
 
         double payRate = Double.valueOf(payRateS);
-        int distance = Integer.valueOf(distanceS);
         int duration = Integer.valueOf(durationS);
 
-        return new Preferences(jobType, payRate, distance, duration);
+        return new Preferences(jobType, payRate, duration);
     }
 
     /**
@@ -89,14 +87,13 @@ public class PreferenceActivity extends AppCompatActivity {
      *
      * @param jobType
      * @param payRate
-     * @param distance
      * @param duration
      * @return
      */
 
-    private boolean isEmpty(String jobType, String payRate, String distance, String duration){
+    private boolean isEmpty(String jobType, String payRate, String duration){
 
-        boolean anyFieldsEmpty = jobType.isEmpty() || payRate.isEmpty() || distance.isEmpty() || duration.isEmpty();
+        boolean anyFieldsEmpty = jobType.isEmpty() || payRate.isEmpty() || duration.isEmpty();
 
         if (anyFieldsEmpty) {
             createToast(R.string.toast_missing_component);
