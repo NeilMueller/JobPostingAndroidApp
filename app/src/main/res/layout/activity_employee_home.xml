@@ -39,5 +39,19 @@
         app:layout_constraintTop_toBottomOf="@+id/welcomeEmployee"
         app:layout_constraintVertical_bias="0.282" />
 
+    <Button
+        android:id="@+id/buttonToPref"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="135dp"
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="136dp"
+        android:layout_marginBottom="129dp"
+        android:text="Preferences"
+        app:layout_constraintBottom_toTopOf="@+id/btn_logout_employee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_seeAvailableJobs" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
