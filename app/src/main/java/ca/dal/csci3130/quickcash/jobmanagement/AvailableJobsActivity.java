@@ -23,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,6 +52,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
     private static final Integer REQUEST_CODE = 123;
     private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     private LatLng userLocation;
+    private ArrayList<Marker> mJobMarkers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,19 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         });
 
         getJobs();
+
+        //filter jobs logic
+        Button filterJobButton = (Button) findViewById(R.id.buttonApplyFilter);
+        filterJobButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String jobType = grabJobType();
+                String payRate = grabPayRate();
+                String duration = grabDuration();
+                getFilteredJobs(jobType, payRate, duration);
+            }
+        });
+
     }
 
     /**
@@ -113,6 +128,72 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         });
     }
 
+    /**
+     * Gets all the jobs from the db
+     */
+    protected void getFilteredJobs(String jobType, String payRateS, String durationS) {
+        jobList.clear();
+        removeMarkers();
+        JobDAO jobDAO = new JobDAO();
+        DatabaseReference jobRef = jobDAO.getDatabaseReference();
+
+        boolean jobTypeSpecified = !jobType.isEmpty();
+        double payRate;
+        double duration;
+
+        //If no payRate specified its 0
+        if(payRateS.isEmpty()){
+            payRate = 0;
+        } else {
+            payRate = Double.valueOf(payRateS);
+        }
+
+        //If not duration specified its 100
+        if(durationS.isEmpty()){
+            duration = 100;
+        } else {
+            duration = Double.valueOf(durationS);
+        }
+
+        jobRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Job job = dataSnapshot.getValue(Job.class);
+                    //if job type specified
+                    if(jobTypeSpecified){
+                        if(jobType.equals(job.getJobType()) && payRate < job.getPayRate() && duration > job.getDuration()){
+                            jobList.add(job);
+                        }
+                    }
+                    //Jobtype not specified
+                    else {
+                        if(payRate < job.getPayRate() && duration > job.getDuration()){
+                            jobList.add(job);
+                        }
+                    }
+
+                }
+
+                // start loading the map
+                loadMap();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String errorRead = error.getMessage();
+            }
+        });
+    }
+
+    /**
+     * Remove all markers
+     */
+    private void removeMarkers(){
+        for (Marker marker : mJobMarkers){
+            marker.remove();
+        }
+    }
     /**
      * Checks/Asks for location permissions and starts map load
      */
@@ -214,7 +295,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         for(JobInterface job : jobList){
             // add pin
             LatLng pin = new LatLng(job.getLatitude(), job.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(pin).title(job.getJobTitle()));
+            mJobMarkers.add(mMap.addMarker(new MarkerOptions().position(pin).title(job.getJobTitle())));
 
             // **can add marker links here**
         }
@@ -277,6 +358,33 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
             return  session.getKeyEmail();
         }
         return null;
+    }
+
+    /**
+     * returns text in jobtype
+     */
+
+    private String grabJobType(){
+        EditText jobTypeEdit = (EditText) findViewById(R.id.editTextSearchJobType);
+        return jobTypeEdit.getText().toString();
+    }
+
+    /**
+     * returns text in payRate
+     */
+
+    private String grabPayRate(){
+        EditText payRateEdit = (EditText) findViewById(R.id.editTextSearchPayRate);
+        return payRateEdit.getText().toString();
+    }
+
+    /**
+     * returns text in duration
+     */
+
+    private String grabDuration(){
+        EditText durationEdit = (EditText) findViewById(R.id.editTextSearchDuration);
+        return durationEdit.getText().toString();
     }
 
     /**
