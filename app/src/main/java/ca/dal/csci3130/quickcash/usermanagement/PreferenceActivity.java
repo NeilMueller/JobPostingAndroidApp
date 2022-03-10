@@ -158,6 +158,11 @@ public class PreferenceActivity extends AppCompatActivity {
         preferenceDAO.addPreference(preferences);
     }
 
+    /**
+     * Returns the email of the user signed in
+     * @return
+     */
+
     private String grabEmail() {
 
         SessionManager session = new SessionManager(PreferenceActivity.this);
