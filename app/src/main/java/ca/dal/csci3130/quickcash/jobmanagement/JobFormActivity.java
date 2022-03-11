@@ -136,7 +136,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-
+        //This error is a android studio bug, the permissions are added
         fusedLocationClient
                 .getCurrentLocation(100, cancellationTokenSource.getToken()) // 100 is PRIORITY_HIGH_ACCURACY
                 .addOnSuccessListener(new OnSuccessListener<Location>() {
