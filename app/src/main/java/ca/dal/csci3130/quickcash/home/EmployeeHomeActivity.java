@@ -42,8 +42,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         availableJobs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EmployeeHomeActivity.this, AvailableJobsActivity.class);
-                startActivity(intent);
+                moveToAvailableJobsActivity();
             }
         });
 
