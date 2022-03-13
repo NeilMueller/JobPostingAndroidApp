@@ -11,4 +11,6 @@
     <string name="title_activity_job_form">JobFormActivity</string>
     <string name="title_activity_available_jobs">AvailableJobsActivity</string>
     <string name="toast_no_preference_found">No Preferences Found for your Account</string>
+    <string name="no_job_found">No Jobs found</string>
+    <string name="job_found">Jobs Available</string>
 </resources>
