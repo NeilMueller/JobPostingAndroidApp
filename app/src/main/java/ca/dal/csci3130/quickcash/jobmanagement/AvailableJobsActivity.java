@@ -96,6 +96,12 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
                 String payRate = grabPayRate();
                 String duration = grabDuration();
                 getFilteredJobs(jobType, payRate, duration);
+                if(jobList.isEmpty()){
+                    createToast(R.string.no_job_found);
+                }
+                else {
+                    createToast(R.string.job_found);
+                }
             }
         });
 
