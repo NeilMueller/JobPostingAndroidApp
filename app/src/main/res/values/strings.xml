@@ -11,6 +11,9 @@
     <string name="title_activity_job_form">JobFormActivity</string>
     <string name="title_activity_available_jobs">AvailableJobsActivity</string>
     <string name="toast_no_preference_found">No Preferences Found for your Account</string>
+    <string name="duration_pay_rate_numeric">Please make sure duration and pay rate are numeric (dot allowed)</string>
+    <string name="job_posted_successfully">Your job has been posted!</string>
+    <string name="job_id_exists">Job ID already exists</string>
     <string name="no_job_found">No Jobs found</string>
     <string name="job_found">Jobs Available</string>
 </resources>

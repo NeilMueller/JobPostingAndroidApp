@@ -164,19 +164,22 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
         String jobDescription = ((EditText) findViewById(R.id.description)).getText().toString();
         String durationString = ((EditText) findViewById(R.id.Duration)).getText().toString();
         String payRateString = ((EditText) findViewById(R.id.payRate)).getText().toString();
-        int duration = durationString.equals("") ? 0 : Integer.parseInt(durationString);
-        double payRate = payRateString.equals("") ? 0 : Double.parseDouble(payRateString);
 
-        if(!isEmpty(jobTitle, jobType, jobDescription, duration, payRate)) {
-            Random random = new Random();
-            int num = random.nextInt(999999);
+        if(isNumeric(durationString, payRateString)) {
+            int duration = durationString.equals("") ? 0 : Integer.parseInt(durationString);
+            double payRate = payRateString.equals("") ? 0 : Double.parseDouble(payRateString);
 
-            String numString = String.format("%06d", num);
-            durationString = String.format("%02d", duration);
+            if (!isEmpty(jobTitle, jobType, jobDescription, duration, payRate)) {
+                Random random = new Random();
+                int num = random.nextInt(999999);
 
-            String jobID = jobType.substring(0, 2) + numString + durationString;
+                String numString = String.format("%06d", num);
+                durationString = String.format("%02d", duration);
 
-            return new Job(jobTitle, jobType, jobDescription, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude);
+                String jobID = jobType.substring(0, 2) + numString + durationString;
+
+                return new Job(jobTitle, jobType, jobDescription, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude);
+            }
         }
 
         return null;
@@ -210,6 +213,29 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     /**
+     * checks if duration and pay rate are numeric or not
+     * @param duration
+     * @param payRate
+     * @return
+     */
+    protected boolean isNumeric(String duration, String payRate){
+        try{
+            if(!duration.equals("")) {
+                Double.parseDouble(duration);
+                if(!payRate.equals("")){
+                    Double.parseDouble(payRate);
+                }
+            }
+
+            return true;
+        }
+        catch(Exception e){
+            createToast(R.string.duration_pay_rate_numeric);
+            return false;
+        }
+    }
+
+    /**
      * method to validate if the jobID is already in the data base
      * if not in the data base it adds a new job to the data base
      * @param newJob
@@ -226,7 +252,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
                     Job job = postSnapshot.getValue(Job.class);
                     String jobID = newJob.getJobID();
                     if (job != null && job.getJobID().equals(jobID)) {
-                        Toast.makeText(getApplicationContext(), "Job ID already exists", Toast.LENGTH_SHORT).show();
+                        createToast(R.string.job_id_exists);
                         Intent intent = new Intent(getApplicationContext(), EmployerHomeActivity.class);
                         newPosting = false;
                         startActivity(intent);
@@ -234,7 +260,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
                 }
                 if (newPosting) {
                     addJob(newJob);
-                    Toast.makeText(getApplicationContext(), "Your job has been posted!", Toast.LENGTH_SHORT).show();
+                    createToast(R.string.job_posted_successfully);
                 }
             }
 
