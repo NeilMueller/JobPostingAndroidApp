@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,13 +38,13 @@ import java.util.List;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
+import ca.dal.csci3130.quickcash.usermanagement.PreferenceActivity;
 import ca.dal.csci3130.quickcash.usermanagement.PreferenceDAO;
 import ca.dal.csci3130.quickcash.usermanagement.PreferenceInterface;
 import ca.dal.csci3130.quickcash.usermanagement.Preferences;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
-public class AvailableJobsActivity extends FragmentActivity implements OnMapReadyCallback,
-        OnInfoWindowClickListener {
+public class AvailableJobsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
@@ -212,7 +211,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
             getCurrentLocationAndStartMap();
 
             // the code to add clickable ads would be added here or in the dummy method below
-            // methodToAddClickableAds();
+            methodToAddClickableAds();
         } else {
             // if not then ask for it
             requestPermissions(new String[]{
@@ -281,17 +280,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
 
     }
 
-    protected void methodToAddClickableAds(){
-                mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(@NonNull Marker marker) {
-                Intent intent = new Intent(AvailableJobsActivity.this, JobAdActivity.class);
-                startActivity(intent);
-                // need to find a way to pass the corresponding job to the jobAdActivity
-
-            }
-        });
-    }
+    protected void methodToAddClickableAds(){ }
 
     /**
      * This method is called when the user accepts or denies the asked permissions
@@ -323,26 +312,14 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         for(JobInterface job : jobList){
             // add pin
             LatLng pin = new LatLng(job.getLatitude(), job.getLongitude());
+
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(pin)
                     .title(job.getJobTitle()));
             marker.setTag(job.getJobID());
 
             mJobMarkers.add(marker);
-
-//            mJobMarkers.add(mMap.addMarker(new MarkerOptions().position(pin).title(job.getJobTitle())));
             // **can add marker links here**
-
-//            mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-//                @Override
-//                public void onInfoWindowClick(@NonNull Marker marker) {
-//                    Intent intent = new Intent(AvailableJobsActivity.this, JobAdActivity.class);
-//                    intent.putExtra("JobID", job.getJobID());
-//                    startActivity(intent);
-//                    // need to find a way to pass the corresponding job to the jobAdActivity
-//
-//                }
-//            });
         }
     }
 
@@ -439,10 +416,5 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
      */
     protected void createToast(int messageId) {
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onInfoWindowClick(@NonNull Marker marker) {
-
     }
 }
