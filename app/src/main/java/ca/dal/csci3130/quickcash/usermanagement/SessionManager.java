@@ -2,7 +2,6 @@ package ca.dal.csci3130.quickcash.usermanagement;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 public class SessionManager implements SessionManagerInterface {
 
