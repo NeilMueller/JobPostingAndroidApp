@@ -1,6 +1,8 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ public class JobAdActivity extends AppCompatActivity {
     private TextView jobType;
     private TextView jobDuration;
     private TextView jobPayRate;
+    private Button apply;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,32 @@ public class JobAdActivity extends AppCompatActivity {
         if (extras != null) {
             jobID = extras.getString("JobID");
         }
+
+        apply = (Button) findViewById(R.id.apply);
+
+        apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                            Job newJob = snapshot1.getValue(Job.class);
+                            if (newJob.getJobID().matches(jobID)){
+
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+
 
 
         // query the database and find the job by its ID
@@ -63,5 +92,7 @@ public class JobAdActivity extends AppCompatActivity {
 
             }
         });
+
+
     }
 }
