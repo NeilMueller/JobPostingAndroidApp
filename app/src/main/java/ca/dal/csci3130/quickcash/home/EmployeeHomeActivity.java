@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.jobmanagement.AvailableJobsActivity;
+import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.PreferenceActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
@@ -83,4 +84,5 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         Intent intent = new Intent(EmployeeHomeActivity.this, PreferenceActivity.class);
         startActivity(intent);
     }
+
 }

@@ -36,6 +36,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/welcomeEmployer"
-        app:layout_constraintVertical_bias="0.717" />
+        app:layout_constraintVertical_bias="0.201" />
+
+    <Button
+        android:id="@+id/btnMakePayment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Make A Payment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/job_Form"
+        app:layout_constraintVertical_bias="0.222" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
