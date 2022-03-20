@@ -14,7 +14,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
+
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
 public class JobAdActivity extends AppCompatActivity {
 
@@ -25,6 +28,10 @@ public class JobAdActivity extends AppCompatActivity {
     private TextView jobDuration;
     private TextView jobPayRate;
     private Button apply;
+    private List<String>employees;
+
+    public JobAdActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +62,8 @@ public class JobAdActivity extends AppCompatActivity {
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             Job newJob = snapshot1.getValue(Job.class);
                             if (newJob.getJobID().matches(jobID)){
+                                if(!employees.contains(grabEmail()))
+                                    employees.add(grabEmail());
 
                             }
                         }
@@ -94,5 +103,20 @@ public class JobAdActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    /**
+     * Returns the email of the user signed in
+     * @return
+     */
+    private String grabEmail(){
+        SessionManager session = new SessionManager(JobAdActivity.this);
+
+        boolean isLoggedIn = session.isLoggedIn();
+
+        if(isLoggedIn)
+            return session.getKeyEmail();
+
+       return null;
     }
 }
