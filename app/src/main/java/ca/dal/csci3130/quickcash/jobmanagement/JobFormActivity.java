@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import ca.dal.csci3130.quickcash.R;
@@ -178,7 +179,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
                 String jobID = jobType.substring(0, 2) + numString + durationString;
 
-                return new Job(jobTitle, jobType, jobDescription, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude);
+                return new Job(jobTitle, jobType, jobDescription, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude, new ArrayList<String>(), "");
             }
         }
 
