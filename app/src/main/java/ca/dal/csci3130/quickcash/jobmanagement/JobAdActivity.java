@@ -1,6 +1,7 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -61,12 +62,20 @@ public class JobAdActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     Job newJob = snapshot1.getValue(Job.class);
-                    if(newJob.getJobID().matches(jobID)) {
+                    if(newJob != null && newJob.getJobID().matches(jobID)) {
                         jobTitle.setText("" + newJob.getJobTitle());
                         jobDesc.setText("" + newJob.getDescription());
                         jobType.setText("" + newJob.getJobType());
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
+                        if (newJob.getSelectedApplicant() != null) {
+                            String buttonText = "SELECTED";
+                            if(!newJob.getSelectedApplicant().equals(grabEmail())){
+                                buttonText = "ANOTHER CANDIDATE SELECTED";
+                            }
+                            apply.setText(buttonText);
+                            apply.setEnabled(false);
+                        }
                     }
                 }
             }
@@ -88,12 +97,14 @@ public class JobAdActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             Job newJob = snapshot1.getValue(Job.class);
-                            if (newJob!=null&&newJob.getJobID().matches(jobID)){
+                            if (newJob != null && newJob.getJobID().matches(jobID)) {
                                 ArrayList<String> applicants = newJob.getApplicants();
-                                if (applicants.contains(grabEmail())){
+                                if (applicants != null && applicants.contains(grabEmail())) {
                                     createToast(R.string.already_applied);
-                                }
-                                else{
+                                } else {
+                                    if (applicants == null)
+                                        applicants = new ArrayList<String>();
+
                                     DatabaseReference newJobPref = snapshot1.getRef();
                                     applicants.add(grabEmail());
                                     Map<String, Object> newJobUpdate = new HashMap<>();
