@@ -1,6 +1,6 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import com.google.android.gms.maps.model.LatLng;
+import java.util.ArrayList;
 
 public interface JobInterface {
     String getJobTitle();
@@ -35,4 +35,12 @@ public interface JobInterface {
     double getLongitude();
 
     void setLongitude(double longitude);
+
+    ArrayList<String> getApplicants();
+
+    void setApplicants(ArrayList<String> applicants);
+
+    String getSelectedApplicant();
+
+    void setSelectedApplicant( String selectedApplicant);
 }

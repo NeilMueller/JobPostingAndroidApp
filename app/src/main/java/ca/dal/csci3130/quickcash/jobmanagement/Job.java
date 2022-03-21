@@ -1,6 +1,6 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import com.google.android.gms.maps.model.LatLng;
+import java.util.ArrayList;
 
 public class Job implements JobInterface{
 
@@ -11,8 +11,10 @@ public class Job implements JobInterface{
     private double payRate;
     private String jobID;
     private double latitude, longitude;
+    private ArrayList<String> applicants;
+    private String selectedApplicant;
 
-    public Job(String jobTitle, String jobType, String jobDescription, int jobDuration, double payRate, String jobID, double latitude, double longitude) {
+    public Job(String jobTitle, String jobType, String jobDescription, int jobDuration, double payRate, String jobID, double latitude, double longitude,ArrayList<String> applicants,String selectedApplicant) {
         this.jobTitle = jobTitle;
         this.jobType = jobType;
         this.jobDescription = jobDescription;
@@ -21,6 +23,8 @@ public class Job implements JobInterface{
         this.jobID = jobID;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.applicants = applicants;
+        this.selectedApplicant = selectedApplicant;
     }
 
     public Job(){
@@ -104,5 +108,25 @@ public class Job implements JobInterface{
     @Override
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    @Override
+    public ArrayList<String> getApplicants() {
+        return applicants;
+    }
+
+    @Override
+    public void setApplicants(ArrayList<String> applicants) {
+        this.applicants = applicants;
+    }
+
+    @Override
+    public String getSelectedApplicant() {
+        return selectedApplicant;
+    }
+
+    @Override
+    public void setSelectedApplicant(String selectedApplicant) {
+        this.selectedApplicant = selectedApplicant;
     }
 }
