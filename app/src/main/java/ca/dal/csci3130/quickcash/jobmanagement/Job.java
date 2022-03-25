@@ -7,6 +7,7 @@ public class Job implements JobInterface{
     private String jobTitle;
     private String jobType;
     private String jobDescription;
+    private String employerID;
     private int jobDuration;
     private double payRate;
     private String jobID;
@@ -14,10 +15,11 @@ public class Job implements JobInterface{
     private ArrayList<String> applicants;
     private String selectedApplicant;
 
-    public Job(String jobTitle, String jobType, String jobDescription, int jobDuration, double payRate, String jobID, double latitude, double longitude,ArrayList<String> applicants,String selectedApplicant) {
+    public Job(String jobTitle, String jobType, String jobDescription, String employerID, int jobDuration, double payRate, String jobID, double latitude, double longitude,ArrayList<String> applicants,String selectedApplicant) {
         this.jobTitle = jobTitle;
         this.jobType = jobType;
         this.jobDescription = jobDescription;
+        this.employerID = employerID;
         this.jobDuration = jobDuration;
         this.payRate = payRate;
         this.jobID = jobID;
@@ -128,5 +130,15 @@ public class Job implements JobInterface{
     @Override
     public void setSelectedApplicant(String selectedApplicant) {
         this.selectedApplicant = selectedApplicant;
+    }
+
+    @Override
+    public String getEmployerID() {
+        return employerID;
+    }
+
+    @Override
+    public void setEmployerID(String employerID) {
+        this.employerID = employerID;
     }
 }

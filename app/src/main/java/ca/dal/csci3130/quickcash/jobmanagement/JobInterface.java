@@ -43,4 +43,8 @@ public interface JobInterface {
     String getSelectedApplicant();
 
     void setSelectedApplicant( String selectedApplicant);
+
+    String getEmployerID();
+
+    void setEmployerID(String employerID);
 }

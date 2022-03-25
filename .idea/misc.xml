@@ -6,7 +6,6 @@
         <entry key="..\:/School/CSCI 3130/Project/csci-3130-group-16/app/src/main/res/layout/activity_available_jobs.xml" value="0.20208333333333334" />
         <entry key="..\:/School/CSCI 3130/Project/csci-3130-group-16/app/src/main/res/layout/activity_employee_home.xml" value="0.17831813576494426" />
         <entry key="..\:/School/CSCI 3130/Project/csci-3130-group-16/app/src/main/res/layout/activity_employer_home.xml" value="0.17831813576494426" />
-        <entry key="..\:/School/CSCI 3130/Project/csci-3130-group-16/app/src/main/res/layout/activity_job_ad.xml" value="0.3120471014492754" />
         <entry key="..\:/School/CSCI 3130/Project/csci-3130-group-16/app/src/main/res/layout/activity_job_form.xml" value="0.14221014492753623" />
         <entry key="..\:/School/CSCI 3130/Project/csci-3130-group-16/app/src/main/res/layout/activity_login.xml" value="0.12360688956433637" />
         <entry key="..\:/School/CSCI 3130/Project/csci-3130-group-16/app/src/main/res/layout/activity_preference.xml" value="0.20208333333333334" />
@@ -15,14 +14,12 @@
         <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_employer_home.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_login.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_main.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_my_posted_jobs.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_preference.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_signup.xml" value="0.17831813576494426" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_employee_home.xml" value="0.18642350557244175" />
-        <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_employer_home.xml" value="0.1" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_login.xml" value="0.22" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_main.xml" value="0.5" />
-        <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_payment.xml" value="0.38697916666666665" />
-        <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_paypal_payment.xml" value="0.36684782608695654" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_signup.xml" value="0.18" />
         <entry key="app/src/main/res/layout/activity_available_jobs.xml" value="0.29994496841097495" />
         <entry key="app/src/main/res/layout/activity_employee_home.xml" value="0.1" />

@@ -35,6 +35,7 @@ import java.util.Random;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
 public class JobFormActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -44,6 +45,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
     private static final Integer REQUEST_CODE = 123;
     private LatLng jobLocation;
     private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    String employerID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,9 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
         // grabs the location services api
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        //Grab user email
+        employerID = grabEmail();
 
         // checks if the permission is already granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -179,7 +184,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
                 String jobID = jobType.substring(0, 2) + numString + durationString;
 
-                return new Job(jobTitle, jobType, jobDescription, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude, new ArrayList<String>(), "");
+                return new Job(jobTitle, jobType, jobDescription, employerID, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude, new ArrayList<String>(), "");
             }
         }
 
@@ -279,5 +284,22 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
     protected void addJob(JobInterface job) {
         JobDAO jobDAO = new JobDAO();
         jobDAO.addJob(job);
+    }
+
+    /**
+     * Returns the email of the user signed in
+     * @return
+     */
+
+    private String grabEmail() {
+
+        SessionManager session = new SessionManager(JobFormActivity.this);
+
+        boolean isLoggedIn = session.isLoggedIn();
+
+        if (isLoggedIn){
+            return  session.getKeyEmail();
+        }
+        return null;
     }
 }

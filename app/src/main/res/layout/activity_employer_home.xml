@@ -49,4 +49,18 @@
         app:layout_constraintTop_toBottomOf="@+id/job_Form"
         app:layout_constraintVertical_bias="0.222" />
 
+    <Button
+        android:id="@+id/btnMyPostedJobs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="115dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginEnd="115dp"
+        android:layout_marginBottom="29dp"
+        android:text="View Posted Jobs"
+        app:layout_constraintBottom_toTopOf="@+id/btn_logout_employer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnMakePayment" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

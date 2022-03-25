@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import ca.dal.csci3130.quickcash.MainActivity;
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.jobmanagement.JobFormActivity;
+import ca.dal.csci3130.quickcash.jobmanagement.MyPostedJobsActivity;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
@@ -20,6 +21,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
 
     private Button makePaymentButton;
     private Button jobFormButton;
+    private Button myJobsButton;
     /**
      * Prevent user from using back button once logged in
      */
@@ -33,6 +35,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_employer_home);
         makePaymentButton = findViewById(R.id.btnMakePayment);
         jobFormButton = findViewById(R.id.job_Form);
+        myJobsButton = findViewById(R.id.btnMyPostedJobs);
 
         SessionManager sessionManager = new SessionManager(getApplicationContext());
         //Gets the name from the session
@@ -56,7 +59,12 @@ public class EmployerHomeActivity extends AppCompatActivity {
             }
         });
 
-
+        myJobsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToMyJobsActivity();
+            }
+        });
     }
 
     /**
@@ -86,6 +94,11 @@ public class EmployerHomeActivity extends AppCompatActivity {
 
     private void moveToJobFormActivity() {
         Intent intent = new Intent(getApplicationContext(), JobFormActivity.class);
+        startActivity(intent);
+    }
+
+    private void moveToMyJobsActivity() {
+        Intent intent = new Intent(getApplicationContext(), MyPostedJobsActivity.class);
         startActivity(intent);
     }
 }
