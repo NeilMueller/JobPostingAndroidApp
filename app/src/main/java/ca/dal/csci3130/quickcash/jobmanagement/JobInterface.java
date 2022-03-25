@@ -47,4 +47,6 @@ public interface JobInterface {
     String getEmployerID();
 
     void setEmployerID(String employerID);
+
+    String getListedInfo();
 }
