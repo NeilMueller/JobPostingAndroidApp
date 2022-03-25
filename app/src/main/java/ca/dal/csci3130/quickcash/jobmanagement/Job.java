@@ -141,4 +141,14 @@ public class Job implements JobInterface{
     public void setEmployerID(String employerID) {
         this.employerID = employerID;
     }
+
+    @Override
+    public String getListedInfo(){
+
+        String info = "Job Type: " + jobType;
+        info = info + "\nDuration: " + String.valueOf(jobDuration) + " hrs";
+        info = info + "\nPayrate: " + String.valueOf(payRate) + " $";
+        info = info + "\nSelected Applicant: " + selectedApplicant;
+        return info;
+    }
 }
