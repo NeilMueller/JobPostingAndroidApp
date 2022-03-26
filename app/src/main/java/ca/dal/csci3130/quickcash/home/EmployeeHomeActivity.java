@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.jobmanagement.AppliedJobsActivity;
 import ca.dal.csci3130.quickcash.jobmanagement.AvailableJobsActivity;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
@@ -19,6 +20,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
 
     private Button availableJobs;
     private Button preferencesButton;
+    private Button appliedJobsButton;
 
     @Override
     //Prevent user from using back button once logged in
@@ -31,6 +33,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_employee_home);
         availableJobs = findViewById(R.id.btn_seeAvailableJobs);
         preferencesButton = findViewById(R.id.buttonToPref);
+        appliedJobsButton = findViewById(R.id.btn_Applied_Jobs);
 
         SessionManager sessionManager = new SessionManager(getApplicationContext());
         //Gets the name from the session
@@ -51,6 +54,13 @@ public class EmployeeHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 moveToPreferenceActivity();
+            }
+        });
+
+        appliedJobsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToAppliedJobsActivity();
             }
         });
     }
@@ -82,6 +92,11 @@ public class EmployeeHomeActivity extends AppCompatActivity {
 
     private void moveToPreferenceActivity() {
         Intent intent = new Intent(EmployeeHomeActivity.this, PreferenceActivity.class);
+        startActivity(intent);
+    }
+
+    private void moveToAppliedJobsActivity(){
+        Intent intent = new Intent(EmployeeHomeActivity.this, AppliedJobsActivity.class);
         startActivity(intent);
     }
 

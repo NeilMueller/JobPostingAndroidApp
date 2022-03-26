@@ -20,6 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickCash">
         <activity
+            android:name=".jobmanagement.AppliedJobsActivity"
+            android:exported="false" />
+        <activity
             android:name=".jobmanagement.MyPostedJobsActivity"
             android:exported="false" />
 
