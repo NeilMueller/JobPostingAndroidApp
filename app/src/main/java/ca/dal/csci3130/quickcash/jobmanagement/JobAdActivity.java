@@ -69,43 +69,47 @@ public class JobAdActivity extends AppCompatActivity {
         apply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                            addJob = false;
-                            Job newJob = snapshot1.getValue(Job.class);
-                            if (newJob != null && newJob.getJobID().matches(jobID)) {
-                                ArrayList<String> applicants = newJob.getApplicants();
-                                if (applicants != null && applicants.contains(userEmail)) {
-                                    createToast(R.string.already_applied);
-                                } else {
-                                    if (applicants == null)
-                                        applicants = new ArrayList<String>();
-
-                                    DatabaseReference newJobPref = snapshot1.getRef();
-                                    applicants.add(grabEmail());
-                                    Map<String, Object> newJobUpdate = new HashMap<>();
-                                    newJobUpdate.put("applicants", applicants);
-                                    newJobPref.updateChildren(newJobUpdate);
-                                    addJob = true;
-                                    createToast(R.string.applied);
-                                }
-                            }
-                        }
-                        if(addJob) addToAppliedList(jobID);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                apply();
             }
         });
 
 
+    }
+
+    private void apply() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    addJob = false;
+                    Job newJob = snapshot1.getValue(Job.class);
+                    if (newJob != null && newJob.getJobID().matches(jobID)) {
+                        ArrayList<String> applicants = newJob.getApplicants();
+                        if (applicants != null && applicants.contains(userEmail)) {
+                            createToast(R.string.already_applied);
+                        } else {
+                            if (applicants == null)
+                                applicants = new ArrayList<String>();
+
+                            DatabaseReference newJobPref = snapshot1.getRef();
+                            applicants.add(grabEmail());
+                            Map<String, Object> newJobUpdate = new HashMap<>();
+                            newJobUpdate.put("applicants", applicants);
+                            newJobPref.updateChildren(newJobUpdate);
+                            addJob = true;
+                            createToast(R.string.applied);
+                        }
+                    }
+                }
+                if(addJob) addToAppliedList(jobID);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void fillFields() {

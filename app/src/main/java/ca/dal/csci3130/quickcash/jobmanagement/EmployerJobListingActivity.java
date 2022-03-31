@@ -5,14 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +30,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
     private TextView jobType;
     private TextView jobDuration;
     private TextView jobPayRate;
+    private TextView candidate;
     private ArrayList<String> applicants;
     private ListView applicantListView;
 
@@ -46,6 +44,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         jobDuration = findViewById(R.id.jobAdDuration);
         jobPayRate = findViewById(R.id.jobAdPayRate);
         applicantListView = findViewById(R.id.list_empJobListing);
+        candidate = findViewById(R.id.tv_selected_candidate);
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -53,6 +52,11 @@ public class EmployerJobListingActivity extends AppCompatActivity {
             jobID = extras.getString("JobID").trim();
         }
 
+        fillFields();
+
+    }
+
+    private void fillFields() {
         // query the database and find the job by its ID
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -66,9 +70,9 @@ public class EmployerJobListingActivity extends AppCompatActivity {
                         jobType.setText("" + newJob.getJobType());
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
+                        candidate.setText("" + newJob.getSelectedApplicant());
                         applicants = newJob.getApplicants();
                         showApplicants(applicants);
-//                        makeApplicantsClickable(applicants);
                     }
                 }
             }
@@ -78,7 +82,6 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     public void showApplicants(ArrayList<String> applicants) {
