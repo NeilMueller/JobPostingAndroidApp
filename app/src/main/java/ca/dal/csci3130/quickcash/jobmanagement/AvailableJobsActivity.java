@@ -210,8 +210,6 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
             // if it is already granted, then get current location and start the map
             getCurrentLocationAndStartMap();
 
-            // the code to add clickable ads would be added here or in the dummy method below
-            methodToAddClickableAds();
         } else {
             // if not then ask for it
             requestPermissions(new String[]{
@@ -279,8 +277,6 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         });
 
     }
-
-    protected void methodToAddClickableAds(){ }
 
     /**
      * This method is called when the user accepts or denies the asked permissions
