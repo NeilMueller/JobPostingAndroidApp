@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.jobmanagement.AppliedJobsActivity;
 import ca.dal.csci3130.quickcash.jobmanagement.AvailableJobsActivity;
 
 public class EmployeeHomeActivityEspressoTest {
@@ -39,6 +40,12 @@ public class EmployeeHomeActivityEspressoTest {
         intended(hasComponent(AvailableJobsActivity.class.getName()));
     }
 
+    /*** test applied jobs link***/
+    @Test
+    public void testMoveToAppliedJobsActivity(){
+        onView(withId(R.id.btn_Applied_Jobs)).perform(click());
+        intended(hasComponent(AppliedJobsActivity.class.getName()));
+    }
 
     @After
     public void tearDown() { Intents.release(); }

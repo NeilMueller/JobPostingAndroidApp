@@ -21,8 +21,8 @@ public class User implements UserInterface {
         this.password = password;
         this.isEmployee = isEmployee;
         this.appliedJobs = new ArrayList<>();
-        //appliedJobs.add("Te75803310");
-        //appliedJobs.add("Pa67723601");
+        appliedJobs.add("");
+
     }
 
     public User() {
