@@ -2,6 +2,8 @@ package ca.dal.csci3130.quickcash.jobmanagement;
 
 import java.util.ArrayList;
 
+import ca.dal.csci3130.quickcash.usermanagement.User;
+
 public interface JobInterface {
     String getJobTitle();
 

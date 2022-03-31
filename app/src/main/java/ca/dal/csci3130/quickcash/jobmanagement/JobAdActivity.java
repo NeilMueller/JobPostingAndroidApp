@@ -67,7 +67,7 @@ public class JobAdActivity extends AppCompatActivity {
                         jobType.setText("" + newJob.getJobType());
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
-                        if (newJob.getSelectedApplicant() != null) {
+                        if (!newJob.acceptingApplications()) {
                             String buttonText = "SELECTED";
                             if(!newJob.getSelectedApplicant().equals(grabEmail())){
                                 buttonText = "ANOTHER CANDIDATE SELECTED";

@@ -69,11 +69,9 @@ public class AppliedJobsActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
                     if(userEmail.equals(user.getEmail())){
-                        Log.d("found user", "true");
                         ArrayList<String> ids = user.getAppliedJobs();
                         for(String str: ids){
                             jobIDs.add(str);
-                            Log.d("JobIDS", str);
                         }
                     }
                 }

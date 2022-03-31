@@ -2,6 +2,8 @@ package ca.dal.csci3130.quickcash.jobmanagement;
 
 import java.util.ArrayList;
 
+import ca.dal.csci3130.quickcash.usermanagement.User;
+
 public class Job implements JobInterface{
 
     private String jobTitle;
@@ -15,7 +17,9 @@ public class Job implements JobInterface{
     private ArrayList<String> applicants;
     private String selectedApplicant;
 
-    public Job(String jobTitle, String jobType, String jobDescription, String employerID, int jobDuration, double payRate, String jobID, double latitude, double longitude,ArrayList<String> applicants,String selectedApplicant) {
+    public Job(String jobTitle, String jobType, String jobDescription, String employerID,
+               int jobDuration, double payRate, String jobID, double latitude, double longitude,
+               ArrayList<String> applicants, String selectedApplicant) {
         this.jobTitle = jobTitle;
         this.jobType = jobType;
         this.jobDescription = jobDescription;
@@ -151,5 +155,9 @@ public class Job implements JobInterface{
         info = info + "\nSelected Applicant: " + selectedApplicant;
         info = info + "\nJob ID: " + jobID;
         return info;
+    }
+
+    public boolean acceptingApplications() {
+        return selectedApplicant.isEmpty();
     }
 }
