@@ -184,7 +184,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
                 String jobID = jobType.substring(0, 2) + numString + durationString;
 
-                return new Job(jobTitle, jobType, jobDescription, employerID, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude, new ArrayList<String>(), "");
+                return new Job(jobTitle, jobType, jobDescription, employerID, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude);
             }
         }
 

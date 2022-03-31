@@ -94,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void checkCredentialsAndLogin(String[] loginDetails) {
         AbstractDAO userDAO = new UserDAO();
         DatabaseReference databaseReference = userDAO.getDatabaseReference();
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean loggedIn = false;

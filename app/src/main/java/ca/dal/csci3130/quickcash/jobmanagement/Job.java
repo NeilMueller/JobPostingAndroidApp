@@ -18,8 +18,7 @@ public class Job implements JobInterface{
     private String selectedApplicant;
 
     public Job(String jobTitle, String jobType, String jobDescription, String employerID,
-               int jobDuration, double payRate, String jobID, double latitude, double longitude,
-               ArrayList<String> applicants, String selectedApplicant) {
+               int jobDuration, double payRate, String jobID, double latitude, double longitude) {
         this.jobTitle = jobTitle;
         this.jobType = jobType;
         this.jobDescription = jobDescription;
@@ -29,8 +28,9 @@ public class Job implements JobInterface{
         this.jobID = jobID;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.applicants = applicants;
-        this.selectedApplicant = selectedApplicant;
+        applicants = new ArrayList<>();
+        applicants.add("");
+        selectedApplicant = "";
     }
 
     public Job(){
