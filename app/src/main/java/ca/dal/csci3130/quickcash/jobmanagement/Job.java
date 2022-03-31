@@ -149,6 +149,7 @@ public class Job implements JobInterface{
         info = info + "\nDuration: " + String.valueOf(jobDuration) + " hrs";
         info = info + "\nPayrate: " + String.valueOf(payRate) + " $";
         info = info + "\nSelected Applicant: " + selectedApplicant;
+        info = info + "\nJob ID: " + jobID;
         return info;
     }
 }
