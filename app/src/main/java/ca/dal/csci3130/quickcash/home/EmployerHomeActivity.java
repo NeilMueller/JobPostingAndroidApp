@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import ca.dal.csci3130.quickcash.MainActivity;
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.jobmanagement.JobFormActivity;
@@ -43,6 +45,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
         // printing welcome message
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployer);
         welcomeMessage.setText(String.format("Welcome Employer, %s", fullName));
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("jobs");
 
 
         makePaymentButton.setOnClickListener(new View.OnClickListener() {

@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.jobmanagement.AppliedJobsActivity;
 import ca.dal.csci3130.quickcash.jobmanagement.AvailableJobsActivity;
@@ -38,6 +40,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         SessionManager sessionManager = new SessionManager(getApplicationContext());
         //Gets the name from the session
         String fullName = sessionManager.getKeyName();
+        FirebaseMessaging.getInstance().subscribeToTopic("jobs");
 
         // printing welcome message
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
