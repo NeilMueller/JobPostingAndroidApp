@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ import ca.dal.csci3130.quickcash.BuildConfig;
 import ca.dal.csci3130.quickcash.MainActivity;
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
+import ca.dal.csci3130.quickcash.jobmanagement.FeedbackActivity;
 
 public class PayPalPaymentActivity extends AppCompatActivity {
 
@@ -38,6 +40,7 @@ public class PayPalPaymentActivity extends AppCompatActivity {
     private Button payNowBtn;
     private TextView paymentStatusTV;
     private Button cancelPayment;
+    private Button feedbackBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,20 @@ public class PayPalPaymentActivity extends AppCompatActivity {
         configPayPal();
         initActivityLauncher();
         setListeners();
+        feedbackBtn = findViewById(R.id.feedbackBtn);
 
+        feedbackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToFeedbackActivity();
+            }
+        });
+
+    }
+
+    private void moveToFeedbackActivity() {
+        Intent intent = new Intent(getApplicationContext(), FeedbackActivity.class);
+        startActivity(intent);
     }
 
     private void init() {

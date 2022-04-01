@@ -26,10 +26,12 @@
         <entry key="app/src/main/res/layout/activity_available_jobs.xml" value="0.29994496841097495" />
         <entry key="app/src/main/res/layout/activity_employee_home.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_employer_home.xml" value="0.4557973012641559" />
+        <entry key="app/src/main/res/layout/activity_feedback.xml" value="0.16666666666666666" />
         <entry key="app/src/main/res/layout/activity_job_form.xml" value="0.3384597778320313" />
         <entry key="app/src/main/res/layout/activity_job_posting.xml" value="0.21422101449275363" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_paypal_payment.xml" value="0.16666666666666666" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.5091853463261048" />
         <entry key="app/src/main/res/layout/content_job_form.xml" value="0.19384057971014493" />
         <entry key="app/src/main/res/layout/fragment_first.xml" value="0.19384057971014493" />
