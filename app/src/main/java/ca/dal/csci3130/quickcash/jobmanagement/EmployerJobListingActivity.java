@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,6 +25,7 @@ import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.User;
+import ca.dal.csci3130.quickcash.jobmanagement.FeedbackActivity;
 
 public class EmployerJobListingActivity extends AppCompatActivity {
 
@@ -35,6 +37,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
     private TextView jobPayRate;
     private TextView candidate;
     private Button paymentBtn;
+    private Button rateEmployeeBtn;
     private ArrayList<String> applicants;
     private ListView applicantListView;
 
@@ -50,6 +53,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         applicantListView = findViewById(R.id.list_empJobListing);
         candidate = findViewById(R.id.tv_selected_candidate);
         paymentBtn = findViewById(R.id.btn_payEmployee);
+        rateEmployeeBtn = findViewById(R.id.btn_rate_employee);
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -63,6 +67,13 @@ public class EmployerJobListingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 moveToPayPalPaymentActivity();
+            }
+        });
+
+        rateEmployeeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                moveToFeedbackActivity();
             }
         });
 
@@ -150,6 +161,13 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
     private void moveToPayPalPaymentActivity() {
         Intent intent = new Intent(EmployerJobListingActivity.this, PayPalPaymentActivity.class);
+        startActivity(intent);
+    }
+
+    private void moveToFeedbackActivity() {
+        Intent intent = new Intent(EmployerJobListingActivity.this, FeedbackActivity.class);
+        intent.putExtra("userID", candidate.getText().toString());
+        Log.d("userID", candidate.getText().toString());
         startActivity(intent);
     }
 }

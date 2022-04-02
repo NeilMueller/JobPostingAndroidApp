@@ -50,14 +50,14 @@ public class PayPalPaymentActivity extends AppCompatActivity {
         configPayPal();
         initActivityLauncher();
         setListeners();
-        feedbackBtn = findViewById(R.id.feedbackBtn);
+        //feedbackBtn = findViewById(R.id.feedbackBtn);
 
-        feedbackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToFeedbackActivity();
-            }
-        });
+        //feedbackBtn.setOnClickListener(new View.OnClickListener() {
+            //@Override
+            //public void onClick(View view) {
+                //moveToFeedbackActivity();
+            //}
+        //});
 
     }
 

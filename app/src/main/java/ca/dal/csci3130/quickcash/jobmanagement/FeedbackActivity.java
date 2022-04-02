@@ -46,6 +46,11 @@ public class FeedbackActivity extends AppCompatActivity {
         userID = findViewById(R.id.tv_rate_user_ID);
         myRating = 0;
 
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            userID.setText(extras.getString("userID").trim());
+        }
+
 
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override

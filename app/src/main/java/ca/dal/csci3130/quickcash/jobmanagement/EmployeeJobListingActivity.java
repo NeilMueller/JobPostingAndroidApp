@@ -60,7 +60,7 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
         rateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                moveToPayPalPaymentActivity();
+                moveToFeedBackActivity();
             }
         });
 
@@ -92,9 +92,9 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
         });
     }
 
-
-    private void moveToPayPalPaymentActivity() {
-        Intent intent = new Intent(EmployeeJobListingActivity.this, PayPalPaymentActivity.class);
+    private void moveToFeedBackActivity(){
+        Intent intent = new Intent(EmployeeJobListingActivity.this, FeedbackActivity.class);
+        intent.putExtra("userID", employer.getText());
         startActivity(intent);
     }
 }
