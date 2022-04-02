@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +21,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
+import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.User;
 
 public class EmployerJobListingActivity extends AppCompatActivity {
@@ -31,6 +34,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
     private TextView jobDuration;
     private TextView jobPayRate;
     private TextView candidate;
+    private Button paymentBtn;
     private ArrayList<String> applicants;
     private ListView applicantListView;
 
@@ -45,6 +49,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         jobPayRate = findViewById(R.id.jobAdPayRate);
         applicantListView = findViewById(R.id.list_empJobListing);
         candidate = findViewById(R.id.tv_selected_candidate);
+        paymentBtn = findViewById(R.id.btn_payEmployee);
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -53,6 +58,13 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         }
 
         fillFields();
+
+        paymentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveToPayPalPaymentActivity();
+            }
+        });
 
     }
 
@@ -134,5 +146,10 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void moveToPayPalPaymentActivity() {
+        Intent intent = new Intent(EmployerJobListingActivity.this, PayPalPaymentActivity.class);
+        startActivity(intent);
     }
 }
