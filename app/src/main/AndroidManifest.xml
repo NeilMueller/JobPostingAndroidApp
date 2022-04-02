@@ -22,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickCash">
         <activity
+            android:name=".jobmanagement.EmployeeJobListingActivity"
+            android:exported="false" />
+        <activity
             android:name=".jobmanagement.ApplicantInfoActivity"
             android:exported="false" />
         <activity
@@ -89,4 +92,5 @@
             </intent-filter>
         </service>
     </application>
+
 </manifest>

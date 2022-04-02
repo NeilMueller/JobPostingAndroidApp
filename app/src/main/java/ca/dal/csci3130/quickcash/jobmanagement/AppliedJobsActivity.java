@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -140,6 +141,22 @@ public class AppliedJobsActivity extends AppCompatActivity {
         SimpleAdapter adapter = new SimpleAdapter(this, listItems,R.layout.my_job_list_item,
                 new String[]{"First Line", "Second Line"},
                 new int[]{R.id.tv_job_title, R.id.tv_job_info});
+
+        myJobListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String itemString = adapter.getItem(i).toString();
+                String[] itemStringArr = itemString.split("Job ID:");
+                String roughJobID = itemStringArr[1];
+                String[] roughJobIDArr = roughJobID.split(",");
+                String JobID = roughJobIDArr[0];
+
+                Intent intent = new Intent(getApplicationContext(), EmployeeJobListingActivity.class);
+                intent.putExtra("JobID", JobID);
+                startActivity(intent);
+
+            }
+        });
 
         Iterator it = jobItem.entrySet().iterator();
         while(it.hasNext()){
