@@ -127,8 +127,8 @@ public class PayPalPaymentActivity extends AppCompatActivity {
         return false;
     }
 
-    private void createToast(int toast_missing_component) {
-        Toast.makeText(getApplicationContext(), getText(toast_missing_component), Toast.LENGTH_LONG).show();
+    private void createToast(int toastMissingComponent) {
+        Toast.makeText(getApplicationContext(), getText(toastMissingComponent), Toast.LENGTH_LONG).show();
     }
 
 }

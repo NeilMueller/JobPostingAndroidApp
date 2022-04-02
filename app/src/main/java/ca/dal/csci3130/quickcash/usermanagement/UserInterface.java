@@ -1,7 +1,14 @@
 package ca.dal.csci3130.quickcash.usermanagement;
 
+/**
+ *
+ */
 public interface UserInterface {
 
+    /**
+     * Gets the first name of the user
+     * @return a string that contains the first name
+     */
     String getFirstName();
 
     void setFirstName(String firstName);

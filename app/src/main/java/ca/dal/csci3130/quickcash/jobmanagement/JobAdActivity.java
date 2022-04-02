@@ -18,14 +18,18 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 
 public class JobAdActivity extends AppCompatActivity {
 
     String jobID;
+    private DAO dao;
     private TextView jobTitle;
     private TextView jobDesc;
     private TextView jobType;
@@ -35,12 +39,15 @@ public class JobAdActivity extends AppCompatActivity {
 
 
     public JobAdActivity() {
+        // empty constructor
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job_ad);
+
+        dao = new JobDAOAdapter(new JobDAO());
 
         jobTitle = findViewById(R.id.jobAdTitle);
         jobDesc = findViewById(R.id.jobAdDescription);
@@ -54,9 +61,15 @@ public class JobAdActivity extends AppCompatActivity {
             jobID = extras.getString("JobID");
         }
 
+        findJob();
 
+        apply = (Button) findViewById(R.id.apply);
+        apply.setOnClickListener(v -> applyJob());
+    }
+
+    private void findJob(){
         // query the database and find the job by its ID
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
+        DatabaseReference ref = dao.getDatabaseReference();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -68,7 +81,7 @@ public class JobAdActivity extends AppCompatActivity {
                         jobType.setText("" + newJob.getJobType());
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
-                        if (newJob.getSelectedApplicant() != null) {
+                        if (!newJob.getSelectedApplicant().equalsIgnoreCase("")) {
                             String buttonText = "SELECTED";
                             if(!newJob.getSelectedApplicant().equals(grabEmail())){
                                 buttonText = "ANOTHER CANDIDATE SELECTED";
@@ -82,49 +95,40 @@ public class JobAdActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - findJob(JobAd):", error.getMessage());
             }
         });
+    }
 
-        apply = (Button) findViewById(R.id.apply);
-
-        apply.setOnClickListener(new View.OnClickListener() {
+    private void applyJob(){
+        DatabaseReference ref1 = dao.getDatabaseReference();
+        ref1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                            Job newJob = snapshot1.getValue(Job.class);
-                            if (newJob != null && newJob.getJobID().matches(jobID)) {
-                                ArrayList<String> applicants = newJob.getApplicants();
-                                if (applicants != null && applicants.contains(grabEmail())) {
-                                    createToast(R.string.already_applied);
-                                } else {
-                                    if (applicants == null)
-                                        applicants = new ArrayList<String>();
-
-                                    DatabaseReference newJobPref = snapshot1.getRef();
-                                    applicants.add(grabEmail());
-                                    Map<String, Object> newJobUpdate = new HashMap<>();
-                                    newJobUpdate.put("applicants", applicants);
-                                    newJobPref.updateChildren(newJobUpdate);
-                                    createToast(R.string.applied);
-                                }
-                            }
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    Job newJob = snapshot1.getValue(Job.class);
+                    if (newJob != null && newJob.getJobID().matches(jobID)) {
+                        List<String> applicants = newJob.getApplicants() == null ? new ArrayList<>() : newJob.getApplicants();
+                        if (applicants.contains(grabEmail())) {
+                            createToast(R.string.already_applied);
+                        }
+                        else {
+                            DatabaseReference newJobPref = snapshot1.getRef();
+                            applicants.add(grabEmail());
+                            Map<String, Object> newJobUpdate = new HashMap<>();
+                            newJobUpdate.put("applicants", applicants);
+                            newJobPref.updateChildren(newJobUpdate);
+                            createToast(R.string.applied);
                         }
                     }
+                }
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("Database Error - applyJob(JobAd):", error.getMessage());
             }
         });
-
-
     }
 
     /**
@@ -132,7 +136,7 @@ public class JobAdActivity extends AppCompatActivity {
      * @return
      */
     private String grabEmail(){
-        SessionManager session = new SessionManager(JobAdActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(JobAdActivity.this);
 
         boolean isLoggedIn = session.isLoggedIn();
 

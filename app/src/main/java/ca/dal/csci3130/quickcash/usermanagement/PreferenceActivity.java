@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -20,14 +19,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
 
 public class PreferenceActivity extends AppCompatActivity {
+
+    DAO dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preference);
+
+        dao = new PreferenceDAOAdapter(new PreferenceDAO());
 
         //Update preferences logic
         Button updatePrefButton = (Button) findViewById(R.id.buttonUpdatePref);
@@ -35,25 +39,17 @@ public class PreferenceActivity extends AppCompatActivity {
         //Return to home page logic
         Button returnHomeButton = (Button) findViewById(R.id.buttonToEmployeeHome);
 
-        returnHomeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToEmployeeHomeActivity();
-            }
-        });
+        returnHomeButton.setOnClickListener(view -> moveToEmployeeHomeActivity());
 
-        updatePrefButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Preferences pref = getPreferences();
-                String id = grabEmail();
-                pref.setUserID(id);
-                if (pref != null){
-                    //Update preferences
-                    checkAndPush(pref);
-                    Intent intent = new Intent(PreferenceActivity.this, EmployeeHomeActivity.class);
-                    startActivity(intent);
-                }
+        updatePrefButton.setOnClickListener(view -> {
+            Preferences pref = getPreferences();
+            String id = grabEmail();
+            pref.setUserID(id);
+            if (pref != null){
+                //Update preferences
+                checkAndPush(pref);
+                Intent intent = new Intent(PreferenceActivity.this, EmployeeHomeActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -119,9 +115,7 @@ public class PreferenceActivity extends AppCompatActivity {
 
     private void checkAndPush(Preferences newPreferences){
 
-        PreferenceDAO databaseReference = new PreferenceDAO();
-        DatabaseReference dataBase = databaseReference.getDatabaseReference();
-
+        DatabaseReference dataBase = dao.getDatabaseReference();
         dataBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -143,19 +137,20 @@ public class PreferenceActivity extends AppCompatActivity {
                     }
                 }
 
-                if (newPreference) addPreferences(newPreferences);
+                if (newPreference) {
+                    addPreferences(newPreferences);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - checkAndPush(Preferences):", error.getMessage());
             }
         });
     }
 
     protected void addPreferences(PreferenceInterface preferences){
-        PreferenceDAO preferenceDAO = new PreferenceDAO();
-        preferenceDAO.addPreference(preferences);
+        dao.add(preferences);
     }
 
     /**
@@ -165,7 +160,7 @@ public class PreferenceActivity extends AppCompatActivity {
 
     private String grabEmail() {
 
-        SessionManager session = new SessionManager(PreferenceActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(PreferenceActivity.this);
 
         boolean isLoggedIn = session.isLoggedIn();
 

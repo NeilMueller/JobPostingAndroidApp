@@ -15,26 +15,25 @@ import ca.dal.csci3130.quickcash.jobmanagement.JobFormActivity;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 
 public class EmployerHomeActivity extends AppCompatActivity {
 
-    private Button makePaymentButton;
-    private Button jobFormButton;
-    /**
-     * Prevent user from using back button once logged in
-     */
+
     @Override
     public void onBackPressed () {
+        //Prevent user from using back button once logged in
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employer_home);
-        makePaymentButton = findViewById(R.id.btnMakePayment);
-        jobFormButton = findViewById(R.id.job_Form);
+        Button makePaymentButton = findViewById(R.id.btnMakePayment);
+        Button jobFormButton = findViewById(R.id.job_Form);
+        Button logoutButton = findViewById(R.id.btn_logout_employer);
 
-        SessionManager sessionManager = new SessionManager(getApplicationContext());
+        SessionManagerInterface sessionManager = SessionManager.getSessionManager(getApplicationContext());
         //Gets the name from the session
         String fullName = sessionManager.getKeyName();
         // printing welcome message
@@ -42,29 +41,16 @@ public class EmployerHomeActivity extends AppCompatActivity {
         welcomeMessage.setText(String.format("Welcome Employer, %s", fullName));
 
 
-        makePaymentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                moveToPayPalPaymentActivity();
-            }
-        });
-
-        jobFormButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToJobFormActivity();
-            }
-        });
-
-
+        logoutButton.setOnClickListener(view -> logout());
+        makePaymentButton.setOnClickListener(v -> moveToPayPalPaymentActivity());
+        jobFormButton.setOnClickListener(view -> moveToJobFormActivity());
     }
 
     /**
      * Logout the user and move to login
-     * @param view
      */
-    public void logout(View view) {
-        SessionManager session = new SessionManager(EmployerHomeActivity.this);
+    public void logout() {
+        SessionManagerInterface session = SessionManager.getSessionManager(EmployerHomeActivity.this);
         session.logoutUser();
 
         moveToLoginActivity();

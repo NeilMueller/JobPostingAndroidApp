@@ -2,6 +2,7 @@ package ca.dal.csci3130.quickcash;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.se.omapi.Session;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,12 +14,10 @@ import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 import ca.dal.csci3130.quickcash.usermanagement.SignupActivity;
 
 public class MainActivity extends AppCompatActivity {
-
-    private Button login;
-    private Button signUp;
 
     @Override
     protected void onStart() {
@@ -34,21 +33,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Add logic to handle the two buttons added in the UI
 
-        login = findViewById(R.id.loginButton);
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
-            }
+        Button login = findViewById(R.id.loginButton);
+        login.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
         });
-        signUp = findViewById(R.id.signUpButton);
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
-                startActivity(intent);
-            }
+
+        Button signUp = findViewById(R.id.signUpButton);
+        signUp.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -57,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void checkSession() {
-        SessionManager session = new SessionManager(MainActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(getApplicationContext());
 
         boolean isLoggedIn = session.isLoggedIn();
 

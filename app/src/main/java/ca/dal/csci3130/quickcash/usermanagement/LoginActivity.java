@@ -2,7 +2,7 @@ package ca.dal.csci3130.quickcash.usermanagement;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,16 +18,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
-import ca.dal.csci3130.quickcash.common.AbstractDAO;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextView registerRedirect;
+    private DAO dao;
 
     @Override
     public void onBackPressed() {
+        // do nothing when pressed back
     }
 
     /**
@@ -37,7 +38,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         checkSession();
     }
 
@@ -46,24 +46,20 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        registerRedirect = (TextView) findViewById(R.id.newUserRedirect);
-        registerRedirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-                startActivity(intent);
-            }
+        dao = new UserDAOAdapter(new UserDAO());
+
+        TextView registerRedirect = (TextView) findViewById(R.id.newUserRedirect);
+        registerRedirect.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+            startActivity(intent);
         });
 
         Button loginButtonCheck = (Button) findViewById(R.id.loginButtonCheckInfo);
 
-        loginButtonCheck.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String[] loginDetails = getLoginData();
-                if (loginDetails != null)
-                    checkCredentialsAndLogin(loginDetails);
-            }
+        loginButtonCheck.setOnClickListener(view -> {
+            String[] loginDetails = getLoginData();
+            if (loginDetails.length != 0)
+                checkCredentialsAndLogin(loginDetails);
         });
     }
 
@@ -78,13 +74,11 @@ public class LoginActivity extends AppCompatActivity {
         String[] loginDetails;
         String loginEmail = ((EditText) findViewById(R.id.etEmailId)).getText().toString();
         String loginPassword = ((EditText) findViewById(R.id.etPassword)).getText().toString();
-        if (!isEmpty(loginEmail, loginPassword)) {
-            if (isValidEmail(loginEmail)) {
-                loginDetails = new String[]{loginEmail, loginPassword};
-                return loginDetails;
-            }
+        if (!isEmpty(loginEmail, loginPassword) && isValidEmail(loginEmail)) {
+            loginDetails = new String[]{loginEmail, loginPassword};
+            return loginDetails;
         }
-        return null;
+        return new String[]{};
     }
 
     /**
@@ -92,8 +86,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginDetails
      */
     protected void checkCredentialsAndLogin(String[] loginDetails) {
-        AbstractDAO userDAO = new UserDAO();
-        DatabaseReference databaseReference = userDAO.getDatabaseReference();
+        DatabaseReference databaseReference = dao.getDatabaseReference();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -115,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - checkCredentialsAndLogin(Login):", error.getMessage());
             }
         });
     }
@@ -185,29 +178,30 @@ public class LoginActivity extends AppCompatActivity {
     //Decrypt
     protected String decryptUserPassword(String password){
 
-        String result = "";
+        StringBuilder result = new StringBuilder("");
         int key = 3; // can make key variable in the future
         for (int x = 0; x < password.length(); x++) {
             char letter = password.charAt(x);
             if (Character.isLowerCase(letter)) {
-                char new_letter = (char) (letter - key);
+                char newLetter = (char) (letter - key);
                 if (letter < ('a' + key)) {
-                    result += (char) (letter + (26 - key));
+                    result.append((char) (letter + (26 - key)));
                 } else {
-                    result += new_letter;
+                    result.append(newLetter);
                 }
             } else if (Character.isUpperCase(letter)) {
-                char new_letter = (char) (letter - key);
+                char newLetter = (char) (letter - key);
                 if (letter < ('A' + key)) {
-                    result += (char) (letter + (26 - key));
+                    result.append((char) (letter + (26 - key)));
                 } else {
-                    result += new_letter;
+                    result.append(newLetter);
                 }
             } else {
-                result += letter;
+                result.append(letter);
             }
         }
-        return result;
+
+        return String.valueOf(result);
     }
 
 
@@ -217,7 +211,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param
      */
     public void login(UserInterface user) {
-        SessionManager session = new SessionManager(LoginActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(LoginActivity.this);
         String fullName = user.getFirstName() + " " + user.getLastName();
 
         session.createLoginSession(user.getEmail(), user.getPassword(), fullName, user.getIsEmployee());
@@ -260,7 +254,7 @@ public class LoginActivity extends AppCompatActivity {
      * Checks if session already exists and moves user to home page session exists
      */
     private void checkSession() {
-        SessionManager session = new SessionManager(LoginActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(LoginActivity.this);
 
         boolean isLoggedIn = session.isLoggedIn();
 

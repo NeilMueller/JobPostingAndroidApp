@@ -1,6 +1,9 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import java.util.ArrayList;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
+import java.util.Map;
 
 public class Job implements JobInterface{
 
@@ -10,21 +13,26 @@ public class Job implements JobInterface{
     private int jobDuration;
     private double payRate;
     private String jobID;
-    private double latitude, longitude;
-    private ArrayList<String> applicants;
+    private double latitude;
+    private double longitude;
+    private List<String> applicants;
     private String selectedApplicant;
 
-    public Job(String jobTitle, String jobType, String jobDescription, int jobDuration, double payRate, String jobID, double latitude, double longitude,ArrayList<String> applicants,String selectedApplicant) {
-        this.jobTitle = jobTitle;
-        this.jobType = jobType;
-        this.jobDescription = jobDescription;
+    public Job(Map<String, String> jobData,
+               int jobDuration,
+               double payRate,
+               LatLng jobLocation,
+               List<String> applicants) {
+        this.jobTitle = jobData.get("jobTitle");
+        this.jobType = jobData.get("jobType");
+        this.jobDescription = jobData.get("jobDescription");
+        this.jobID = jobData.get("jobID");
+        this.selectedApplicant = jobData.get("selectedApplicant");
         this.jobDuration = jobDuration;
         this.payRate = payRate;
-        this.jobID = jobID;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.latitude = jobLocation.latitude;
+        this.longitude = jobLocation.longitude;
         this.applicants = applicants;
-        this.selectedApplicant = selectedApplicant;
     }
 
     public Job(){
@@ -111,12 +119,12 @@ public class Job implements JobInterface{
     }
 
     @Override
-    public ArrayList<String> getApplicants() {
+    public List<String> getApplicants() {
         return applicants;
     }
 
     @Override
-    public void setApplicants(ArrayList<String> applicants) {
+    public void setApplicants(List<String> applicants) {
         this.applicants = applicants;
     }
 

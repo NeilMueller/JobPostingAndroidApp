@@ -1,6 +1,7 @@
 package ca.dal.csci3130.quickcash.usermanagement;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -12,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.rule.ActivityTestRule;
 
@@ -64,33 +66,19 @@ public class SignupActivityEspressoTest {
     /*** passwordLength()**/
 
     @Test
-    public void shortPassword() {
-        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "A1e9fG!", "A1e9fG!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
-    }
+    public void invalidPassword(){
+        //short password
+        checkToast("A1e9fG!");
 
-    @Test
-    public void noUpperCase() {
-        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "abc1de9fg!", "abc1de9fg!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
-    }
+        //no uppercase
+        checkToast("abc1de9fg!");
 
-    @Test
-    public void noLowerCase() {
-        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "ABC1DE9FG!", "ABC1DE9FG!");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
-    }
+        //no lowercase
+        checkToast("ABC1DE9FG!");
 
-    @Test
-    public void noSpecialChar() {
-        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", "Abc1de9fG", "Abc1de9fG");
-        onView(withId(R.id.signUpButton)).perform(click());
-        onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
+        //no special char
+        checkToast("Abc1de9fG");
     }
-
 
     /*** passwordConfirmation()**/
 
@@ -129,8 +117,23 @@ public class SignupActivityEspressoTest {
         databaseReference.child(userObjectKey).removeValue();
     }
 
-    public void fillFields(String fName, String lName, String email, String phoneNum, String password, String cPassword) {
+    private void checkToast(String password){
+        fillFields("Joe", "Smith", "js12345@dal.ca", "1234567890", password, password);
+        onView(withId(R.id.signUpButton)).perform(click());
+        onView(withText(R.string.toast_invalid_password)).inRoot(new ToastMatcher()).check(matches(isDisplayed()));
+        emptyFields();
+    }
 
+    private void emptyFields(){
+        onView(withId(R.id.etFirstName)).perform(clearText());
+        onView(withId(R.id.etLastName)).perform(clearText());
+        onView(withId(R.id.etEmailIdSignUp)).perform(clearText());
+        onView(withId(R.id.etPhoneNumber)).perform(clearText());
+        onView(withId(R.id.etPasswordSignUp)).perform(clearText());
+        onView(withId(R.id.etConfirmPasswordSignUp)).perform(clearText(), closeSoftKeyboard());
+    }
+
+    public void fillFields(String fName, String lName, String email, String phoneNum, String password, String cPassword) {
         onView(withId(R.id.etFirstName)).perform(typeText(fName));
         onView(withId(R.id.etLastName)).perform(typeText(lName));
         onView(withId(R.id.etEmailIdSignUp)).perform(typeText(email));

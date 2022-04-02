@@ -14,25 +14,24 @@ import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.PreferenceActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 
 public class EmployeeHomeActivity extends AppCompatActivity {
 
-    private Button availableJobs;
-    private Button preferencesButton;
-
     @Override
-    //Prevent user from using back button once logged in
     public void onBackPressed () {
+        //Prevent user from using back button once logged in
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_home);
-        availableJobs = findViewById(R.id.btn_seeAvailableJobs);
-        preferencesButton = findViewById(R.id.buttonToPref);
+        Button availableJobs = findViewById(R.id.btn_seeAvailableJobs);
+        Button preferencesButton = findViewById(R.id.buttonToPref);
+        Button logoutButton = findViewById(R.id.btn_logout_employee);
 
-        SessionManager sessionManager = new SessionManager(getApplicationContext());
+        SessionManagerInterface sessionManager = SessionManager.getSessionManager(getApplicationContext());
         //Gets the name from the session
         String fullName = sessionManager.getKeyName();
 
@@ -40,30 +39,19 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
         welcomeMessage.setText(String.format("Welcome Employee, %s", fullName));
 
-        availableJobs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToAvailableJobsActivity();
-            }
-        });
-
-        preferencesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToPreferenceActivity();
-            }
-        });
+        logoutButton.setOnClickListener(view -> logout());
+        availableJobs.setOnClickListener(view -> moveToAvailableJobsActivity());
+        preferencesButton.setOnClickListener(view -> moveToPreferenceActivity());
     }
 
 
     /**
      * Deletes session and opens login screen
      *
-     * @param view
      */
+    public void logout() {
 
-    public void logout(View view) {
-        SessionManager session = new SessionManager(EmployeeHomeActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(EmployeeHomeActivity.this);
         session.logoutUser();
 
         moveToLoginActivity();

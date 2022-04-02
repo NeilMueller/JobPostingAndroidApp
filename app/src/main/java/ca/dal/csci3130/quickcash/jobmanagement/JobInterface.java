@@ -1,6 +1,6 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface JobInterface {
     String getJobTitle();
@@ -36,9 +36,9 @@ public interface JobInterface {
 
     void setLongitude(double longitude);
 
-    ArrayList<String> getApplicants();
+    List<String> getApplicants();
 
-    void setApplicants(ArrayList<String> applicants);
+    void setApplicants(List<String> applicants);
 
     String getSelectedApplicant();
 

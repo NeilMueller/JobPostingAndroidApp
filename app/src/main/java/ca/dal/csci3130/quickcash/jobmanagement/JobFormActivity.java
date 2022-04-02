@@ -3,15 +3,13 @@ package ca.dal.csci3130.quickcash.jobmanagement;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -24,31 +22,37 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.CancellationTokenSource;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
 
 public class JobFormActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    private DAO dao;
     private FusedLocationProviderClient fusedLocationClient;
     private SupportMapFragment mapFragment;
     private static final Integer REQUEST_CODE = 123;
     private LatLng jobLocation;
     private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job_form);
+
+        random = new Random();
+        dao = new JobDAOAdapter(new JobDAO());
 
         // Obtain the SupportMapFragment
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -76,7 +80,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        GoogleMap mMap = googleMap;
 
         // if location was not retrievable for some reason, set to default - Dalhousie University
         LatLng location = jobLocation == null ? new LatLng(44.636585, -63.5938442) : jobLocation;
@@ -89,27 +93,28 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
         // After the map is set up, continue with normal flow
 
         Button postButton = (Button) findViewById(R.id.post);
-        postButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Job newJob = getJobData();
-                if (newJob != null) {
-                    checkAndPushJob(newJob);
-                    Intent intent = new Intent(JobFormActivity.this, EmployerHomeActivity.class);
-                    startActivity(intent);
-                }
+        postButton.setOnClickListener(view -> {
+            Job newJob = getJobData();
+            if (newJob != null) {
+                checkAndPushJob(newJob);
+                Intent intent = new Intent(JobFormActivity.this, EmployerHomeActivity.class);
+                startActivity(intent);
             }
         });
     }
 
     /**
+     * @deprecated
+     * Check out registerForActivityResult()
+     * Link: https://developer.android.com/reference/androidx/fragment/app/Fragment
      * This method is called when the user accepts or denies the asked permissions
      * @param requestCode
      * @param permissions
      * @param grantResults
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    @Deprecated
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) { //NOSONAR
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         // if request_code has not changed, the process of asking the permission was successful
@@ -133,22 +138,19 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
      * Checkout the first solution here: https://stackoverflow.com/questions/2279647/how-to-emulate-gps-location-in-the-android-emulator
      */
     protected void getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         //This error is a android studio bug, the permissions are added
         fusedLocationClient
                 .getCurrentLocation(100, cancellationTokenSource.getToken()) // 100 is PRIORITY_HIGH_ACCURACY
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // if location is not null, set it to job location
-                        if (location != null) {
-                            jobLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            // get the map ready
-                            mapFragment.getMapAsync(JobFormActivity.this);
-                        }
+                .addOnSuccessListener(location -> {
+                    // if location is not null, set it to job location
+                    if (location != null) {
+                        jobLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        // get the map ready
+                        mapFragment.getMapAsync(JobFormActivity.this);
                     }
                 });
     }
@@ -171,7 +173,6 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
             double payRate = payRateString.equals("") ? 0 : Double.parseDouble(payRateString);
 
             if (!isEmpty(jobTitle, jobType, jobDescription, duration, payRate)) {
-                Random random = new Random();
                 int num = random.nextInt(999999);
 
                 String numString = String.format("%06d", num);
@@ -179,7 +180,14 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
                 String jobID = jobType.substring(0, 2) + numString + durationString;
 
-                return new Job(jobTitle, jobType, jobDescription, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude, new ArrayList<String>(), "");
+                Map<String, String> jobData = new HashMap<>();
+                jobData.put("jobTitle", jobTitle);
+                jobData.put("jobType", jobType);
+                jobData.put("jobDescription", jobDescription);
+                jobData.put("jobID", jobID);
+                jobData.put("selectedApplicant", "");
+
+                return new Job(jobData, duration, payRate, jobLocation, new ArrayList<>());
             }
         }
 
@@ -242,8 +250,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
      * @param newJob
      */
     private void checkAndPushJob(Job newJob) {
-        JobDAO databaseReference = new JobDAO();
-        DatabaseReference dataBase = databaseReference.getDatabaseReference();
+        DatabaseReference dataBase = dao.getDatabaseReference();
 
         dataBase.addListenerForSingleValueEvent( new ValueEventListener() {
             @Override
@@ -267,7 +274,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - checkAndPushJob(JobForm):", error.getMessage());
             }
         });
     }
@@ -277,7 +284,6 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
      * @param job
      */
     protected void addJob(JobInterface job) {
-        JobDAO jobDAO = new JobDAO();
-        jobDAO.addJob(job);
+        dao.add(job);
     }
 }
