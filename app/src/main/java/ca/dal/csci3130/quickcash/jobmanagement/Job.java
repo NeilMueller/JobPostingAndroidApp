@@ -16,6 +16,7 @@ public class Job implements JobInterface{
     private double latitude, longitude;
     private ArrayList<String> applicants;
     private String selectedApplicant;
+    private boolean jobStatusOpen;
 
     public Job(String jobTitle, String jobType, String jobDescription, String employerID,
                int jobDuration, double payRate, String jobID, double latitude, double longitude) {
@@ -31,6 +32,7 @@ public class Job implements JobInterface{
         applicants = new ArrayList<>();
         applicants.add("");
         selectedApplicant = "";
+        jobStatusOpen = true;
     }
 
     public Job(){
@@ -145,6 +147,12 @@ public class Job implements JobInterface{
     public void setEmployerID(String employerID) {
         this.employerID = employerID;
     }
+
+    @Override
+    public boolean getJobStatus() { return jobStatusOpen; }
+
+    @Override
+    public void setJobStatus(boolean jobStatus) { jobStatusOpen = jobStatus; }
 
     @Override
     public String getListedInfo(){
