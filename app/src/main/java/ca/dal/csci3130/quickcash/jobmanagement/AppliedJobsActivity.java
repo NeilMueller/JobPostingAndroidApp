@@ -103,8 +103,12 @@ public class AppliedJobsActivity extends AppCompatActivity {
                             jobList.add(job);
                         }
                         else {
-                            //job accepted someone and it should be removed from our job list
-                            removeJob(job.getJobID());
+                            if(job.getSelectedApplicant().equals(userEmail)){
+                                jobList.add(job);
+                            } else {
+                                //job accepted someone and it should be removed from our job list
+                                removeJob(job.getJobID());
+                            }
                         }
                     }
                 }
