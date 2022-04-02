@@ -25,7 +25,7 @@
     <ListView
         android:id="@+id/lv_applied_jobs"
         android:layout_width="370dp"
-        android:layout_height="573dp"
+        android:layout_height="544dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="34dp"
         android:layout_marginEnd="21dp"
@@ -48,5 +48,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.01" />
+        app:layout_constraintVertical_bias="0.023" />
 </androidx.constraintlayout.widget.ConstraintLayout>
