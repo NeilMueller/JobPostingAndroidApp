@@ -121,7 +121,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
                     // get jobs and add them to a global list
-                    jobList.add(job);
+                    if(job.getSelectedApplicant().equals("")){jobList.add(job);}
                 }
 
                 // start loading the map
@@ -169,13 +169,13 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
                     Job job = dataSnapshot.getValue(Job.class);
                     //if job type specified
                     if(jobTypeSpecified){
-                        if(jobType.equals(job.getJobType()) && payRate < job.getPayRate() && duration > job.getDuration()){
+                        if(jobType.equals(job.getJobType()) && payRate < job.getPayRate() && duration > job.getDuration() && job.getSelectedApplicant().equals("")){
                             jobList.add(job);
                         }
                     }
                     //Jobtype not specified
                     else {
-                        if(payRate < job.getPayRate() && duration > job.getDuration()){
+                        if(payRate < job.getPayRate() && duration > job.getDuration() && job.getSelectedApplicant().equals("")){
                             jobList.add(job);
                         }
                     }
@@ -210,8 +210,6 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
             // if it is already granted, then get current location and start the map
             getCurrentLocationAndStartMap();
 
-            // the code to add clickable ads would be added here or in the dummy method below
-            methodToAddClickableAds();
         } else {
             // if not then ask for it
             requestPermissions(new String[]{
@@ -279,8 +277,6 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         });
 
     }
-
-    protected void methodToAddClickableAds(){ }
 
     /**
      * This method is called when the user accepts or denies the asked permissions

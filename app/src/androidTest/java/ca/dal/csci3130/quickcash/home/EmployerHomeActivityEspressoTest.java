@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.jobmanagement.JobFormActivity;
+import ca.dal.csci3130.quickcash.jobmanagement.MyPostedJobsActivity;
 
 public class EmployerHomeActivityEspressoTest {
     @Rule
@@ -29,6 +30,12 @@ public class EmployerHomeActivityEspressoTest {
     public void testMoveToJobFormActivity() {
         onView(withId(R.id.job_Form)).perform(click());
         intended(hasComponent(JobFormActivity.class.getName()));
+    }
+
+    @Test
+    public void testMoveToPostedJobsActivity() {
+        onView(withId(R.id.btnMyPostedJobs)).perform(click());
+        intended(hasComponent(MyPostedJobsActivity.class.getName()));
     }
 
     @After

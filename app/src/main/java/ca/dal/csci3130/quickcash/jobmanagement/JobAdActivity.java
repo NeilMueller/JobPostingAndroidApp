@@ -1,7 +1,6 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,7 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.AbstractDAO;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.User;
+import ca.dal.csci3130.quickcash.usermanagement.UserDAO;
+import ca.dal.csci3130.quickcash.usermanagement.UserInterface;
 
 public class JobAdActivity extends AppCompatActivity {
 
@@ -32,6 +35,8 @@ public class JobAdActivity extends AppCompatActivity {
     private TextView jobDuration;
     private TextView jobPayRate;
     private Button apply;
+    private String userEmail;
+    private boolean addJob;
 
 
     public JobAdActivity() {
@@ -54,7 +59,60 @@ public class JobAdActivity extends AppCompatActivity {
             jobID = extras.getString("JobID");
         }
 
+        userEmail = grabEmail();
 
+
+        fillFields();
+
+        apply = (Button) findViewById(R.id.apply);
+
+        apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                apply();
+            }
+        });
+
+
+    }
+
+    private void apply() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    addJob = false;
+                    Job newJob = snapshot1.getValue(Job.class);
+                    if (newJob != null && newJob.getJobID().matches(jobID)) {
+                        ArrayList<String> applicants = newJob.getApplicants();
+                        if (applicants != null && applicants.contains(userEmail)) {
+                            createToast(R.string.already_applied);
+                        } else {
+                            if (applicants == null)
+                                applicants = new ArrayList<String>();
+
+                            DatabaseReference newJobPref = snapshot1.getRef();
+                            applicants.add(grabEmail());
+                            Map<String, Object> newJobUpdate = new HashMap<>();
+                            newJobUpdate.put("applicants", applicants);
+                            newJobPref.updateChildren(newJobUpdate);
+                            addJob = true;
+                            createToast(R.string.applied);
+                        }
+                    }
+                }
+                if(addJob) addToAppliedList(jobID);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void fillFields() {
         // query the database and find the job by its ID
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -68,9 +126,9 @@ public class JobAdActivity extends AppCompatActivity {
                         jobType.setText("" + newJob.getJobType());
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
-                        if (newJob.getSelectedApplicant() != null) {
+                        if (!newJob.acceptingApplications()) {
                             String buttonText = "SELECTED";
-                            if(!newJob.getSelectedApplicant().equals(grabEmail())){
+                            if(!newJob.getSelectedApplicant().equals(userEmail)){
                                 buttonText = "ANOTHER CANDIDATE SELECTED";
                             }
                             apply.setText(buttonText);
@@ -85,46 +143,34 @@ public class JobAdActivity extends AppCompatActivity {
 
             }
         });
+    }
 
-        apply = (Button) findViewById(R.id.apply);
-
-        apply.setOnClickListener(new View.OnClickListener() {
+    private void addToAppliedList(String jobIDToAdd){
+        AbstractDAO userDAO = new UserDAO();
+        DatabaseReference databaseReference = userDAO.getDatabaseReference();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                            Job newJob = snapshot1.getValue(Job.class);
-                            if (newJob != null && newJob.getJobID().matches(jobID)) {
-                                ArrayList<String> applicants = newJob.getApplicants();
-                                if (applicants != null && applicants.contains(grabEmail())) {
-                                    createToast(R.string.already_applied);
-                                } else {
-                                    if (applicants == null)
-                                        applicants = new ArrayList<String>();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                                    DatabaseReference newJobPref = snapshot1.getRef();
-                                    applicants.add(grabEmail());
-                                    Map<String, Object> newJobUpdate = new HashMap<>();
-                                    newJobUpdate.put("applicants", applicants);
-                                    newJobPref.updateChildren(newJobUpdate);
-                                    createToast(R.string.applied);
-                                }
-                            }
-                        }
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    UserInterface user = dataSnapshot.getValue(User.class);
+                    if(userEmail.equals(user.getEmail())){
+                        DatabaseReference userRef = dataSnapshot.getRef();
+                        Map<String, Object> userUpdate = new HashMap<>();
+                        ArrayList<String> ids = user.getAppliedJobs();
+                        ids.add(jobIDToAdd);
+                        userUpdate.put("appliedJobs", ids);
+                        userRef.updateChildren(userUpdate);
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+            }
 
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String errorRead = error.getMessage();
             }
         });
-
-
     }
 
     /**

@@ -9,8 +9,8 @@
 
     <ListView
         android:id="@+id/myJobsListView"
-        android:layout_width="301dp"
-        android:layout_height="438dp"
+        android:layout_width="336dp"
+        android:layout_height="572dp"
         android:layout_marginStart="55dp"
         android:layout_marginTop="68dp"
         android:layout_marginEnd="55dp"
@@ -18,7 +18,8 @@
         app:layout_constraintBottom_toTopOf="@+id/btnReturnEmployerHome"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></ListView>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.085"></ListView>
 
     <Button
         android:id="@+id/btnReturnEmployerHome"
@@ -27,11 +28,27 @@
         android:layout_marginStart="158dp"
         android:layout_marginTop="602dp"
         android:layout_marginEnd="159dp"
-        android:layout_marginBottom="81dp"
+        android:layout_marginBottom="40dp"
         android:text="Return Home"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/tv_my_posted_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My Posted Jobs"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.022" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
