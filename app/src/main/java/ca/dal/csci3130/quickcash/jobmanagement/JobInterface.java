@@ -51,4 +51,8 @@ public interface JobInterface {
     void setEmployerID(String employerID);
 
     String getListedInfo();
+
+    boolean getJobStatus();
+
+    void setJobStatus(boolean jobStatus);
 }

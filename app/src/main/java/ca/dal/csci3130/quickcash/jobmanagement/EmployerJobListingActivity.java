@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,6 +21,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
@@ -36,6 +39,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
     private TextView jobDuration;
     private TextView jobPayRate;
     private TextView candidate;
+    private TextView status;
     private Button paymentBtn;
     private Button rateEmployeeBtn;
     private ArrayList<String> applicants;
@@ -50,9 +54,12 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         jobType = findViewById(R.id.jobAdType_emp);
         jobDuration = findViewById(R.id.jobAdDuration);
         jobPayRate = findViewById(R.id.jobAdPayRate);
+        status = findViewById(R.id.tv_status_display);
         applicantListView = findViewById(R.id.list_empJobListing);
         candidate = findViewById(R.id.tv_selected_candidate);
         paymentBtn = findViewById(R.id.btn_payEmployee);
+        paymentBtn.setEnabled(false);
+
         rateEmployeeBtn = findViewById(R.id.btn_rate_employee);
 
         // Grab job id
@@ -66,6 +73,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         paymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closeJobStatus();
                 moveToPayPalPaymentActivity();
             }
         });
@@ -96,6 +104,17 @@ public class EmployerJobListingActivity extends AppCompatActivity {
                         candidate.setText("" + newJob.getSelectedApplicant());
                         applicants = newJob.getApplicants();
                         showApplicants(applicants);
+                        //Set JobStatus Filed
+                        if (newJob.getJobStatus()) {
+                            status.setText("Open");
+                        } else {
+                            status.setText("CLOSED");
+                        }
+                        //Enable/Disable Payment Button
+                        if(newJob.getSelectedApplicant() != "") {
+                            paymentBtn.setEnabled(true);
+                        }
+
                     }
                 }
             }
@@ -162,6 +181,31 @@ public class EmployerJobListingActivity extends AppCompatActivity {
     private void moveToPayPalPaymentActivity() {
         Intent intent = new Intent(EmployerJobListingActivity.this, PayPalPaymentActivity.class);
         startActivity(intent);
+    }
+
+    private void closeJobStatus() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    Job newJob = snapshot1.getValue(Job.class);
+                    if (newJob != null && newJob.getJobID().matches(jobID)) {
+                        DatabaseReference jobRef = snapshot1.getRef();
+                        Map<String, Object> jobUpdate = new HashMap<>();
+                        jobUpdate.put("jobStatusOpen", false);
+                        jobRef.updateChildren(jobUpdate);
+                        Toast.makeText(getApplicationContext(), "Job Closed, Moving to Payment",
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void moveToFeedbackActivity() {
