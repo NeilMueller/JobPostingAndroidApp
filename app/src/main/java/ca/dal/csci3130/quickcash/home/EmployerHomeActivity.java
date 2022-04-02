@@ -20,8 +20,7 @@ import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 
 public class EmployerHomeActivity extends AppCompatActivity {
-
-    private Button makePaymentButton;
+    
     private Button jobFormButton;
     private Button myJobsButton;
     /**
@@ -35,7 +34,6 @@ public class EmployerHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employer_home);
-        makePaymentButton = findViewById(R.id.btnMakePayment);
         jobFormButton = findViewById(R.id.job_Form);
         myJobsButton = findViewById(R.id.btnMyPostedJobs);
 
@@ -47,13 +45,6 @@ public class EmployerHomeActivity extends AppCompatActivity {
         welcomeMessage.setText(String.format("Welcome Employer, %s", fullName));
         FirebaseMessaging.getInstance().unsubscribeFromTopic("jobs");
 
-
-        makePaymentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                moveToPayPalPaymentActivity();
-            }
-        });
 
         jobFormButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,10 +81,6 @@ public class EmployerHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void moveToPayPalPaymentActivity() {
-        Intent intent = new Intent(EmployerHomeActivity.this, PayPalPaymentActivity.class);
-        startActivity(intent);
-    }
 
     private void moveToJobFormActivity() {
         Intent intent = new Intent(getApplicationContext(), JobFormActivity.class);
