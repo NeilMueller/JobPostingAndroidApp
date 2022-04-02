@@ -29,5 +29,13 @@ public interface UserInterface {
     void setIsEmployee(boolean isEmployee);
 
     ArrayList<String> getAppliedJobs();
+
+    double getRating();
+
+    void setRating(double rating);
+
+    int getNumberOfRatings();
+
+    void setNumberOfRatings(int numberOfRating);
 }
 
