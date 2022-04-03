@@ -52,7 +52,7 @@ public interface JobInterface {
 
     String getListedInfo();
 
-    boolean getJobStatus();
+    boolean getJobStatusOpen();
 
-    void setJobStatus(boolean jobStatus);
+    void setJobStatusOpen(boolean jobStatusOpen);
 }

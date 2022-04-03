@@ -32,7 +32,7 @@ public class Job implements JobInterface{
         applicants = new ArrayList<>();
         applicants.add("");
         selectedApplicant = "";
-        jobStatusOpen = true;
+        this.jobStatusOpen = true;
     }
 
     public Job(){
@@ -149,10 +149,10 @@ public class Job implements JobInterface{
     }
 
     @Override
-    public boolean getJobStatus() { return jobStatusOpen; }
+    public boolean getJobStatusOpen() { return jobStatusOpen; }
 
     @Override
-    public void setJobStatus(boolean jobStatus) { jobStatusOpen = jobStatus; }
+    public void setJobStatusOpen(boolean jobStatusOpen) { this.jobStatusOpen = jobStatusOpen; }
 
     @Override
     public String getListedInfo(){
