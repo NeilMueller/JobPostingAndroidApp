@@ -34,12 +34,17 @@ public class JobAdActivity extends AppCompatActivity {
 
     String jobID;
     private DAO dao;
+    private DAO dao1;
     private TextView jobTitle;
     private TextView jobDesc;
     private TextView jobType;
     private TextView jobDuration;
     private TextView jobPayRate;
     private Button apply;
+    private String userEmail;
+    private boolean addJob;
+    private TextView ratingTV;
+    private String employerID;
 
 
     public JobAdActivity() {
@@ -52,12 +57,16 @@ public class JobAdActivity extends AppCompatActivity {
         setContentView(R.layout.activity_job_ad);
 
         dao = new JobDAOAdapter(new JobDAO());
+        dao1 = new UserDAOAdapter(new UserDAO());
 
         jobTitle = findViewById(R.id.jobAdTitle);
         jobDesc = findViewById(R.id.jobAdDescription);
         jobType = findViewById(R.id.jobAdType);
         jobDuration = findViewById(R.id.jobAdDuration);
         jobPayRate = findViewById(R.id.jobAdPayRate);
+        ratingTV = findViewById(R.id.ratingTV);
+
+        displayRating();
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -85,7 +94,8 @@ public class JobAdActivity extends AppCompatActivity {
                         jobType.setText("" + newJob.getJobType());
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
-                        if (!newJob.getSelectedApplicant().equalsIgnoreCase("")) {
+                        employerID = newJob.getEmployerID();
+                        if (!newJob.acceptingApplications()) {
                             String buttonText = "SELECTED";
                             if(!newJob.getSelectedApplicant().equals(grabEmail())){
                                 buttonText = "ANOTHER CANDIDATE SELECTED";
@@ -100,6 +110,27 @@ public class JobAdActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("Database Error - findJob(JobAd):", error.getMessage());
+            }
+        });
+    }
+
+    protected void displayRating () {
+        DatabaseReference ref = dao1.getDatabaseReference();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user != null && employerID.equals(user.getEmail())){
+                        ratingTV.setText("" + String.format("%.2f", user.getRating()) + "/5");
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
@@ -137,7 +168,6 @@ public class JobAdActivity extends AppCompatActivity {
     }
 
     private void addToAppliedList(String jobIDToAdd){
-        DAO dao1 = new UserDAOAdapter(new UserDAO());
         DatabaseReference databaseReference = dao1.getDatabaseReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

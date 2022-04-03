@@ -44,8 +44,8 @@
         <entry key="app/src/main/res/layout/activity_applicant_info.xml" value="0.20945516392804575" />
         <entry key="app/src/main/res/layout/activity_available_jobs.xml" value="0.29994496841097495" />
         <entry key="app/src/main/res/layout/activity_details.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_employee_home.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_employer_home.xml" value="0.4557973012641559" />
+        <entry key="app/src/main/res/layout/activity_employee_home.xml" value="0.14537037037037037" />
+        <entry key="app/src/main/res/layout/activity_employer_home.xml" value="0.14537037037037037" />
         <entry key="app/src/main/res/layout/activity_employer_job_listing.xml" value="0.18813902942846852" />
         <entry key="app/src/main/res/layout/activity_job.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_job_ad.xml" value="0.165" />
