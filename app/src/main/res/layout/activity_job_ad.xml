@@ -144,8 +144,8 @@
 
     <TextView
         android:id="@+id/textView8"
-        android:layout_width="156dp"
-        android:layout_height="28dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Employer Rating:"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -158,8 +158,8 @@
 
     <TextView
         android:id="@+id/ratingTV"
-        android:layout_width="74dp"
-        android:layout_height="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Rating"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

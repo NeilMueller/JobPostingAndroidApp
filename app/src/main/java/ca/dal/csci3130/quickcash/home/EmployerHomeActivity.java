@@ -32,6 +32,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
     private Button jobFormButton;
     private Button myJobsButton;
     private TextView ratingTV;
+    private TextView numOfRater;
     /**
      * Prevent user from using back button once logged in
      */
@@ -46,6 +47,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
         jobFormButton = findViewById(R.id.job_Form);
         myJobsButton = findViewById(R.id.btnMyPostedJobs);
         ratingTV = findViewById(R.id.ratingTV);
+        numOfRater = findViewById(R.id.numOfRaterTV);
 
         displayRating();
 
@@ -88,7 +90,8 @@ public class EmployerHomeActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
                     if (user != null && email.equals(user.getEmail())){
-                        ratingTV.setText("rating " + user.getRating());
+                        ratingTV.setText("" + String.format("%.2f", user.getRating()) + "/5");
+                        numOfRater.setText("" + user.getNumberOfRatings());
                     }
                 }
             }

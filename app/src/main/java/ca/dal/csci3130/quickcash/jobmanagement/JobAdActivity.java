@@ -130,7 +130,7 @@ public class JobAdActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
                     if (user != null && employerID.equals(user.getEmail())){
-                        ratingTV.setText("" + user.getRating());
+                        ratingTV.setText("" + String.format("%.2f", user.getRating()) + "/5");
 
                     }
                 }

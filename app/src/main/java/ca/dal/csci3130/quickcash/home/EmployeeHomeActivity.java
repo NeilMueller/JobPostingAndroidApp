@@ -34,6 +34,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
     private Button preferencesButton;
     private Button appliedJobsButton;
     private TextView ratingTV;
+    private TextView numOfRater;
 
     @Override
     //Prevent user from using back button once logged in
@@ -48,6 +49,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         preferencesButton = findViewById(R.id.buttonToPref);
         appliedJobsButton = findViewById(R.id.btn_Applied_Jobs);
         ratingTV = findViewById(R.id.ratingTV);
+        numOfRater = findViewById(R.id.numOfRaterTV);
 
         SessionManager sessionManager = new SessionManager(getApplicationContext());
         //Gets the name from the session
@@ -99,7 +101,8 @@ public class EmployeeHomeActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
                     if (user != null && email.equals(user.getEmail())){
-                        ratingTV.setText("rating " + user.getRating());
+                        ratingTV.setText("" + String.format("%.2f", user.getRating()) + "/5");
+                        numOfRater.setText("" + user.getNumberOfRatings());
                     }
                 }
             }

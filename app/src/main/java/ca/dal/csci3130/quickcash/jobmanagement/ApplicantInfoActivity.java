@@ -101,7 +101,7 @@ public class ApplicantInfoActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
                     if (user != null && email.equals(user.getEmail())){
-                        tv_applicantRating.setText("" + user.getRating());
+                        tv_applicantRating.setText("" + String.format("%.2f", user.getRating()) + "/5");
                     }
                 }
             }
