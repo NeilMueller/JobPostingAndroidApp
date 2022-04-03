@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.AbstractDAO;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.User;
+import ca.dal.csci3130.quickcash.usermanagement.UserDAO;
 
 public class ApplicantInfoActivity extends AppCompatActivity {
 
@@ -29,6 +33,7 @@ public class ApplicantInfoActivity extends AppCompatActivity {
     String JobID;
     String finalJobID;
     String finalEmpEmail;
+    private TextView tv_applicantRating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,10 @@ public class ApplicantInfoActivity extends AppCompatActivity {
         // and the job should not accept any more applications
         finalJobID = JobID.trim();
         finalEmpEmail = empEmail;
+        tv_applicantRating = findViewById(R.id.tv_applicantRating);
+
+        displayRating();
+
         acceptApplicantButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,15 +89,41 @@ public class ApplicantInfoActivity extends AppCompatActivity {
         });
     }
 
+    protected void displayRating () {
+        Bundle extras = getIntent().getExtras();
+        String email = extras.getString("EmpEmail");
+
+        AbstractDAO userDAO = new UserDAO();
+        DatabaseReference ref = userDAO.getDatabaseReference();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user != null && email.equals(user.getEmail())){
+                        tv_applicantRating.setText("" + user.getRating());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void fillFields() {
         TextView empNameTextView = findViewById(R.id.tv_applicantName);
         TextView empEmailTextView = findViewById(R.id.tv_applicantEmail);
+        TextView empRatingTextView = findViewById(R.id.tv_applicantRating);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             empName = extras.getString("EmpName");
             empEmail = extras.getString("EmpEmail");
             JobID = extras.getString("JobID");
+
         }
         empNameTextView.setText(empName);
         empEmailTextView.setText(empEmail);
