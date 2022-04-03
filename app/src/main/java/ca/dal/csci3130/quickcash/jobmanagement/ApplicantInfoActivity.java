@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class ApplicantInfoActivity extends AppCompatActivity {
     String JobID;
     String finalJobID;
     String finalEmpEmail;
+    double rating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class ApplicantInfoActivity extends AppCompatActivity {
         // and the job should not accept any more applications
         finalJobID = JobID.trim();
         finalEmpEmail = empEmail;
+
         acceptApplicantButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,15 +86,18 @@ public class ApplicantInfoActivity extends AppCompatActivity {
     private void fillFields() {
         TextView empNameTextView = findViewById(R.id.tv_applicantName);
         TextView empEmailTextView = findViewById(R.id.tv_applicantEmail);
+        RatingBar ratingRatingBar = findViewById(R.id.ratingBarApplicant);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             empName = extras.getString("EmpName");
             empEmail = extras.getString("EmpEmail");
             JobID = extras.getString("JobID");
+            rating = extras.getDouble("Rating");
         }
         empNameTextView.setText(empName);
         empEmailTextView.setText(empEmail);
+        ratingRatingBar.setRating((float) rating);
     }
 
     private void moveToJobListing(){

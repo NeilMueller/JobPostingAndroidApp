@@ -170,6 +170,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
                         intent.putExtra("EmpName", employeeName);
                         intent.putExtra("EmpEmail", user[0].getEmail());
                         intent.putExtra("JobID", jobID);
+                        intent.putExtra("Rating", user[0].getRating());
                         startActivity(intent);
                     }
                 }
