@@ -39,7 +39,6 @@ public class PayPalPaymentActivity extends AppCompatActivity {
     private Button payNowBtn;
     private TextView paymentStatusTV;
     private Button cancelPayment;
-    private Button feedbackBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,20 +48,6 @@ public class PayPalPaymentActivity extends AppCompatActivity {
         configPayPal();
         initActivityLauncher();
         setListeners();
-        //feedbackBtn = findViewById(R.id.feedbackBtn);
-
-        //feedbackBtn.setOnClickListener(new View.OnClickListener() {
-        //@Override
-        //public void onClick(View view) {
-        //moveToFeedbackActivity();
-        //}
-        //});
-
-    }
-
-    private void moveToFeedbackActivity() {
-        Intent intent = new Intent(getApplicationContext(), FeedbackActivity.class);
-        startActivity(intent);
     }
 
     private void init() {
@@ -94,6 +79,7 @@ public class PayPalPaymentActivity extends AppCompatActivity {
                                 String payID = payObj.getJSONObject("response").getString("id");
                                 String state = payObj.getJSONObject("response").getString("state");
                                 paymentStatusTV.setText(String.format("Payment %s%n with payment id is %s", state, payID));
+
                             } catch (JSONException e) {
                                 Log.e("Error", "an extremely unlikely failure occurred: ", e);
                             }

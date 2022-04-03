@@ -1,8 +1,10 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
 public class Feedback {
+
     private String employeeEmailFB;
     private float myRating;
+
     public Feedback(){}
     public Feedback(String employeeEmailFB, float myRating){
         this.employeeEmailFB = employeeEmailFB;

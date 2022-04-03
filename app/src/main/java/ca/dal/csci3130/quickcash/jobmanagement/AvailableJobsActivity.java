@@ -52,7 +52,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
     private static final Integer REQUEST_CODE = 123;
     private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     private LatLng userLocation;
-    private ArrayList<Marker> mJobMarkers = new ArrayList<>();
+    private final ArrayList<Marker> mJobMarkers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,12 +88,6 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
             String payRate = grabPayRate();
             String duration = grabDuration();
             getFilteredJobs(jobType, payRate, duration);
-            if(jobList.isEmpty()){
-                createToast(R.string.no_job_found);
-            }
-            else {
-                createToast(R.string.job_found);
-            }
         });
     }
 
@@ -102,13 +96,15 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
      */
     protected void getJobs() {
         DatabaseReference jobRef = dao.getDatabaseReference();
-        jobRef.addValueEventListener(new ValueEventListener() {
+        jobRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
                     // get jobs and add them to a global list
-                    if(job.getSelectedApplicant().equals("")){jobList.add(job);}
+                    if(job != null && job.acceptingApplications()){
+                        jobList.add(job);
+                    }
                 }
 
                 // start loading the map
@@ -131,25 +127,28 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         DatabaseReference jobRef = dao.getDatabaseReference();
 
         boolean jobTypeSpecified = !jobType.isEmpty();
-        double payRate = payRateS.isEmpty() ? 0 : Double.valueOf(payRateS);
-        double duration = durationS.isEmpty() ? 100 : Double.valueOf(durationS);
+        double payRate = payRateS.isEmpty() ? 0 : Double.parseDouble(payRateS);
+        double duration = durationS.isEmpty() ? 100 : Double.parseDouble(durationS);
 
-        jobRef.addValueEventListener(new ValueEventListener() {
+        jobRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
-                    //if job type specified
-                    if(jobTypeSpecified && jobType.equals(job.getJobType()) && payRate < job.getPayRate() && duration > job.getDuration()){
-                        jobList.add(job);
-                    }
-                    //Jobtype not specified
-                    else {
-                        if(payRate < job.getPayRate() && duration > job.getDuration() && job.getSelectedApplicant().equals("")){
+                    if(job != null) {
+                        boolean jobInPref = payRate < job.getPayRate() && duration > job.getDuration() && job.acceptingApplications();
+                        // if job type was specified, check whether its equal or not. If not, then just check the other prefs.
+                        if(jobInPref && (!jobTypeSpecified || jobType.equalsIgnoreCase(job.getJobType()))){
                             jobList.add(job);
                         }
                     }
+                }
 
+                if(jobList.isEmpty()){
+                    createToast(R.string.no_job_found);
+                }
+                else {
+                    createToast(R.string.job_found);
                 }
 
                 // start loading the map
@@ -298,13 +297,13 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         DAO dao1 = new PreferenceDAOAdapter(new PreferenceDAO());
         DatabaseReference databaseReference = dao1.getDatabaseReference();
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean noPref = true;
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     PreferenceInterface preferenceItem = dataSnapshot.getValue(Preferences.class);
-                    if(checkID(preferenceItem)){
+                    if(preferenceItem != null && checkID(preferenceItem)){
                         jobTypeEdit.setText(preferenceItem.getJobType());
                         payRateEdit.setText(String.valueOf(preferenceItem.getPayRate()));
                         durationEdit.setText(String.valueOf(preferenceItem.getDuration()));

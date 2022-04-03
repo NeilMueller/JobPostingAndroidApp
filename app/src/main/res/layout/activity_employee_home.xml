@@ -10,7 +10,7 @@
         android:id="@+id/btn_logout_employee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="64dp"
         android:text="Logout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,10 +22,14 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/btn_logout_employee"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.097" />
+
 
     <Button
         android:id="@+id/btn_seeAvailableJobs"
@@ -37,36 +41,35 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/welcomeEmployee"
-        app:layout_constraintVertical_bias="0.282" />
+        app:layout_constraintVertical_bias="0.446" />
 
     <Button
         android:id="@+id/buttonToPref"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="135dp"
         android:layout_marginTop="21dp"
-        android:layout_marginEnd="136dp"
         android:layout_marginBottom="129dp"
         android:text="Preferences"
         app:layout_constraintBottom_toTopOf="@+id/btn_logout_employee"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_seeAvailableJobs" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_seeAvailableJobs"
+        app:layout_constraintVertical_bias="0.239" />
 
     <Button
         android:id="@+id/btn_Applied_Jobs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="133dp"
         android:layout_marginTop="45dp"
-        android:layout_marginEnd="136dp"
         android:layout_marginBottom="36dp"
         android:text="Applied Jobs"
         app:layout_constraintBottom_toTopOf="@+id/btn_logout_employee"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonToPref" />
-
+        app:layout_constraintTop_toBottomOf="@+id/buttonToPref"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/ratingTV"
@@ -76,10 +79,10 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.706"
+        app:layout_constraintHorizontal_bias="0.768"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.258" />
+        app:layout_constraintVertical_bias="0.236" />
 
     <TextView
         android:id="@+id/numOfRaterTV"
@@ -89,23 +92,23 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.309"
+        app:layout_constraintHorizontal_bias="0.314"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.258" />
+        app:layout_constraintVertical_bias="0.236" />
 
     <TextView
         android:id="@+id/ratingTV2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Number of Rater"
+        android:text="Number of Raters"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.215"
+        app:layout_constraintHorizontal_bias="0.229"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.309" />
+        app:layout_constraintVertical_bias="0.298" />
 
     <TextView
         android:id="@+id/numOfRaterTV2"
@@ -115,11 +118,10 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.782"
+        app:layout_constraintHorizontal_bias="0.86"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.309" />
-
+        app:layout_constraintVertical_bias="0.298" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

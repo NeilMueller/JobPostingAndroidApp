@@ -106,7 +106,8 @@
             android:id="@+id/radioButtonEmployee"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Employee" />
+            android:text="Employee"
+            android:textAlignment="viewStart" />
 
         <RadioButton
             android:id="@+id/radioButtonEmployer"

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 import ca.dal.csci3130.quickcash.usermanagement.User;
 
 public class EmployeeJobListingActivity extends AppCompatActivity {
@@ -34,8 +37,11 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
     private TextView jobDuration;
     private TextView jobPayRate;
     private TextView employer;
+    private TextView status;
     private Button rateBtn;
+    private String userEmail;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_job_listing);
@@ -47,6 +53,8 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
         jobPayRate = findViewById(R.id.jobAdPayRate_eja);
         employer = findViewById(R.id.tv_employer);
         rateBtn = findViewById(R.id.btn_rate_employer);
+        status = findViewById(R.id.applicationStatusTextView);
+        userEmail = grabEmail();
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -56,13 +64,7 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
 
         fillFields();
         rateBtn.setEnabled(false);
-
-        rateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                moveToFeedBackActivity();
-            }
-        });
+        rateBtn.setOnClickListener(v -> moveToFeedBackActivity());
 
     }
 
@@ -75,18 +77,29 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     Job newJob = snapshot1.getValue(Job.class);
                     if (newJob != null && newJob.getJobID().matches(jobID)) {
-                        jobTitle.setText("" + newJob.getJobTitle());
-                        jobDesc.setText("" + newJob.getDescription());
-                        jobType.setText("" + newJob.getJobType());
-                        jobDuration.setText("" + newJob.getDuration());
-                        jobPayRate.setText("" + newJob.getPayRate());
-                        employer.setText("" + newJob.getEmployerID());
-                        if(!newJob.getJobStatusOpen()) {
-                            rateBtn.setEnabled(false);
-                            Toast.makeText(getApplicationContext(), "Job Is Completed and Closed", Toast.LENGTH_LONG).show();
+                        jobTitle.setText(newJob.getJobTitle());
+                        jobDesc.setText(newJob.getDescription());
+                        jobType.setText(newJob.getJobType());
+                        jobDuration.setText(String.valueOf(newJob.getDuration()));
+                        jobPayRate.setText(String.valueOf(newJob.getPayRate()));
+                        employer.setText(newJob.getEmployerID());
+
+                        if(newJob.acceptingApplications()){
+                            status.setText("Application In Progress");
                         }
-                        if(newJob.getSelectedApplicant().contains("@")) {
+                        else if(newJob.getSelectedApplicant().equals(userEmail)){
+                            if(newJob.getJobStatusOpen()) {
+                                status.setText("SELECTED");
+                            }
+                            else {
+                                status.setText("CLOSED");
+                                Toast.makeText(getApplicationContext(), "Job Is Completed and Closed", Toast.LENGTH_LONG).show();
+                            }
                             rateBtn.setEnabled(true);
+                        }
+                        else{
+                            status.setText("Another Candidate Selected");
+                            rateBtn.setEnabled(false);
                         }
                     }
                 }
@@ -94,9 +107,26 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - fillFields (EmployeeJobListing)", error.getMessage());
             }
         });
+    }
+
+    /**
+     * Returns the email of the user signed in
+     * @return
+     */
+
+    private String grabEmail() {
+
+        SessionManagerInterface session = SessionManager.getSessionManager(this);
+
+        boolean isLoggedIn = session.isLoggedIn();
+
+        if (isLoggedIn){
+            return  session.getKeyEmail();
+        }
+        return null;
     }
 
     private void moveToFeedBackActivity(){

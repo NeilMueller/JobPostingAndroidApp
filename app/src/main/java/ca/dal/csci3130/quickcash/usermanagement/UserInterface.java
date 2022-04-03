@@ -1,6 +1,6 @@
 package ca.dal.csci3130.quickcash.usermanagement;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -36,7 +36,7 @@ public interface UserInterface {
 
     void setIsEmployee(boolean isEmployee);
 
-    ArrayList<String> getAppliedJobs();
+    List<String> getAppliedJobs();
 
     double getRating();
 

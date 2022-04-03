@@ -2,6 +2,7 @@ package ca.dal.csci3130.quickcash.jobmanagement;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +25,11 @@ public class Job implements JobInterface{
                int jobDuration,
                double payRate,
                LatLng jobLocation,
-               List<String> applicants,
-               String employerId) {
+               List<String> applicants) {
         this.jobTitle = jobData.get("jobTitle");
         this.jobType = jobData.get("jobType");
         this.jobDescription = jobData.get("jobDescription");
-        this.employerID = employerId;
+        this.employerID = jobData.get("employerId");
         this.jobID = jobData.get("jobID");
         this.selectedApplicant = jobData.get("selectedApplicant");
         this.jobDuration = jobDuration;
@@ -125,7 +125,7 @@ public class Job implements JobInterface{
 
     @Override
     public List<String> getApplicants() {
-        return applicants;
+        return applicants == null ? new ArrayList<>() : applicants;
     }
 
     @Override
@@ -161,16 +161,15 @@ public class Job implements JobInterface{
 
     @Override
     public String getListedInfo(){
-
         String info = "Job Type: " + jobType;
-        info = info + "\nDuration: " + String.valueOf(jobDuration) + " hrs";
-        info = info + "\nPayrate: " + String.valueOf(payRate) + " $";
+        info = info + "\nDuration: " + jobDuration + " hrs";
+        info = info + "\nPayrate: " + payRate + " $";
         info = info + "\nSelected Applicant: " + selectedApplicant;
         info = info + "\nJob ID: " + jobID;
         return info;
     }
 
     public boolean acceptingApplications() {
-        return selectedApplicant.isEmpty();
+        return selectedApplicant == null || selectedApplicant.isEmpty();
     }
 }

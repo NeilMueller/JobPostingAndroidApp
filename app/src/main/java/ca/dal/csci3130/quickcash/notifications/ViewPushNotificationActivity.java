@@ -28,12 +28,7 @@ public class ViewPushNotificationActivity extends AppCompatActivity {
         setData();
         Button availableJobs = findViewById(R.id.btn_ToAvailable_Jobs);
 
-        availableJobs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToAvailableJobsActivity();
-            }
-        });
+        availableJobs.setOnClickListener(view -> moveToAvailableJobsActivity());
     }
 
     private void init() {

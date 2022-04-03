@@ -7,12 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,7 +34,6 @@ public class MyPostedJobsActivity extends AppCompatActivity {
 
     private String userEmail;
     private List<Job> jobList;
-    private Button returnHomebtn;
     HashMap<String, String> jobItem = new HashMap<>();
     DAO dao;
 
@@ -50,15 +47,12 @@ public class MyPostedJobsActivity extends AppCompatActivity {
         jobList = new ArrayList<>();
         userEmail = grabEmail();
 
-        returnHomebtn = findViewById(R.id.btnReturnEmployerHome);
+        Button returnHomebtn = findViewById(R.id.btnReturnEmployerHome);
 
         getJobs();
 
 
-        returnHomebtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {moveToEmployerHomePage();}
-        });
+        returnHomebtn.setOnClickListener(view -> moveToEmployerHomePage());
 
     }
 
@@ -69,7 +63,7 @@ public class MyPostedJobsActivity extends AppCompatActivity {
     protected void getJobs() {
         DatabaseReference jobRef = dao.getDatabaseReference();
 
-        jobRef.addValueEventListener(new ValueEventListener() {
+        jobRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -85,7 +79,7 @@ public class MyPostedJobsActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - getJobs (MyPostedJobs)", error.getMessage());
             }
         });
     }
@@ -107,28 +101,24 @@ public class MyPostedJobsActivity extends AppCompatActivity {
                 new String[]{"First Line", "Second Line"},
                 new int[]{R.id.tv_job_title, R.id.tv_job_info});
 
-        myJobListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String itemString = adapter.getItem(i).toString();
-                String[] itemStringArr = itemString.split("Job ID:");
-                String roughJobID = itemStringArr[1];
-                String[] roughJobIDArr = roughJobID.split(",");
-                String JobID = roughJobIDArr[0];
+        myJobListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            String itemString = adapter.getItem(i).toString();
+            String[] itemStringArr = itemString.split("Job ID:");
+            String roughJobID = itemStringArr[1];
+            String[] roughJobIDArr = roughJobID.split(",");
 
-                Intent intent = new Intent(getApplicationContext(), EmployerJobListingActivity.class);
-                intent.putExtra("JobID", JobID);
-                startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), EmployerJobListingActivity.class);
+            intent.putExtra("JobID", roughJobIDArr[0]);
+            startActivity(intent);
 
-            }
         });
 
-        Iterator it = jobItem.entrySet().iterator();
+        Iterator<Map.Entry<String, String>> it = jobItem.entrySet().iterator();
         while(it.hasNext()){
             HashMap<String, String> resultsMap = new HashMap<>();
-            Map.Entry pair = (Map.Entry)it.next();
-            resultsMap.put("First Line", pair.getKey().toString());
-            resultsMap.put("Second Line", pair.getValue().toString());
+            Map.Entry<String, String> pair = it.next();
+            resultsMap.put("First Line", pair.getKey());
+            resultsMap.put("Second Line", pair.getValue());
             listItems.add(resultsMap);
         }
 

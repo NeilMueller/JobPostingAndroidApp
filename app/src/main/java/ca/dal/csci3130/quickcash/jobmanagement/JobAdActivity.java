@@ -2,7 +2,6 @@ package ca.dal.csci3130.quickcash.jobmanagement;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -41,10 +39,9 @@ public class JobAdActivity extends AppCompatActivity {
     private TextView jobDuration;
     private TextView jobPayRate;
     private Button apply;
-    private String userEmail;
-    private boolean addJob;
     private TextView ratingTV;
     private String employerID;
+    private String userEmail;
 
 
     public JobAdActivity() {
@@ -65,8 +62,7 @@ public class JobAdActivity extends AppCompatActivity {
         jobDuration = findViewById(R.id.jobAdDuration);
         jobPayRate = findViewById(R.id.jobAdPayRate);
         ratingTV = findViewById(R.id.ratingTV);
-
-        displayRating();
+        userEmail = grabEmail();
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -75,6 +71,7 @@ public class JobAdActivity extends AppCompatActivity {
         }
 
         findJob();
+        displayRating();
 
         apply = (Button) findViewById(R.id.apply);
         apply.setOnClickListener(v -> applyJob());
@@ -89,15 +86,16 @@ public class JobAdActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     Job newJob = snapshot1.getValue(Job.class);
                     if(newJob != null && newJob.getJobID().matches(jobID)) {
-                        jobTitle.setText("" + newJob.getJobTitle());
-                        jobDesc.setText("" + newJob.getDescription());
-                        jobType.setText("" + newJob.getJobType());
-                        jobDuration.setText("" + newJob.getDuration());
-                        jobPayRate.setText("" + newJob.getPayRate());
+                        jobTitle.setText(newJob.getJobTitle());
+                        jobDesc.setText(newJob.getDescription());
+                        jobType.setText(newJob.getJobType());
+                        jobDuration.setText(String.valueOf(newJob.getDuration()));
+                        jobPayRate.setText(String.valueOf(newJob.getPayRate()));
                         employerID = newJob.getEmployerID();
+
                         if (!newJob.acceptingApplications()) {
                             String buttonText = "SELECTED";
-                            if(!newJob.getSelectedApplicant().equals(grabEmail())){
+                            if(!newJob.getSelectedApplicant().equals(userEmail)){
                                 buttonText = "ANOTHER CANDIDATE SELECTED";
                             }
                             apply.setText(buttonText);
@@ -130,7 +128,7 @@ public class JobAdActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - displayRating (JobAd):", error.getMessage());
             }
         });
     }
@@ -143,13 +141,13 @@ public class JobAdActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     Job newJob = snapshot1.getValue(Job.class);
                     if (newJob != null && newJob.getJobID().matches(jobID)) {
-                        List<String> applicants = newJob.getApplicants() == null ? new ArrayList<>() : newJob.getApplicants();
-                        if (applicants.contains(grabEmail())) {
+                        List<String> applicants = newJob.getApplicants();
+                        if (applicants.contains(userEmail)) {
                             createToast(R.string.already_applied);
                         }
                         else {
                             DatabaseReference newJobPref = snapshot1.getRef();
-                            applicants.add(grabEmail());
+                            applicants.add(userEmail);
                             Map<String, Object> newJobUpdate = new HashMap<>();
                             newJobUpdate.put("applicants", applicants);
                             newJobPref.updateChildren(newJobUpdate);
@@ -175,10 +173,10 @@ public class JobAdActivity extends AppCompatActivity {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
-                    if(grabEmail().equals(user.getEmail())){
+                    if(user != null && userEmail.equals(user.getEmail())){
                         DatabaseReference userRef = dataSnapshot.getRef();
                         Map<String, Object> userUpdate = new HashMap<>();
-                        ArrayList<String> ids = user.getAppliedJobs();
+                        List<String> ids = user.getAppliedJobs() == null ? new ArrayList<>() : user.getAppliedJobs();
                         ids.add(jobIDToAdd);
                         userUpdate.put("appliedJobs", ids);
                         userRef.updateChildren(userUpdate);
@@ -189,7 +187,7 @@ public class JobAdActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - addToAppliedList (JobAdActivity)", error.getMessage());
             }
         });
     }

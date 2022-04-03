@@ -43,6 +43,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
     private List<String> applicants;
     private ListView applicantListView;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employer_job_listing);
@@ -85,30 +86,29 @@ public class EmployerJobListingActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     Job newJob = snapshot1.getValue(Job.class);
                     if (newJob != null && newJob.getJobID().matches(jobID)) {
-                        jobTitle.setText("" + newJob.getJobTitle());
-                        jobDesc.setText("" + newJob.getDescription());
-                        jobType.setText("" + newJob.getJobType());
-                        jobDuration.setText("" + newJob.getDuration());
-                        jobPayRate.setText("" + newJob.getPayRate());
-                        candidate.setText("" + newJob.getSelectedApplicant());
+                        jobTitle.setText(newJob.getJobTitle());
+                        jobDesc.setText(newJob.getDescription());
+                        jobType.setText(newJob.getJobType());
+                        jobDuration.setText(String.valueOf(newJob.getDuration()));
+                        jobPayRate.setText(String.valueOf(newJob.getPayRate()));
+                        candidate.setText(newJob.getSelectedApplicant());
                         applicants = newJob.getApplicants();
                         showApplicants(applicants);
-                        //Set JobStatus Filed
-                        if (newJob.getJobStatusOpen()) {
+
+                        if(newJob.acceptingApplications()){
                             status.setText("Open");
                             rateEmployeeBtn.setEnabled(false);
-                        } else {
+                            paymentBtn.setEnabled(false);
+                        }
+                        else{
+                            status.setText("Candidate Selected");
+                            paymentBtn.setEnabled(true);
+                        }
+
+                        if(!newJob.getJobStatusOpen()){
                             status.setText("CLOSED");
                             rateEmployeeBtn.setEnabled(true);
-                        }
-                        //Enable/Disable Payment Button
-                        if(newJob.getSelectedApplicant().contains("@")) {
-                            paymentBtn.setEnabled(true);
-                            rateEmployeeBtn.setEnabled(true);
-                        }
-                        if(!newJob.getJobStatusOpen()) {
                             paymentBtn.setEnabled(false);
-                            rateEmployeeBtn.setEnabled(false);
                         }
                     }
                 }
@@ -116,7 +116,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - fillFields (EmployerJobListingActivity)", error.getMessage());
             }
         });
     }
@@ -128,40 +128,34 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         makeApplicantsClickable(adapter);
     }
 
-    public void makeApplicantsClickable(ArrayAdapter adapter) {
-        applicantListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // after the employer clicks on the applicant, take them to an activity showing
-                // info about the applicant, with a button showing to accept them for the job
+    public void makeApplicantsClickable(ArrayAdapter<String> adapter) {
+        applicantListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            // after the employer clicks on the applicant, take them to an activity showing
+            // info about the applicant, with a button showing to accept them for the job
 
-                // first, find the user by their email.
-                String userEmail = adapter.getItem(i).toString().trim();
-//                Toast.makeText(getApplicationContext(), userEmail, Toast.LENGTH_LONG).show();
-                showApplicantInfo(userEmail);
-//                String employeeName = user.getFirstName() + " " + user.getLastName();
+            // first, find the user by their email.
+            String userEmail = adapter.getItem(i).trim();
+            showApplicantInfo(userEmail);
 
-            }
         });
     }
 
     public void showApplicantInfo(String userEmail) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User");
-        final User[] user = {null};
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot snapshot1 : snapshot.getChildren()) {
-                    user[0] = snapshot1.getValue(User.class);
-                    if(user[0] != null && user[0].getEmail().matches(userEmail)) {
+                    User user = snapshot1.getValue(User.class);
+                    if(user != null && user.getEmail().matches(userEmail)) {
                         // after we have found the user, start the applicant info intent
-                        String employeeName = user[0].getFirstName() + " " + user[0].getLastName();
+                        String employeeName = user.getFirstName() + " " + user.getLastName();
                         Intent intent = new Intent(getApplicationContext(),
                                 ApplicantInfoActivity.class);
                         intent.putExtra("EmpName", employeeName);
-                        intent.putExtra("EmpEmail", user[0].getEmail());
+                        intent.putExtra("EmpEmail", user.getEmail());
                         intent.putExtra("JobID", jobID);
-                        intent.putExtra("Rating", user[0].getRating());
+                        intent.putExtra("Rating", user.getRating());
                         startActivity(intent);
                     }
                 }
@@ -169,7 +163,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - showApplicantInfo (EmployerJobListingActivity)", error.getMessage());
             }
         });
     }
@@ -199,7 +193,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - closeJobStatus (EmployerJobListingActivity)", error.getMessage());
             }
         });
     }

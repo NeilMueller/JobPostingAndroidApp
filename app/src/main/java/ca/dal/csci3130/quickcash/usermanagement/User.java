@@ -1,6 +1,7 @@
 package ca.dal.csci3130.quickcash.usermanagement;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class User implements UserInterface {
 
@@ -9,10 +10,10 @@ public class User implements UserInterface {
     private String email;
     private String phone;
     private String password;
-    private boolean isEmployee; // true or false.
+    private boolean isEmployee;
     private double rating;
     private int numberOfRatings;
-    private ArrayList<String> appliedJobs;
+    private List<String> appliedJobs;
 
     public User(String firstName, String lastName, String email, String phone, String password,
                 boolean isEmployee) {
@@ -23,10 +24,8 @@ public class User implements UserInterface {
         this.password = password;
         this.isEmployee = isEmployee;
         this.appliedJobs = new ArrayList<>();
-        appliedJobs.add("");
-
-        rating = 0;
-        numberOfRatings = 0;
+        this.rating = 0;
+        this.numberOfRatings = 0;
     }
 
     public User() {
@@ -93,8 +92,8 @@ public class User implements UserInterface {
     }
 
     @Override
-    public ArrayList<String> getAppliedJobs(){
-        return appliedJobs;
+    public List<String> getAppliedJobs(){
+        return appliedJobs == null ? new ArrayList<>() : appliedJobs;
     }
 
     @Override

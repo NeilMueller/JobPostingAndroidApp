@@ -17,7 +17,7 @@ import java.util.Map;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
-    public void onNewToken(@NonNull String token) {
+    public void onNewToken(@NonNull String token) { //NOSONAR
         super.onNewToken(token);
     }
 

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +36,6 @@ public class FeedbackActivity extends AppCompatActivity {
 
     float myRating;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,19 +52,8 @@ public class FeedbackActivity extends AppCompatActivity {
         }
 
 
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                myRating = ratingBar.getRating();
-            }
-        });
-
-        ratingBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                rateUser();
-            }
-        });
+        ratingBar.setOnRatingBarChangeListener((ratingBar, v, b) -> myRating = ratingBar.getRating());
+        ratingBtn.setOnClickListener(view -> rateUser());
 
     }
 
@@ -104,7 +93,7 @@ public class FeedbackActivity extends AppCompatActivity {
                         createToast(R.string.toast_rating_applied);
 
                         //move to correct homepage
-                        if(raterIsEmployer == true){
+                        if(raterIsEmployer){
                             moveToEmployerHomeActivity();
                         } else {
                             moveToEmployeeHomeActivity();
@@ -118,7 +107,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - rateUser (FeedBackActivity)", error.getMessage());
             }
         });
     }

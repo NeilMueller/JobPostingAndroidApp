@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -57,33 +55,28 @@ public class AppliedJobsActivity extends AppCompatActivity {
         Button homePageButton = findViewById(R.id.btn_Employee_Home);
 
         getJobIDs();
-
         homePageButton.setOnClickListener(view -> moveToEmployeeHome());
     }
 
     protected void getJobIDs() {
         DatabaseReference databaseReference = dao.getDatabaseReference();
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
-                    if(userEmail.equals(user.getEmail())){
-                        ArrayList<String> ids = user.getAppliedJobs();
-                        for(String str: ids){
-                            jobIDs.add(str);
-                        }
+                    if(user != null && userEmail.equals(user.getEmail())){
+                        List<String> ids = user.getAppliedJobs();
+                        jobIDs.addAll(ids);
                     }
                 }
 
                 getJobs();
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - getJobIDs (AppliedJobs):", error.getMessage());
             }
         });
     }
@@ -96,18 +89,13 @@ public class AppliedJobsActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
                     // get jobs and add them to a global list
-                    if(jobIDs.contains(job.getJobID())) {
-                        if(job.getSelectedApplicant().equals("")){
-                            //job still accepting
+                    if(job != null && jobIDs.contains(job.getJobID())) {
+                        if(job.acceptingApplications() || job.getSelectedApplicant().equals(userEmail)){
                             jobList.add(job);
                         }
                         else {
-                            if(job.getSelectedApplicant().equals(userEmail)){
-                                jobList.add(job);
-                            } else {
-                                //job accepted someone and it should be removed from our job list
-                                removeJob(job.getJobID());
-                            }
+                            //job accepted someone and it should be removed from our job list
+                            removeJob(job.getJobID());
                         }
                     }
                 }
@@ -117,7 +105,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - getJobs (AppliedJobs):", error.getMessage());
             }
         });
     }
@@ -140,28 +128,24 @@ public class AppliedJobsActivity extends AppCompatActivity {
                 new String[]{"First Line", "Second Line"},
                 new int[]{R.id.tv_job_title, R.id.tv_job_info});
 
-        myJobListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String itemString = adapter.getItem(i).toString();
-                String[] itemStringArr = itemString.split("Job ID:");
-                String roughJobID = itemStringArr[1];
-                String[] roughJobIDArr = roughJobID.split(",");
-                String JobID = roughJobIDArr[0];
+        myJobListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            String itemString = adapter.getItem(i).toString();
+            String[] itemStringArr = itemString.split("Job ID:");
+            String roughJobID = itemStringArr[1];
+            String[] roughJobIDArr = roughJobID.split(",");
 
-                Intent intent = new Intent(getApplicationContext(), EmployeeJobListingActivity.class);
-                intent.putExtra("JobID", JobID);
-                startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), EmployeeJobListingActivity.class);
+            intent.putExtra("JobID", roughJobIDArr[0]);
+            startActivity(intent);
 
-            }
         });
 
-        Iterator it = jobItem.entrySet().iterator();
+        Iterator<Map.Entry<String, String>> it = jobItem.entrySet().iterator();
         while(it.hasNext()){
             HashMap<String, String> resultsMap = new HashMap<>();
-            Map.Entry pair = (Map.Entry)it.next();
-            resultsMap.put("First Line", pair.getKey().toString());
-            resultsMap.put("Second Line", pair.getValue().toString());
+            Map.Entry<String, String> pair = it.next();
+            resultsMap.put("First Line", pair.getKey());
+            resultsMap.put("Second Line", pair.getValue());
             listItems.add(resultsMap);
         }
 
@@ -176,10 +160,10 @@ public class AppliedJobsActivity extends AppCompatActivity {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
-                    if(userEmail.equals(user.getEmail())){
+                    if(user != null && userEmail.equals(user.getEmail())){
                         DatabaseReference userRef = dataSnapshot.getRef();
                         Map<String, Object> userUpdate = new HashMap<>();
-                        ArrayList<String> ids = user.getAppliedJobs();
+                        List<String> ids = user.getAppliedJobs();
                         ids.remove(jobIDtoRemove);
                         userUpdate.put("appliedJobs", ids);
                         userRef.updateChildren(userUpdate);
@@ -190,7 +174,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - removeJob (AppliedJobs):", error.getMessage());
             }
         });
     }

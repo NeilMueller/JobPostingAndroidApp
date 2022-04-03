@@ -13,7 +13,7 @@ public class FeedbackDAO {
         databaseReference = db.getReference(Feedback.class.getSimpleName());
     }
 
-    public Task<Void> add (Feedback feedback){
+    public Task<Void> add(Feedback feedback){
         return databaseReference.push().setValue(feedback);
     }
 }
