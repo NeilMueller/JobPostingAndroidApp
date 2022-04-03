@@ -81,6 +81,11 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
                         employer.setText("" + newJob.getEmployerID());
+                        if (newJob.getJobStatus()) {
+                            rateBtn.setEnabled(false);
+                        } else {
+                            rateBtn.setEnabled(true);
+                        }
                     }
                 }
             }

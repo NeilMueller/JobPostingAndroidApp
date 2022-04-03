@@ -107,8 +107,10 @@ public class EmployerJobListingActivity extends AppCompatActivity {
                         //Set JobStatus Filed
                         if (newJob.getJobStatus()) {
                             status.setText("Open");
+                            rateEmployeeBtn.setEnabled(false);
                         } else {
                             status.setText("CLOSED");
+                            rateEmployeeBtn.setEnabled(true);
                         }
                         //Enable/Disable Payment Button
                         if(newJob.getSelectedApplicant() != "") {
