@@ -59,8 +59,8 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         candidate = findViewById(R.id.tv_selected_candidate);
         paymentBtn = findViewById(R.id.btn_payEmployee);
         paymentBtn.setEnabled(false);
-
         rateEmployeeBtn = findViewById(R.id.btn_rate_employee);
+        rateEmployeeBtn.setEnabled(false);
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -105,16 +105,20 @@ public class EmployerJobListingActivity extends AppCompatActivity {
                         applicants = newJob.getApplicants();
                         showApplicants(applicants);
                         //Set JobStatus Filed
-                        if (newJob.getJobStatus()) {
+                        if (newJob.getJobStatusOpen()) {
                             status.setText("Open");
                         } else {
                             status.setText("CLOSED");
                         }
                         //Enable/Disable Payment Button
-                        if(newJob.getSelectedApplicant() != "") {
+                        if(newJob.getSelectedApplicant().contains("@")) {
                             paymentBtn.setEnabled(true);
+                            rateEmployeeBtn.setEnabled(true);
                         }
-
+                        if(!newJob.getJobStatusOpen()) {
+                            paymentBtn.setEnabled(false);
+                            rateEmployeeBtn.setEnabled(false);
+                        }
                     }
                 }
             }
@@ -166,6 +170,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
                         intent.putExtra("EmpName", employeeName);
                         intent.putExtra("EmpEmail", user[0].getEmail());
                         intent.putExtra("JobID", jobID);
+                        intent.putExtra("Rating", user[0].getRating());
                         startActivity(intent);
                     }
                 }

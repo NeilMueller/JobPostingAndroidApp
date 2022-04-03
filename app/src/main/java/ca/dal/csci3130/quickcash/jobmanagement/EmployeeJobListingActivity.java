@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,8 +36,6 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
     private TextView employer;
     private Button rateBtn;
 
-
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_job_listing);
@@ -56,6 +55,7 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
         }
 
         fillFields();
+        rateBtn.setEnabled(false);
 
         rateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +81,13 @@ public class EmployeeJobListingActivity extends AppCompatActivity {
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
                         employer.setText("" + newJob.getEmployerID());
+                        if(!newJob.getJobStatusOpen()) {
+                            rateBtn.setEnabled(false);
+                            Toast.makeText(getApplicationContext(), "Job Is Completed and Closed", Toast.LENGTH_LONG).show();
+                        }
+                        if(newJob.getSelectedApplicant().contains("@")) {
+                            rateBtn.setEnabled(true);
+                        }
                     }
                 }
             }

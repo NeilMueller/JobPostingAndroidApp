@@ -33,7 +33,7 @@ public class FeedbackActivity extends AppCompatActivity {
     TextView userID;
     RatingBar ratingBar;
 
-    double myRating;
+    float myRating;
 
 
     @Override

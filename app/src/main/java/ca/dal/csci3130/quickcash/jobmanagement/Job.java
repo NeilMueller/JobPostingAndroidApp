@@ -156,10 +156,10 @@ public class Job implements JobInterface{
     }
 
     @Override
-    public boolean getJobStatus() { return jobStatusOpen; }
+    public boolean getJobStatusOpen() { return this.jobStatusOpen; }
 
     @Override
-    public void setJobStatus(boolean jobStatus) { jobStatusOpen = jobStatus; }
+    public void setJobStatusOpen(boolean jobStatusOpen) { this.jobStatusOpen = jobStatusOpen; }
 
     @Override
     public String getListedInfo(){
