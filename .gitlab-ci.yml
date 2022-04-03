@@ -26,6 +26,7 @@ before_script:
   - touch local.properties
   - echo "MAPS_API_KEY=empty" > local.properties
   - echo "PAYPAL_CLIENT_ID=empty" >> local.properties
+  - echo "FIREBASE_SERVER_KEY=empty" >> local.properties
 
 lintDebug:
   stage: build

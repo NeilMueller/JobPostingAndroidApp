@@ -5,11 +5,14 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.List;
 import java.util.Map;
 
+import ca.dal.csci3130.quickcash.usermanagement.User;
+
 public class Job implements JobInterface{
 
     private String jobTitle;
     private String jobType;
     private String jobDescription;
+    private String employerID;
     private int jobDuration;
     private double payRate;
     private String jobID;
@@ -17,15 +20,18 @@ public class Job implements JobInterface{
     private double longitude;
     private List<String> applicants;
     private String selectedApplicant;
+    private boolean jobStatusOpen;
 
     public Job(Map<String, String> jobData,
                int jobDuration,
                double payRate,
                LatLng jobLocation,
-               List<String> applicants) {
+               List<String> applicants,
+               String employerId) {
         this.jobTitle = jobData.get("jobTitle");
         this.jobType = jobData.get("jobType");
         this.jobDescription = jobData.get("jobDescription");
+        this.employerID = employerId;
         this.jobID = jobData.get("jobID");
         this.selectedApplicant = jobData.get("selectedApplicant");
         this.jobDuration = jobDuration;
@@ -33,6 +39,7 @@ public class Job implements JobInterface{
         this.latitude = jobLocation.latitude;
         this.longitude = jobLocation.longitude;
         this.applicants = applicants;
+        this.jobStatusOpen = true;
     }
 
     public Job(){
@@ -136,5 +143,36 @@ public class Job implements JobInterface{
     @Override
     public void setSelectedApplicant(String selectedApplicant) {
         this.selectedApplicant = selectedApplicant;
+    }
+
+    @Override
+    public String getEmployerID() {
+        return employerID;
+    }
+
+    @Override
+    public void setEmployerID(String employerID) {
+        this.employerID = employerID;
+    }
+
+    @Override
+    public boolean getJobStatus() { return jobStatusOpen; }
+
+    @Override
+    public void setJobStatus(boolean jobStatus) { jobStatusOpen = jobStatus; }
+
+    @Override
+    public String getListedInfo(){
+
+        String info = "Job Type: " + jobType;
+        info = info + "\nDuration: " + String.valueOf(jobDuration) + " hrs";
+        info = info + "\nPayrate: " + String.valueOf(payRate) + " $";
+        info = info + "\nSelected Applicant: " + selectedApplicant;
+        info = info + "\nJob ID: " + jobID;
+        return info;
+    }
+
+    public boolean acceptingApplications() {
+        return selectedApplicant.isEmpty();
     }
 }

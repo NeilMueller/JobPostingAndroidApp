@@ -108,7 +108,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
                     // get jobs and add them to a global list
-                    jobList.add(job);
+                    if(job.getSelectedApplicant().equals("")){jobList.add(job);}
                 }
 
                 // start loading the map
@@ -145,7 +145,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
                     }
                     //Jobtype not specified
                     else {
-                        if(payRate < job.getPayRate() && duration > job.getDuration()){
+                        if(payRate < job.getPayRate() && duration > job.getDuration() && job.getSelectedApplicant().equals("")){
                             jobList.add(job);
                         }
                     }

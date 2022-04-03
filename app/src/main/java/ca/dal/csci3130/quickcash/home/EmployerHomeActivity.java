@@ -9,9 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import ca.dal.csci3130.quickcash.MainActivity;
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.jobmanagement.JobFormActivity;
+import ca.dal.csci3130.quickcash.jobmanagement.MyPostedJobsActivity;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
@@ -29,9 +32,9 @@ public class EmployerHomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employer_home);
-        Button makePaymentButton = findViewById(R.id.btnMakePayment);
         Button jobFormButton = findViewById(R.id.job_Form);
         Button logoutButton = findViewById(R.id.btn_logout_employer);
+        Button myJobsButton = findViewById(R.id.btnMyPostedJobs);
 
         SessionManagerInterface sessionManager = SessionManager.getSessionManager(getApplicationContext());
         //Gets the name from the session
@@ -39,11 +42,12 @@ public class EmployerHomeActivity extends AppCompatActivity {
         // printing welcome message
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployer);
         welcomeMessage.setText(String.format("Welcome Employer, %s", fullName));
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("jobs");
 
 
         logoutButton.setOnClickListener(view -> logout());
-        makePaymentButton.setOnClickListener(v -> moveToPayPalPaymentActivity());
         jobFormButton.setOnClickListener(view -> moveToJobFormActivity());
+        myJobsButton.setOnClickListener(view -> moveToMyJobsActivity());
     }
 
     /**
@@ -65,13 +69,14 @@ public class EmployerHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void moveToPayPalPaymentActivity() {
-        Intent intent = new Intent(EmployerHomeActivity.this, PayPalPaymentActivity.class);
-        startActivity(intent);
-    }
 
     private void moveToJobFormActivity() {
         Intent intent = new Intent(getApplicationContext(), JobFormActivity.class);
+        startActivity(intent);
+    }
+
+    private void moveToMyJobsActivity() {
+        Intent intent = new Intent(getApplicationContext(), MyPostedJobsActivity.class);
         startActivity(intent);
     }
 }

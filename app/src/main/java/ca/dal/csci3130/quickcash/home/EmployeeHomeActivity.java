@@ -8,7 +8,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.jobmanagement.AppliedJobsActivity;
 import ca.dal.csci3130.quickcash.jobmanagement.AvailableJobsActivity;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
@@ -29,11 +32,13 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_employee_home);
         Button availableJobs = findViewById(R.id.btn_seeAvailableJobs);
         Button preferencesButton = findViewById(R.id.buttonToPref);
+        Button appliedJobsButton = findViewById(R.id.btn_Applied_Jobs);
         Button logoutButton = findViewById(R.id.btn_logout_employee);
 
         SessionManagerInterface sessionManager = SessionManager.getSessionManager(getApplicationContext());
         //Gets the name from the session
         String fullName = sessionManager.getKeyName();
+        FirebaseMessaging.getInstance().subscribeToTopic("jobs");
 
         // printing welcome message
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
@@ -42,6 +47,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         logoutButton.setOnClickListener(view -> logout());
         availableJobs.setOnClickListener(view -> moveToAvailableJobsActivity());
         preferencesButton.setOnClickListener(view -> moveToPreferenceActivity());
+        appliedJobsButton.setOnClickListener(view -> moveToAppliedJobsActivity());
     }
 
 
@@ -70,6 +76,11 @@ public class EmployeeHomeActivity extends AppCompatActivity {
 
     private void moveToPreferenceActivity() {
         Intent intent = new Intent(EmployeeHomeActivity.this, PreferenceActivity.class);
+        startActivity(intent);
+    }
+
+    private void moveToAppliedJobsActivity(){
+        Intent intent = new Intent(EmployeeHomeActivity.this, AppliedJobsActivity.class);
         startActivity(intent);
     }
 

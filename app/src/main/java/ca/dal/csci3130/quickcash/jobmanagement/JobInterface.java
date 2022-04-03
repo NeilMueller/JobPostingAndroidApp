@@ -2,6 +2,8 @@ package ca.dal.csci3130.quickcash.jobmanagement;
 
 import java.util.List;
 
+import ca.dal.csci3130.quickcash.usermanagement.User;
+
 public interface JobInterface {
     String getJobTitle();
 
@@ -43,4 +45,14 @@ public interface JobInterface {
     String getSelectedApplicant();
 
     void setSelectedApplicant( String selectedApplicant);
+
+    String getEmployerID();
+
+    void setEmployerID(String employerID);
+
+    String getListedInfo();
+
+    boolean getJobStatus();
+
+    void setJobStatus(boolean jobStatus);
 }

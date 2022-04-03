@@ -13,6 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,14 +31,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import ca.dal.csci3130.quickcash.BuildConfig;
 import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 
 public class JobFormActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -45,10 +55,14 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
     private LatLng jobLocation;
     private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     private Random random;
+    String employerID;
+    private RequestQueue requestQueue;
+    private static final String PUSH_NOTIFICATION_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestQueue = Volley.newRequestQueue(this);
         setContentView(R.layout.activity_job_form);
 
         random = new Random();
@@ -60,6 +74,9 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
         // grabs the location services api
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        //Grab user email
+        employerID = grabEmail();
 
         // checks if the permission is already granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -187,7 +204,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
                 jobData.put("jobID", jobID);
                 jobData.put("selectedApplicant", "");
 
-                return new Job(jobData, duration, payRate, jobLocation, new ArrayList<>());
+                return new Job(jobData, duration, payRate, jobLocation, new ArrayList<>(), employerID);
             }
         }
 
@@ -269,6 +286,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
                 if (newPosting) {
                     addJob(newJob);
                     createToast(R.string.job_posted_successfully);
+                    sendNotification(newJob);
                 }
             }
 
@@ -286,4 +304,64 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
     protected void addJob(JobInterface job) {
         dao.add(job);
     }
+
+    /**
+     * Returns the email of the user signed in
+     * @return
+     */
+
+    private String grabEmail() {
+
+        SessionManagerInterface session = SessionManager.getSessionManager(JobFormActivity.this);
+
+        boolean isLoggedIn = session.isLoggedIn();
+
+        if (isLoggedIn){
+            return  session.getKeyEmail();
+        }
+        return null;
+    }
+
+    //Notification Code
+    private void sendNotification(Job newJob) {
+
+        try {
+            final JSONObject notificationJSONBody = new JSONObject();
+            notificationJSONBody.put("title", "New \""+newJob.getJobTitle()+ "\" Job Available!");
+            notificationJSONBody.put("body", "A new "+newJob.getJobType()+ "job was created near you!");
+
+            final JSONObject dataJSONBody = new JSONObject();
+            dataJSONBody.put("jobId", "Job ID: "+newJob.getJobID());
+            dataJSONBody.put("jobLocation", "Location: "+newJob.getLatitude() +","+newJob.getLongitude());
+
+
+            final JSONObject pushNotificationJSONBody = new JSONObject();
+            pushNotificationJSONBody.put("to", "/topics/jobs");
+            pushNotificationJSONBody.put("notification", notificationJSONBody);
+            pushNotificationJSONBody.put("data", dataJSONBody);
+
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
+                    PUSH_NOTIFICATION_ENDPOINT,
+                    pushNotificationJSONBody,
+                    response ->
+                            Toast.makeText(JobFormActivity.this,
+                                    "Push notification sent.",
+                                    Toast.LENGTH_SHORT).show(),
+                    Throwable::printStackTrace) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    final Map<String, String> headers = new HashMap<>();
+                    headers.put("content-type", "application/json");
+                    headers.put("authorization", "key=" + BuildConfig.FIREBASE_SERVER_KEY);
+                    return headers;
+                }
+            };
+
+            requestQueue.add(request);
+        } catch (JSONException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
 }

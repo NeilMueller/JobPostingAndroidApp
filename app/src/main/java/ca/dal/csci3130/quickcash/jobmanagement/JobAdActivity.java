@@ -118,6 +118,7 @@ public class JobAdActivity extends AppCompatActivity {
                             Map<String, Object> newJobUpdate = new HashMap<>();
                             newJobUpdate.put("applicants", applicants);
                             newJobPref.updateChildren(newJobUpdate);
+                            addToAppliedList(jobID);
                             createToast(R.string.applied);
                         }
                     }
@@ -127,6 +128,34 @@ public class JobAdActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("Database Error - applyJob(JobAd):", error.getMessage());
+            }
+        });
+    }
+
+    private void addToAppliedList(String jobIDToAdd){
+        AbstractDAO userDAO = new UserDAO();
+        DatabaseReference databaseReference = userDAO.getDatabaseReference();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    UserInterface user = dataSnapshot.getValue(User.class);
+                    if(userEmail.equals(user.getEmail())){
+                        DatabaseReference userRef = dataSnapshot.getRef();
+                        Map<String, Object> userUpdate = new HashMap<>();
+                        ArrayList<String> ids = user.getAppliedJobs();
+                        ids.add(jobIDToAdd);
+                        userUpdate.put("appliedJobs", ids);
+                        userRef.updateChildren(userUpdate);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                final String errorRead = error.getMessage();
             }
         });
     }
