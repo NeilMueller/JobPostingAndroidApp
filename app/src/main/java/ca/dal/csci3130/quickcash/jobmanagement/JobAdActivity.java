@@ -37,6 +37,8 @@ public class JobAdActivity extends AppCompatActivity {
     private Button apply;
     private String userEmail;
     private boolean addJob;
+    private TextView ratingTV;
+    private String employerID;
 
 
     public JobAdActivity() {
@@ -52,6 +54,9 @@ public class JobAdActivity extends AppCompatActivity {
         jobType = findViewById(R.id.jobAdType);
         jobDuration = findViewById(R.id.jobAdDuration);
         jobPayRate = findViewById(R.id.jobAdPayRate);
+        ratingTV = findViewById(R.id.ratingTV);
+
+        displayRating();
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -72,6 +77,8 @@ public class JobAdActivity extends AppCompatActivity {
                 apply();
             }
         });
+
+
 
 
     }
@@ -112,6 +119,30 @@ public class JobAdActivity extends AppCompatActivity {
         });
     }
 
+    protected void displayRating () {
+
+
+        AbstractDAO userDAO = new UserDAO();
+        DatabaseReference ref = userDAO.getDatabaseReference();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user != null && employerID.equals(user.getEmail())){
+                        ratingTV.setText("" + String.format("%.2f", user.getRating()) + "/5");
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void fillFields() {
         // query the database and find the job by its ID
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
@@ -126,6 +157,7 @@ public class JobAdActivity extends AppCompatActivity {
                         jobType.setText("" + newJob.getJobType());
                         jobDuration.setText("" + newJob.getDuration());
                         jobPayRate.setText("" + newJob.getPayRate());
+                        employerID = newJob.getEmployerID();
                         if (!newJob.acceptingApplications()) {
                             String buttonText = "SELECTED";
                             if(!newJob.getSelectedApplicant().equals(userEmail)){
