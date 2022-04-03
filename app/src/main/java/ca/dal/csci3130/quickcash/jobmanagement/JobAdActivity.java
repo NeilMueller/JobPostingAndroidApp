@@ -25,6 +25,10 @@ import ca.dal.csci3130.quickcash.R;
 import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
+import ca.dal.csci3130.quickcash.usermanagement.User;
+import ca.dal.csci3130.quickcash.usermanagement.UserDAO;
+import ca.dal.csci3130.quickcash.usermanagement.UserDAOAdapter;
+import ca.dal.csci3130.quickcash.usermanagement.UserInterface;
 
 public class JobAdActivity extends AppCompatActivity {
 
@@ -133,15 +137,15 @@ public class JobAdActivity extends AppCompatActivity {
     }
 
     private void addToAppliedList(String jobIDToAdd){
-        AbstractDAO userDAO = new UserDAO();
-        DatabaseReference databaseReference = userDAO.getDatabaseReference();
+        DAO dao1 = new UserDAOAdapter(new UserDAO());
+        DatabaseReference databaseReference = dao1.getDatabaseReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
-                    if(userEmail.equals(user.getEmail())){
+                    if(grabEmail().equals(user.getEmail())){
                         DatabaseReference userRef = dataSnapshot.getRef();
                         Map<String, Object> userUpdate = new HashMap<>();
                         ArrayList<String> ids = user.getAppliedJobs();

@@ -5,8 +5,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.List;
 import java.util.Map;
 
-import ca.dal.csci3130.quickcash.usermanagement.User;
-
 public class Job implements JobInterface{
 
     private String jobTitle;

@@ -24,20 +24,23 @@ import java.util.List;
 import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
-import ca.dal.csci3130.quickcash.common.AbstractDAO;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 import ca.dal.csci3130.quickcash.usermanagement.User;
 import ca.dal.csci3130.quickcash.usermanagement.UserDAO;
+import ca.dal.csci3130.quickcash.usermanagement.UserDAOAdapter;
 import ca.dal.csci3130.quickcash.usermanagement.UserInterface;
 
 public class AppliedJobsActivity extends AppCompatActivity {
 
-    private Button homePageButton;
     private String userEmail;
     private List<String> jobIDs;
     private List<Job> jobList;
     HashMap<String, String> jobItem = new HashMap<>();
+    DAO dao;
+    DAO dao1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,21 +51,18 @@ public class AppliedJobsActivity extends AppCompatActivity {
         jobIDs = new ArrayList<>();
         userEmail = grabEmail();
 
-        homePageButton = findViewById(R.id.btn_Employee_Home);
+        dao = new UserDAOAdapter(new UserDAO());
+        dao1 = new JobDAOAdapter(new JobDAO());
+
+        Button homePageButton = findViewById(R.id.btn_Employee_Home);
 
         getJobIDs();
 
-        homePageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToEmployeeHome();
-            }
-        });
+        homePageButton.setOnClickListener(view -> moveToEmployeeHome());
     }
 
     protected void getJobIDs() {
-        AbstractDAO userDAO = new UserDAO();
-        DatabaseReference databaseReference = userDAO.getDatabaseReference();
+        DatabaseReference databaseReference = dao.getDatabaseReference();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -89,9 +89,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
     }
 
     private void getJobs(){
-        JobDAO jobDAO = new JobDAO();
-        DatabaseReference jobRef = jobDAO.getDatabaseReference();
-
+        DatabaseReference jobRef = dao1.getDatabaseReference();
         jobRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -171,8 +169,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
     }
 
     private void removeJob(String jobIDtoRemove){
-        AbstractDAO userDAO = new UserDAO();
-        DatabaseReference databaseReference = userDAO.getDatabaseReference();
+        DatabaseReference databaseReference = dao.getDatabaseReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -205,7 +202,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
 
     private String grabEmail() {
 
-        SessionManager session = new SessionManager(AppliedJobsActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(AppliedJobsActivity.this);
 
         boolean isLoggedIn = session.isLoggedIn();
 

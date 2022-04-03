@@ -26,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 
 public class MyPostedJobsActivity extends AppCompatActivity {
 
@@ -36,12 +38,14 @@ public class MyPostedJobsActivity extends AppCompatActivity {
     private List<Job> jobList;
     private Button returnHomebtn;
     HashMap<String, String> jobItem = new HashMap<>();
+    DAO dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_posted_jobs);
 
+        dao = new JobDAOAdapter(new JobDAO());
 
         jobList = new ArrayList<>();
         userEmail = grabEmail();
@@ -63,8 +67,7 @@ public class MyPostedJobsActivity extends AppCompatActivity {
      * Gets all the jobs from the db that match the user
      */
     protected void getJobs() {
-        JobDAO jobDAO = new JobDAO();
-        DatabaseReference jobRef = jobDAO.getDatabaseReference();
+        DatabaseReference jobRef = dao.getDatabaseReference();
 
         jobRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -139,7 +142,7 @@ public class MyPostedJobsActivity extends AppCompatActivity {
 
     private String grabEmail() {
 
-        SessionManager session = new SessionManager(MyPostedJobsActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(MyPostedJobsActivity.this);
 
         boolean isLoggedIn = session.isLoggedIn();
 

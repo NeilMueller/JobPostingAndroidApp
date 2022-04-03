@@ -26,15 +26,12 @@
         <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_preference.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/activity_signup.xml" value="0.17831813576494426" />
         <entry key="..\:/Users/User/AndroidStudioProjects/csci-3130-group-16/app/src/main/res/layout/my_job_list_item.xml" value="0.2821557971014493" />
-        <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_applicant_info.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_applied_jobs.xml" value="0.31476449275362317" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_available_jobs.xml" value="0.33695652173913043" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_employee_home.xml" value="0.18642350557244175" />
-        <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_employee_job_listing.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_employer_home.xml" value="0.18819655521783182" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_employer_job_listing.xml" value="0.33695652173913043" />
-        <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_feedback.xml" value="0.1" />
-        <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_job_ad.xml" value="0.22" />
+        <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_job_ad.xml" value="0.1" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_job_form.xml" value="0.27445652173913043" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_login.xml" value="0.22" />
         <entry key="..\:/Users/adamj/Documents/DALHOUSIE/Course Work/08 Winter 2022/CSCI 3130 Software Engineering/Group Project/csci-3130-group-16/app/src/main/res/layout/activity_main.xml" value="0.5" />
@@ -57,6 +54,8 @@
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_my_posted_jobs.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_pay_pal_payment.xml" value="0.17135416666666667" />
+        <entry key="app/src/main/res/layout/activity_paypal_payment.xml" value="0.17135416666666667" />
         <entry key="app/src/main/res/layout/activity_signup.xml" value="0.5091853463261048" />
         <entry key="app/src/main/res/layout/content_job_form.xml" value="0.19384057971014493" />
         <entry key="app/src/main/res/layout/fragment_first.xml" value="0.19384057971014493" />
@@ -64,9 +63,6 @@
         <entry key="app/src/main/res/layout/my_job_list_item.xml" value="0.15070921985815602" />
       </map>
     </option>
-  </component>
-  <component name="JavadocGenerationManager">
-    <option name="OUTPUT_DIRECTORY" value="$USER_HOME$/Desktop" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />

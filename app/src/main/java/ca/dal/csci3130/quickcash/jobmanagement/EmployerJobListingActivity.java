@@ -1,8 +1,5 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,21 +11,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
-import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.User;
-import ca.dal.csci3130.quickcash.jobmanagement.FeedbackActivity;
 
 public class EmployerJobListingActivity extends AppCompatActivity {
 
@@ -42,7 +40,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
     private TextView status;
     private Button paymentBtn;
     private Button rateEmployeeBtn;
-    private ArrayList<String> applicants;
+    private List<String> applicants;
     private ListView applicantListView;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,21 +68,12 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
         fillFields();
 
-        paymentBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closeJobStatus();
-                moveToPayPalPaymentActivity();
-            }
+        paymentBtn.setOnClickListener(v -> {
+            closeJobStatus();
+            moveToPayPalPaymentActivity();
         });
 
-        rateEmployeeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToFeedbackActivity();
-            }
-        });
-
+        rateEmployeeBtn.setOnClickListener(view -> moveToFeedbackActivity());
     }
 
     private void fillFields() {
@@ -130,7 +119,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         });
     }
 
-    public void showApplicants(ArrayList<String> applicants) {
+    public void showApplicants(List<String> applicants) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(EmployerJobListingActivity.this,
                 android.R.layout.simple_list_item_1, applicants);
         applicantListView.setAdapter(adapter);
