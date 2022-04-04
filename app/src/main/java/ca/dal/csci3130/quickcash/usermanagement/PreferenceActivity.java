@@ -1,14 +1,14 @@
 package ca.dal.csci3130.quickcash.usermanagement;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,8 +24,13 @@ import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
 
 public class PreferenceActivity extends AppCompatActivity {
 
-    DAO dao;
+    private DAO dao;
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,23 +50,19 @@ public class PreferenceActivity extends AppCompatActivity {
             Preferences pref = getPreferences();
             String id = grabEmail();
             pref.setUserID(id);
-            if (pref != null){
-                //Update preferences
-                checkAndPush(pref);
-                Intent intent = new Intent(PreferenceActivity.this, EmployeeHomeActivity.class);
-                startActivity(intent);
-            }
+            checkAndPush(pref);
+            Intent intent = new Intent(PreferenceActivity.this, EmployeeHomeActivity.class);
+            startActivity(intent);
         });
     }
 
 
     /**
      * Gets all preference data from the UI
+     *
      * @return PreferenceObject
      */
-
-    private Preferences getPreferences(){
-
+    private Preferences getPreferences() {
         //Grab data
         String jobType = ((EditText) findViewById(R.id.editTextJobType)).getText().toString();
         String payRateS = ((EditText) findViewById(R.id.editTextPayRate)).getText().toString();
@@ -70,22 +71,22 @@ public class PreferenceActivity extends AppCompatActivity {
         double payRate;
         double duration;
 
-        if(isEmpty(jobType, payRateS, durationS)){
-            //Default payrate is 0
-            if (payRateS.isEmpty()){
+        if (isEmpty(jobType, payRateS, durationS)) {
+            //Default pay rate is 0
+            if (payRateS.isEmpty()) {
                 payRate = 0;
             } else {
-                payRate = Double.valueOf(payRateS);
+                payRate = Double.parseDouble(payRateS);
             }
             //Default duration is 100
-            if (durationS.isEmpty()){
+            if (durationS.isEmpty()) {
                 duration = 100;
             } else {
-                duration = Double.valueOf(durationS);
+                duration = Double.parseDouble(durationS);
             }
         } else {
-            payRate = Double.valueOf(payRateS);
-            duration = Double.valueOf(durationS);
+            payRate = Double.parseDouble(payRateS);
+            duration = Double.parseDouble(durationS);
         }
 
         return new Preferences(jobType, payRate, duration);
@@ -100,9 +101,7 @@ public class PreferenceActivity extends AppCompatActivity {
      * @param duration
      * @return
      */
-
-    private boolean isEmpty(String jobType, String payRate, String duration){
-
+    private boolean isEmpty(String jobType, String payRate, String duration) {
         boolean anyFieldsEmpty = jobType.isEmpty() || payRate.isEmpty() || duration.isEmpty();
 
         if (anyFieldsEmpty) {
@@ -113,14 +112,18 @@ public class PreferenceActivity extends AppCompatActivity {
         return false;
     }
 
-    private void checkAndPush(Preferences newPreferences){
-
+    /**
+     * Update/Add preferences of the user.
+     *
+     * @param newPreferences
+     */
+    private void checkAndPush(Preferences newPreferences) {
         DatabaseReference dataBase = dao.getDatabaseReference();
         dataBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean newPreference = true;
-                for (DataSnapshot postSnapshot : snapshot.getChildren()){
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     Preferences preferences = postSnapshot.getValue(Preferences.class);
                     String userID = newPreferences.getUserID();
                     if (preferences != null && preferences.getUserID().equals(userID)) {
@@ -149,33 +152,42 @@ public class PreferenceActivity extends AppCompatActivity {
         });
     }
 
-    protected void addPreferences(PreferenceInterface preferences){
+    /**
+     * Push preferences to db
+     *
+     * @param preferences
+     */
+    protected void addPreferences(PreferenceInterface preferences) {
         dao.add(preferences);
     }
 
     /**
      * Returns the email of the user signed in
+     *
      * @return
      */
-
     private String grabEmail() {
-
         SessionManagerInterface session = SessionManager.getSessionManager(PreferenceActivity.this);
-
         boolean isLoggedIn = session.isLoggedIn();
 
-        if (isLoggedIn){
-            return  session.getKeyEmail();
+        if (isLoggedIn) {
+            return session.getKeyEmail();
         }
         return null;
     }
 
-
-
-    protected void createToast(int messageId){
+    /**
+     * Create a toast
+     *
+     * @param messageId
+     */
+    protected void createToast(int messageId) {
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Move to Employee Home
+     */
     private void moveToEmployeeHomeActivity() {
         Intent intent = new Intent(PreferenceActivity.this, EmployeeHomeActivity.class);
         startActivity(intent);

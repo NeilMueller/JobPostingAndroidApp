@@ -7,14 +7,16 @@ public class SessionManager implements SessionManagerInterface {
 
     static final String SHARE_PREF_NAME = "session";
     private static SessionManager sessionManager;
-    SharedPreferences.Editor editor;
     private final SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
+    // private constructor
     private SessionManager(Context context) {
         pref = context.getSharedPreferences(SHARE_PREF_NAME, Context.MODE_PRIVATE);
         editor = pref.edit();
     }
 
+    // Singleton
     public static SessionManagerInterface getSessionManager(Context context) {
         if (sessionManager == null) {
             sessionManager = new SessionManager(context);
@@ -28,11 +30,6 @@ public class SessionManager implements SessionManagerInterface {
         editor.putString("password", password).commit();
         editor.putString("name", name).commit();
         editor.putBoolean("isEmployee", isEmployee).commit();
-    }
-
-    @Override
-    public void checkLogin() {
-        // for interface implementation only. Not in use.
     }
 
     @Override

@@ -1,8 +1,5 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +7,9 @@ import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,12 +25,12 @@ import ca.dal.csci3130.quickcash.R;
 
 public class ApplicantInfoActivity extends AppCompatActivity {
 
+    private String empEmail;
+    private String jobID;
+    private String finalJobID;
+    private String finalEmpEmail;
+    private double rating;
     private String empName;
-    String empEmail;
-    String jobID;
-    String finalJobID;
-    String finalEmpEmail;
-    double rating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class ApplicantInfoActivity extends AppCompatActivity {
                         jobUpdate.put("selectedApplicant", finalEmpEmail);
                         jobUpdate.put("applicants", new ArrayList<>());
                         jobRef.updateChildren(jobUpdate);
-                        Toast.makeText(getApplicationContext(), "Candidate accepted", Toast.LENGTH_LONG).show();
+                        createToast(R.string.candidate_accepted);
                         moveToJobListing();
                     }
                 }
@@ -92,9 +92,18 @@ public class ApplicantInfoActivity extends AppCompatActivity {
         ratingRatingBar.setRating((float) rating);
     }
 
-    private void moveToJobListing(){
-        Intent intent = new Intent(getApplicationContext(), EmployerJobListingActivity.class);
+    private void moveToJobListing() {
+        Intent intent = new Intent(this, EmployerJobListingActivity.class);
         intent.putExtra("JobID", jobID);
         startActivity(intent);
+    }
+
+    /**
+     * method to create Toast message upon error
+     *
+     * @param messageId
+     */
+    protected void createToast(int messageId) {
+        Toast.makeText(this, getString(messageId), Toast.LENGTH_LONG).show();
     }
 }

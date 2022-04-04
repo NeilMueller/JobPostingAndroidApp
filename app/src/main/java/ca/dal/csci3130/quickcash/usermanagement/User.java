@@ -3,6 +3,9 @@ package ca.dal.csci3130.quickcash.usermanagement;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * User Object to save a user's details
+ */
 public class User implements UserInterface {
 
     private String firstName;
@@ -15,6 +18,7 @@ public class User implements UserInterface {
     private int numberOfRatings;
     private List<String> appliedJobs;
 
+    // constructor
     public User(String firstName, String lastName, String email, String phone, String password,
                 boolean isEmployee) {
         this.firstName = firstName;
@@ -28,8 +32,11 @@ public class User implements UserInterface {
         this.numberOfRatings = 0;
     }
 
+    // empty constructor
     public User() {
     }
+
+    // getters and setters for all data points
 
     @Override
     public String getFirstName() {
@@ -92,7 +99,7 @@ public class User implements UserInterface {
     }
 
     @Override
-    public List<String> getAppliedJobs(){
+    public List<String> getAppliedJobs() {
         return appliedJobs == null ? new ArrayList<>() : appliedJobs;
     }
 

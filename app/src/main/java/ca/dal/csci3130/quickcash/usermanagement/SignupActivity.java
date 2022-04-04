@@ -3,8 +3,6 @@ package ca.dal.csci3130.quickcash.usermanagement;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -30,6 +28,11 @@ public class SignupActivity extends AppCompatActivity {
 
     private DAO dao;
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +43,7 @@ public class SignupActivity extends AppCompatActivity {
         //Existing user Redirect hyperlink
         TextView loginRedirect = (TextView) findViewById(R.id.existingUserRedirect);
         loginRedirect.setOnClickListener(view -> {
-            Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
+            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
             startActivity(intent);
         });
 
@@ -51,7 +54,7 @@ public class SignupActivity extends AppCompatActivity {
             User newUser = getUserData();
             if (newUser != null) {
                 checkAndPush(newUser); // push to DB if data is valid
-                Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
+                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
@@ -68,10 +71,11 @@ public class SignupActivity extends AppCompatActivity {
 
     /**
      * method to create Toast message upon error
+     *
      * @param messageId
      */
 
-    protected void createToast(int messageId){
+    protected void createToast(int messageId) {
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
     }
 
@@ -111,7 +115,6 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         return null;
-
     }
 
 
@@ -212,7 +215,7 @@ public class SignupActivity extends AppCompatActivity {
     private void checkAndPush(User newUser) {
         DatabaseReference dataBase = dao.getDatabaseReference();
 
-        dataBase.addListenerForSingleValueEvent( new ValueEventListener() {
+        dataBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean newAccount = true;
@@ -251,35 +254,31 @@ public class SignupActivity extends AppCompatActivity {
         // ET5: encrypt user password here
         StringBuilder result = new StringBuilder("");
         int key = 3;
-        for(int x = 0; x< password.length(); x++){
+        for (int x = 0; x < password.length(); x++) {
             char letter = password.charAt(x);
-            if(Character.isLowerCase(letter)){
-                char newLetter = (char)(letter+key);
+            if (Character.isLowerCase(letter)) {
+                char newLetter = (char) (letter + key);
 
-                if(newLetter > 'z'){
-                    result.append((char)(letter -(26-key)));
-
-                }
-                else{
-                    result.append(newLetter);
-                }
-            }
-            else if(Character.isUpperCase(letter)){
-                char newLetter = (char)(letter+key);
-
-                if(newLetter > 'Z'){
+                if (newLetter > 'z') {
                     result.append((char) (letter - (26 - key)));
 
-                }else{
+                } else {
                     result.append(newLetter);
                 }
-            }
-            else{
+            } else if (Character.isUpperCase(letter)) {
+                char newLetter = (char) (letter + key);
+
+                if (newLetter > 'Z') {
+                    result.append((char) (letter - (26 - key)));
+
+                } else {
+                    result.append(newLetter);
+                }
+            } else {
                 result.append(letter);
             }
 
         }
         return String.valueOf(result);
     }
-
 }

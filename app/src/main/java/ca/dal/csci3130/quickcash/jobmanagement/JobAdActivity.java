@@ -30,7 +30,7 @@ import ca.dal.csci3130.quickcash.usermanagement.UserInterface;
 
 public class JobAdActivity extends AppCompatActivity {
 
-    String jobID;
+    private String jobID;
     private DAO dao;
     private DAO dao1;
     private TextView jobTitle;
@@ -48,6 +48,11 @@ public class JobAdActivity extends AppCompatActivity {
         // empty constructor
     }
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +82,10 @@ public class JobAdActivity extends AppCompatActivity {
         apply.setOnClickListener(v -> applyJob());
     }
 
-    private void findJob(){
+    /**
+     * Find the requested job and fill UI with its details
+     */
+    private void findJob() {
         // query the database and find the job by its ID
         DatabaseReference ref = dao.getDatabaseReference();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -85,7 +93,7 @@ public class JobAdActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     Job newJob = snapshot1.getValue(Job.class);
-                    if(newJob != null && newJob.getJobID().matches(jobID)) {
+                    if (newJob != null && newJob.getJobID().matches(jobID)) {
                         jobTitle.setText(newJob.getJobTitle());
                         jobDesc.setText(newJob.getDescription());
                         jobType.setText(newJob.getJobType());
@@ -95,7 +103,7 @@ public class JobAdActivity extends AppCompatActivity {
 
                         if (!newJob.acceptingApplications()) {
                             String buttonText = "SELECTED";
-                            if(!newJob.getSelectedApplicant().equals(userEmail)){
+                            if (!newJob.getSelectedApplicant().equals(userEmail)) {
                                 buttonText = "ANOTHER CANDIDATE SELECTED";
                             }
                             apply.setText(buttonText);
@@ -112,14 +120,17 @@ public class JobAdActivity extends AppCompatActivity {
         });
     }
 
-    protected void displayRating () {
+    /**
+     * Display the ratings of the user
+     */
+    protected void displayRating() {
         DatabaseReference ref = dao1.getDatabaseReference();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
-                    if (user != null && employerID.equals(user.getEmail())){
+                    if (user != null && employerID.equals(user.getEmail())) {
                         ratingTV.setText("" + String.format("%.2f", user.getRating()) + "/5");
 
                     }
@@ -133,7 +144,10 @@ public class JobAdActivity extends AppCompatActivity {
         });
     }
 
-    private void applyJob(){
+    /**
+     * Apply for this job
+     */
+    private void applyJob() {
         DatabaseReference ref1 = dao.getDatabaseReference();
         ref1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -144,8 +158,7 @@ public class JobAdActivity extends AppCompatActivity {
                         List<String> applicants = newJob.getApplicants();
                         if (applicants.contains(userEmail)) {
                             createToast(R.string.already_applied);
-                        }
-                        else {
+                        } else {
                             DatabaseReference newJobPref = snapshot1.getRef();
                             applicants.add(userEmail);
                             Map<String, Object> newJobUpdate = new HashMap<>();
@@ -165,7 +178,12 @@ public class JobAdActivity extends AppCompatActivity {
         });
     }
 
-    private void addToAppliedList(String jobIDToAdd){
+    /**
+     * Add to the user's applied jobs list after the user has applied for the job
+     *
+     * @param jobIDToAdd
+     */
+    private void addToAppliedList(String jobIDToAdd) {
         DatabaseReference databaseReference = dao1.getDatabaseReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -173,7 +191,7 @@ public class JobAdActivity extends AppCompatActivity {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
-                    if(user != null && userEmail.equals(user.getEmail())){
+                    if (user != null && userEmail.equals(user.getEmail())) {
                         DatabaseReference userRef = dataSnapshot.getRef();
                         Map<String, Object> userUpdate = new HashMap<>();
                         List<String> ids = user.getAppliedJobs() == null ? new ArrayList<>() : user.getAppliedJobs();
@@ -194,25 +212,26 @@ public class JobAdActivity extends AppCompatActivity {
 
     /**
      * Returns the email of the user signed in
+     *
      * @return
      */
-    private String grabEmail(){
+    private String grabEmail() {
         SessionManagerInterface session = SessionManager.getSessionManager(JobAdActivity.this);
 
         boolean isLoggedIn = session.isLoggedIn();
 
-        if(isLoggedIn)
+        if (isLoggedIn)
             return session.getKeyEmail();
 
-       return null;
+        return null;
     }
 
     /**
      * method to create Toast message upon error
+     *
      * @param messageId
      */
-    protected void createToast(int messageId){
+    protected void createToast(int messageId) {
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
     }
-
 }

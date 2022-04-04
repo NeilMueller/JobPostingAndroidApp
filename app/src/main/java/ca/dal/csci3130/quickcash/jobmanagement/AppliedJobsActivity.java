@@ -1,14 +1,14 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,13 +33,18 @@ import ca.dal.csci3130.quickcash.usermanagement.UserInterface;
 
 public class AppliedJobsActivity extends AppCompatActivity {
 
+    private final HashMap<String, String> jobItem = new HashMap<>();
+    private DAO dao;
+    private DAO dao1;
     private String userEmail;
     private List<String> jobIDs;
     private List<Job> jobList;
-    HashMap<String, String> jobItem = new HashMap<>();
-    DAO dao;
-    DAO dao1;
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +63,9 @@ public class AppliedJobsActivity extends AppCompatActivity {
         homePageButton.setOnClickListener(view -> moveToEmployeeHome());
     }
 
+    /**
+     * Gets the job ids that the user has applied to
+     */
     protected void getJobIDs() {
         DatabaseReference databaseReference = dao.getDatabaseReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -65,7 +73,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
-                    if(user != null && userEmail.equals(user.getEmail())){
+                    if (user != null && userEmail.equals(user.getEmail())) {
                         List<String> ids = user.getAppliedJobs();
                         jobIDs.addAll(ids);
                     }
@@ -81,7 +89,10 @@ public class AppliedJobsActivity extends AppCompatActivity {
         });
     }
 
-    private void getJobs(){
+    /**
+     * Gets the jobs that the user has applied to
+     */
+    private void getJobs() {
         DatabaseReference jobRef = dao1.getDatabaseReference();
         jobRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -89,11 +100,10 @@ public class AppliedJobsActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
                     // get jobs and add them to a global list
-                    if(job != null && jobIDs.contains(job.getJobID())) {
-                        if(job.acceptingApplications() || job.getSelectedApplicant().equals(userEmail)){
+                    if (job != null && jobIDs.contains(job.getJobID())) {
+                        if (job.acceptingApplications() || job.getSelectedApplicant().equals(userEmail)) {
                             jobList.add(job);
-                        }
-                        else {
+                        } else {
                             //job accepted someone and it should be removed from our job list
                             removeJob(job.getJobID());
                         }
@@ -111,20 +121,23 @@ public class AppliedJobsActivity extends AppCompatActivity {
     }
 
 
-    private void fillList(){
+    /**
+     * Fills the UI List of applied jobs
+     */
+    private void fillList() {
 
-        if(jobList.isEmpty()){
-            jobItem.put("No Jobs Applied To","");
+        if (jobList.isEmpty()) {
+            jobItem.put("No Jobs Applied To", "");
         }
 
-        for(JobInterface job : jobList) {
+        for (JobInterface job : jobList) {
             jobItem.put(job.getJobTitle(), job.getListedInfo());
         }
 
         ListView myJobListView = (ListView) findViewById(R.id.lv_applied_jobs);
 
         List<HashMap<String, String>> listItems = new ArrayList<>();
-        SimpleAdapter adapter = new SimpleAdapter(this, listItems,R.layout.my_job_list_item,
+        SimpleAdapter adapter = new SimpleAdapter(this, listItems, R.layout.my_job_list_item,
                 new String[]{"First Line", "Second Line"},
                 new int[]{R.id.tv_job_title, R.id.tv_job_info});
 
@@ -141,7 +154,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
         });
 
         Iterator<Map.Entry<String, String>> it = jobItem.entrySet().iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             HashMap<String, String> resultsMap = new HashMap<>();
             Map.Entry<String, String> pair = it.next();
             resultsMap.put("First Line", pair.getKey());
@@ -152,7 +165,12 @@ public class AppliedJobsActivity extends AppCompatActivity {
         myJobListView.setAdapter(adapter);
     }
 
-    private void removeJob(String jobIDtoRemove){
+    /**
+     * Remove the jobs that the user has applied to but was not selected
+     *
+     * @param jobIDtoRemove
+     */
+    private void removeJob(String jobIDtoRemove) {
         DatabaseReference databaseReference = dao.getDatabaseReference();
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -160,7 +178,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
-                    if(user != null && userEmail.equals(user.getEmail())){
+                    if (user != null && userEmail.equals(user.getEmail())) {
                         DatabaseReference userRef = dataSnapshot.getRef();
                         Map<String, Object> userUpdate = new HashMap<>();
                         List<String> ids = user.getAppliedJobs();
@@ -181,22 +199,23 @@ public class AppliedJobsActivity extends AppCompatActivity {
 
     /**
      * Returns the email of the user signed in
-     * @return
+     *
+     * @return userEmail
      */
-
     private String grabEmail() {
-
         SessionManagerInterface session = SessionManager.getSessionManager(AppliedJobsActivity.this);
-
         boolean isLoggedIn = session.isLoggedIn();
 
-        if (isLoggedIn){
-            return  session.getKeyEmail();
+        if (isLoggedIn) {
+            return session.getKeyEmail();
         }
         return null;
     }
 
-    private void moveToEmployeeHome(){
+    /**
+     * Move to Employee Home
+     */
+    private void moveToEmployeeHome() {
         Intent intent = new Intent(AppliedJobsActivity.this, EmployeeHomeActivity.class);
         startActivity(intent);
     }

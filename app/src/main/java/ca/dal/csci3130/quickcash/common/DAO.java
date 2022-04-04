@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseReference;
  */
 public class DAO {
     /**
-     * Get db reference
+     * Get database reference
      *
      * @return DatabaseReference
      */
@@ -17,7 +17,7 @@ public class DAO {
     }
 
     /**
-     * push object to db
+     * push object to database
      *
      * @param obj
      */

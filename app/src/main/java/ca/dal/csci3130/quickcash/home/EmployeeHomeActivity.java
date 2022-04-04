@@ -29,7 +29,7 @@ import ca.dal.csci3130.quickcash.usermanagement.UserDAOAdapter;
 
 public class EmployeeHomeActivity extends AppCompatActivity {
 
-    DAO dao;
+    private DAO dao;
     private TextView ratingTV;
     private TextView numOfRater;
     private SessionManagerInterface sessionManager;
@@ -108,7 +108,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
      * Deletes session and opens login screen
      */
     public void logout() {
-        SessionManagerInterface session = SessionManager.getSessionManager(EmployeeHomeActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(this);
         session.logoutUser();
 
         moveToLoginActivity();
@@ -118,7 +118,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
      * moves to LoginActivity
      */
     private void moveToLoginActivity() {
-        Intent intent = new Intent(EmployeeHomeActivity.this, LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -127,7 +127,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
      * moves to AvailableJobsActivity
      */
     private void moveToAvailableJobsActivity() {
-        Intent intent = new Intent(EmployeeHomeActivity.this, AvailableJobsActivity.class);
+        Intent intent = new Intent(this, AvailableJobsActivity.class);
         startActivity(intent);
     }
 
@@ -135,7 +135,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
      * moves to PreferenceActivity
      */
     private void moveToPreferenceActivity() {
-        Intent intent = new Intent(EmployeeHomeActivity.this, PreferenceActivity.class);
+        Intent intent = new Intent(this, PreferenceActivity.class);
         startActivity(intent);
     }
 
@@ -143,7 +143,7 @@ public class EmployeeHomeActivity extends AppCompatActivity {
      * moves to AppliedJobsActivity
      */
     private void moveToAppliedJobsActivity() {
-        Intent intent = new Intent(EmployeeHomeActivity.this, AppliedJobsActivity.class);
+        Intent intent = new Intent(this, AppliedJobsActivity.class);
         startActivity(intent);
     }
 }

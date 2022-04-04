@@ -1,17 +1,15 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,57 +20,57 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.home.EmployeeHomeActivity;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
-import ca.dal.csci3130.quickcash.usermanagement.PreferenceActivity;
 import ca.dal.csci3130.quickcash.usermanagement.User;
 import ca.dal.csci3130.quickcash.usermanagement.UserDAO;
+import ca.dal.csci3130.quickcash.usermanagement.UserDAOAdapter;
 
 public class FeedbackActivity extends AppCompatActivity {
 
-    Button ratingBtn;
-    TextView userID;
-    RatingBar ratingBar;
+    private TextView userID;
+    private float myRating;
+    private DAO dao;
 
-    float myRating;
-
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
 
-        ratingBtn = findViewById(R.id.ratingBtn);
-        ratingBar = findViewById(R.id.ratingBar);
+        dao = new UserDAOAdapter(new UserDAO());
+
+        Button ratingBtn = findViewById(R.id.ratingBtn);
+        RatingBar ratingBar = findViewById(R.id.ratingBar);
         userID = findViewById(R.id.tv_rate_user_ID);
         myRating = 0;
 
         Bundle extras = getIntent().getExtras();
-        if(extras != null) {
+        if (extras != null) {
             userID.setText(extras.getString("userID").trim());
         }
 
-
-        ratingBar.setOnRatingBarChangeListener((ratingBar, v, b) -> myRating = ratingBar.getRating());
+        ratingBar.setOnRatingBarChangeListener((r, v, b) -> myRating = r.getRating());
         ratingBtn.setOnClickListener(view -> rateUser());
-
     }
 
     /**
-     * Gets all the jobs from the db that match the user
+     * Rate the user
      */
     protected void rateUser() {
-        UserDAO userDAO = new UserDAO();
-        DatabaseReference userRef = userDAO.getDatabaseReference();
+        DatabaseReference userRef = dao.getDatabaseReference();
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-
                     User user = dataSnapshot.getValue(User.class);
-
-                    if(user.getEmail().equals(userID.getText())){
-
+                    if (user != null && user.getEmail().equals(userID.getText())) {
                         boolean raterIsEmployer = user.getIsEmployee();
 
                         //Get new rating
@@ -93,16 +91,13 @@ public class FeedbackActivity extends AppCompatActivity {
                         createToast(R.string.toast_rating_applied);
 
                         //move to correct homepage
-                        if(raterIsEmployer){
+                        if (raterIsEmployer) {
                             moveToEmployerHomeActivity();
                         } else {
                             moveToEmployeeHomeActivity();
                         }
                     }
-
                 }
-
-
             }
 
             @Override
@@ -112,17 +107,28 @@ public class FeedbackActivity extends AppCompatActivity {
         });
     }
 
-    protected void createToast(int messageID){
-        Toast.makeText(getApplicationContext(), getString(messageID), Toast.LENGTH_LONG).show();
+    /**
+     * Create a toast
+     *
+     * @param messageID
+     */
+    protected void createToast(int messageID) {
+        Toast.makeText(this, getString(messageID), Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Move to Employee Home
+     */
     private void moveToEmployeeHomeActivity() {
-        Intent intent = new Intent(FeedbackActivity.this, EmployeeHomeActivity.class);
+        Intent intent = new Intent(this, EmployeeHomeActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Move to Employer Home
+     */
     private void moveToEmployerHomeActivity() {
-        Intent intent = new Intent(FeedbackActivity.this, EmployerHomeActivity.class);
+        Intent intent = new Intent(this, EmployerHomeActivity.class);
         startActivity(intent);
     }
 }

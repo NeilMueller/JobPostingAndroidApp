@@ -1,5 +1,8 @@
 package ca.dal.csci3130.quickcash.usermanagement;
 
+/**
+ * Preference Object to save a user's preferences
+ */
 public class Preferences implements PreferenceInterface {
 
     private String userID;
@@ -7,13 +10,18 @@ public class Preferences implements PreferenceInterface {
     private double payRate;
     private double duration;
 
+    // constructor
     public Preferences(String jobType, double payRate, double duration) {
         this.jobType = jobType;
         this.payRate = payRate;
         this.duration = duration;
     }
 
-    public Preferences(){}
+    // empty constructor
+    public Preferences() {
+    }
+
+    // getters and setters for all data points
 
     @Override
     public String getUserID() {

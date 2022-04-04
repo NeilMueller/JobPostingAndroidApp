@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Job implements JobInterface{
+/**
+ * Job Object to save a job with all its details
+ */
+public class Job implements JobInterface {
 
     private String jobTitle;
     private String jobType;
@@ -21,6 +24,7 @@ public class Job implements JobInterface{
     private String selectedApplicant;
     private boolean jobStatusOpen;
 
+    // constructor
     public Job(Map<String, String> jobData,
                int jobDuration,
                double payRate,
@@ -40,8 +44,11 @@ public class Job implements JobInterface{
         this.jobStatusOpen = true;
     }
 
-    public Job(){
+    // Empty Constructor
+    public Job() {
     }
+
+    // getters and setters for all data points
 
     @Override
     public String getJobTitle() {
@@ -104,7 +111,7 @@ public class Job implements JobInterface{
     }
 
     @Override
-    public double getLatitude(){
+    public double getLatitude() {
         return this.latitude;
     }
 
@@ -154,13 +161,17 @@ public class Job implements JobInterface{
     }
 
     @Override
-    public boolean getJobStatusOpen() { return this.jobStatusOpen; }
+    public boolean getJobStatusOpen() {
+        return this.jobStatusOpen;
+    }
 
     @Override
-    public void setJobStatusOpen(boolean jobStatusOpen) { this.jobStatusOpen = jobStatusOpen; }
+    public void setJobStatusOpen(boolean jobStatusOpen) {
+        this.jobStatusOpen = jobStatusOpen;
+    }
 
     @Override
-    public String getListedInfo(){
+    public String getListedInfo() {
         String info = "Job Type: " + jobType;
         info = info + "\nDuration: " + jobDuration + " hrs";
         info = info + "\nPayrate: " + payRate + " $";
@@ -169,6 +180,7 @@ public class Job implements JobInterface{
         return info;
     }
 
+    @Override
     public boolean acceptingApplications() {
         return selectedApplicant == null || selectedApplicant.isEmpty();
     }

@@ -34,13 +34,17 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Checks if user is logged in
      */
-
     @Override
     protected void onStart() {
         super.onStart();
         checkSession();
     }
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * checks the credentials and redirects to the respective home page
+     *
      * @param loginDetails
      */
     protected void checkCredentialsAndLogin(String[] loginDetails) {
@@ -93,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                 boolean loggedIn = false;
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     UserInterface user = dataSnapshot.getValue(User.class);
-                    if(checkCredentials(loginDetails, user)){
+                    if (checkCredentials(loginDetails, user)) {
                         // create session and redirect to home page
                         loggedIn = true;
                         createToast(R.string.toast_login_successful);
@@ -155,14 +160,15 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Returns true or false based on whether credentials are valid or not
+     *
      * @param loginDetails
      * @param user
      * @return true or false
      */
-    protected boolean checkCredentials(String[] loginDetails, UserInterface user){
+    protected boolean checkCredentials(String[] loginDetails, UserInterface user) {
         if (user != null && user.getEmail().equalsIgnoreCase(loginDetails[0])) {
             String decryptedPassword = decryptUserPassword(user.getPassword()); //test
-            if(decryptedPassword.equals(loginDetails[1]))
+            if (decryptedPassword.equals(loginDetails[1]))
                 return true;
         }
 
@@ -175,9 +181,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param password
      * @return decryptedPassword
      */
-    //Decrypt
-    protected String decryptUserPassword(String password){
-
+    protected String decryptUserPassword(String password) {
         StringBuilder result = new StringBuilder("");
         int key = 3; // can make key variable in the future
         for (int x = 0; x < password.length(); x++) {
@@ -229,7 +233,6 @@ public class LoginActivity extends AppCompatActivity {
      * Shift to the Employee home page
      */
     private void moveToEmployeePage() {
-
         Intent intentEmployee = new Intent(LoginActivity.this, EmployeeHomeActivity.class);
         intentEmployee.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentEmployee);
@@ -237,11 +240,8 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Shift to the Employer home page
-     *
-     *
      */
     private void moveToEmployerPage() {
-
         Intent intentEmployer = new Intent(LoginActivity.this, EmployerHomeActivity.class);
         intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -249,13 +249,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Checks if session already exists and moves user to home page session exists
      */
     private void checkSession() {
         SessionManagerInterface session = SessionManager.getSessionManager(LoginActivity.this);
-
         boolean isLoggedIn = session.isLoggedIn();
 
         if (isLoggedIn) {
@@ -267,6 +265,4 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }

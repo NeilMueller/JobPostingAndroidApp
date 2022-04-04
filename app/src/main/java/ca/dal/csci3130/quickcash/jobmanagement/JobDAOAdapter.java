@@ -5,9 +5,12 @@ import com.google.firebase.database.DatabaseReference;
 
 import ca.dal.csci3130.quickcash.common.DAO;
 
+/**
+ * Provides the functionalities of a JobDAO to an abstract DAO
+ */
 public class JobDAOAdapter extends DAO {
 
-    private JobDAO jobDAO;
+    private final JobDAO jobDAO;
 
     public JobDAOAdapter(JobDAO jobDAO){
         this.jobDAO = jobDAO;

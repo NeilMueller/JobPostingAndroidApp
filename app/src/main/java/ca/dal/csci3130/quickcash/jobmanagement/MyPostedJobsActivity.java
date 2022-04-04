@@ -1,16 +1,14 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import static android.text.TextUtils.split;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,12 +29,16 @@ import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 
 public class MyPostedJobsActivity extends AppCompatActivity {
 
-
     private String userEmail;
     private List<Job> jobList;
-    HashMap<String, String> jobItem = new HashMap<>();
-    DAO dao;
+    private HashMap<String, String> jobItem = new HashMap<>();
+    private DAO dao;
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,13 +49,10 @@ public class MyPostedJobsActivity extends AppCompatActivity {
         jobList = new ArrayList<>();
         userEmail = grabEmail();
 
-        Button returnHomebtn = findViewById(R.id.btnReturnEmployerHome);
-
         getJobs();
 
-
-        returnHomebtn.setOnClickListener(view -> moveToEmployerHomePage());
-
+        Button returnHomeBtn = findViewById(R.id.btnReturnEmployerHome);
+        returnHomeBtn.setOnClickListener(view -> moveToEmployerHomePage());
     }
 
 
@@ -69,7 +68,7 @@ public class MyPostedJobsActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
                     // get jobs and add them to a global list
-                    if(userEmail.equals(job.getEmployerID())) {
+                    if (userEmail.equals(job.getEmployerID())) {
                         jobList.add(job);
                     }
                 }
@@ -84,20 +83,23 @@ public class MyPostedJobsActivity extends AppCompatActivity {
         });
     }
 
-    private void fillList(){
+    /**
+     * Fill the jobs in the UI.
+     */
+    private void fillList() {
 
-        if(jobList.isEmpty()){
-            jobItem.put("No Posted Jobs","");
+        if (jobList.isEmpty()) {
+            jobItem.put("No Posted Jobs", "");
         }
 
-        for(JobInterface job : jobList) {
+        for (JobInterface job : jobList) {
             jobItem.put(job.getJobTitle(), job.getListedInfo());
         }
 
         ListView myJobListView = (ListView) findViewById(R.id.myJobsListView);
 
         List<HashMap<String, String>> listItems = new ArrayList<>();
-        SimpleAdapter adapter = new SimpleAdapter(this, listItems,R.layout.my_job_list_item,
+        SimpleAdapter adapter = new SimpleAdapter(this, listItems, R.layout.my_job_list_item,
                 new String[]{"First Line", "Second Line"},
                 new int[]{R.id.tv_job_title, R.id.tv_job_info});
 
@@ -114,7 +116,7 @@ public class MyPostedJobsActivity extends AppCompatActivity {
         });
 
         Iterator<Map.Entry<String, String>> it = jobItem.entrySet().iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             HashMap<String, String> resultsMap = new HashMap<>();
             Map.Entry<String, String> pair = it.next();
             resultsMap.put("First Line", pair.getKey());
@@ -127,25 +129,25 @@ public class MyPostedJobsActivity extends AppCompatActivity {
 
     /**
      * Returns the email of the user signed in
-     * @return
+     *
+     * @return userEmail
      */
-
     private String grabEmail() {
-
         SessionManagerInterface session = SessionManager.getSessionManager(MyPostedJobsActivity.this);
-
         boolean isLoggedIn = session.isLoggedIn();
 
-        if (isLoggedIn){
-            return  session.getKeyEmail();
+        if (isLoggedIn) {
+            return session.getKeyEmail();
         }
         return null;
     }
 
+    /**
+     * Move to EmployerHome
+     */
     private void moveToEmployerHomePage() {
         Intent intent = new Intent(getApplicationContext(), EmployerHomeActivity.class);
         startActivity(intent);
     }
-
 }
 

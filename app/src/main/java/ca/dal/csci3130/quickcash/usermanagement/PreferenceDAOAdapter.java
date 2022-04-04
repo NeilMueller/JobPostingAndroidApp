@@ -5,11 +5,14 @@ import com.google.firebase.database.DatabaseReference;
 
 import ca.dal.csci3130.quickcash.common.DAO;
 
+/**
+ * Provides the functionalities of a PreferenceDAO to an abstract DAO
+ */
 public class PreferenceDAOAdapter extends DAO {
 
-    private PreferenceDAO preferenceDAO;
+    private final PreferenceDAO preferenceDAO;
 
-    public PreferenceDAOAdapter(PreferenceDAO preferenceDAO){
+    public PreferenceDAOAdapter(PreferenceDAO preferenceDAO) {
         this.preferenceDAO = preferenceDAO;
     }
 
@@ -19,8 +22,8 @@ public class PreferenceDAOAdapter extends DAO {
     }
 
     @Override
-    public Task<Void> add(Object obj){
-        if(obj instanceof PreferenceInterface){
+    public Task<Void> add(Object obj) {
+        if (obj instanceof PreferenceInterface) {
             return preferenceDAO.addPreference((Preferences) obj);
         }
         return null;

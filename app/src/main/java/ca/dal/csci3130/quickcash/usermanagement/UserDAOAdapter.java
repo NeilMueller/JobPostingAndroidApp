@@ -5,9 +5,12 @@ import com.google.firebase.database.DatabaseReference;
 
 import ca.dal.csci3130.quickcash.common.DAO;
 
+/**
+ * Provides the functionalities of a UserDAO to an abstract DAO
+ */
 public class UserDAOAdapter extends DAO {
 
-    private UserDAO userDAO;
+    private final UserDAO userDAO;
 
     public UserDAOAdapter(UserDAO userDAO){
         this.userDAO = userDAO;

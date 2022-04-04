@@ -44,16 +44,21 @@ import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 
 public class AvailableJobsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final Integer REQUEST_CODE = 123;
+    private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private final ArrayList<Marker> mJobMarkers = new ArrayList<>();
     private DAO dao;
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
     private List<Job> jobList;
     private FusedLocationProviderClient fusedLocationClient;
-    private static final Integer REQUEST_CODE = 123;
-    private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     private LatLng userLocation;
-    private final ArrayList<Marker> mJobMarkers = new ArrayList<>();
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +76,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
 
         Button returnHome = findViewById(R.id.btn_returnHome_employee);
         returnHome.setOnClickListener(view -> {
-            Intent intent = new Intent(AvailableJobsActivity.this, EmployeeHomeActivity.class);
+            Intent intent = new Intent(this, EmployeeHomeActivity.class);
             startActivity(intent);
         });
 
@@ -102,7 +107,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
                     // get jobs and add them to a global list
-                    if(job != null && job.acceptingApplications()){
+                    if (job != null && job.acceptingApplications()) {
                         jobList.add(job);
                     }
                 }
@@ -119,7 +124,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
     }
 
     /**
-     * Gets all the jobs from the db
+     * Gets all filtered jobs
      */
     protected void getFilteredJobs(String jobType, String payRateS, String durationS) {
         jobList.clear();
@@ -135,22 +140,16 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Job job = dataSnapshot.getValue(Job.class);
-                    if(job != null) {
+                    if (job != null) {
                         boolean jobInPref = payRate < job.getPayRate() && duration > job.getDuration() && job.acceptingApplications();
                         // if job type was specified, check whether its equal or not. If not, then just check the other prefs.
-                        if(jobInPref && (!jobTypeSpecified || jobType.equalsIgnoreCase(job.getJobType()))){
+                        if (jobInPref && (!jobTypeSpecified || jobType.equalsIgnoreCase(job.getJobType()))) {
                             jobList.add(job);
                         }
                     }
                 }
 
-                if(jobList.isEmpty()){
-                    createToast(R.string.no_job_found);
-                }
-                else {
-                    createToast(R.string.job_found);
-                }
-
+                checkIfFilterHasAnyMatchingJobs();
                 // start loading the map
                 loadMap();
             }
@@ -162,14 +161,23 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         });
     }
 
+    private void checkIfFilterHasAnyMatchingJobs(){
+        if (jobList.isEmpty()) {
+            createToast(R.string.no_job_found);
+        } else {
+            createToast(R.string.job_found);
+        }
+    }
+
     /**
      * Remove all markers
      */
-    private void removeMarkers(){
-        for (Marker marker : mJobMarkers){
+    private void removeMarkers() {
+        for (Marker marker : mJobMarkers) {
             marker.remove();
         }
     }
+
     /**
      * Checks/Asks for location permissions and starts map load
      */
@@ -210,6 +218,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
 
     /**
      * Invoked when map is ready
+     *
      * @param googleMap
      */
     @Override
@@ -241,14 +250,13 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
     }
 
     /**
-     * @deprecated
-     * Check out registerForActivityResult()
-     * Link: https://developer.android.com/reference/androidx/fragment/app/Fragment
-     *
-     * This method is called when the user accepts or denies the asked permissions
      * @param requestCode
      * @param permissions
      * @param grantResults
+     * @deprecated Check out registerForActivityResult()
+     * Link: https://developer.android.com/reference/androidx/fragment/app/Fragment
+     * <p>
+     * This method is called when the user accepts or denies the asked permissions
      */
     @Override
     @Deprecated
@@ -262,7 +270,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
                 getCurrentLocationAndStartMap();
             } else {
                 // if not move forward and start the map with a default location
-                Toast.makeText(AvailableJobsActivity.this, "Permission denied by user !!!", Toast.LENGTH_SHORT).show();
+                createToast(R.string.permission_denied);
                 mapFragment.getMapAsync(AvailableJobsActivity.this);
             }
         }
@@ -271,8 +279,8 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
     /**
      * add pins to the map and create links from pins to clickable ads
      */
-    protected void addJobPinsToMap(){
-        for(JobInterface job : jobList){
+    protected void addJobPinsToMap() {
+        for (JobInterface job : jobList) {
             // add pin
             LatLng pin = new LatLng(job.getLatitude(), job.getLongitude());
 
@@ -289,7 +297,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
     /**
      * Imports filter settings into edit text
      */
-    private void importPref(){
+    private void importPref() {
         EditText jobTypeEdit = (EditText) findViewById(R.id.editTextSearchJobType);
         EditText payRateEdit = (EditText) findViewById(R.id.editTextSearchPayRate);
         EditText durationEdit = (EditText) findViewById(R.id.editTextSearchDuration);
@@ -301,9 +309,9 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean noPref = true;
-                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     PreferenceInterface preferenceItem = dataSnapshot.getValue(Preferences.class);
-                    if(preferenceItem != null && checkID(preferenceItem)){
+                    if (preferenceItem != null && checkID(preferenceItem)) {
                         jobTypeEdit.setText(preferenceItem.getJobType());
                         payRateEdit.setText(String.valueOf(preferenceItem.getPayRate()));
                         durationEdit.setText(String.valueOf(preferenceItem.getDuration()));
@@ -312,7 +320,7 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
                     }
                 }
                 //if no preferences found
-                if(noPref){
+                if (noPref) {
                     createToast(R.string.toast_no_preference_found);
                 }
             }
@@ -324,9 +332,15 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
         });
     }
 
-    private boolean checkID(PreferenceInterface preference){
+    /**
+     * Checks whether the id of a preferences is equal to the current user's email
+     *
+     * @param preference
+     * @return true/false
+     */
+    private boolean checkID(PreferenceInterface preference) {
         String id = grabEmail();
-        if(id == null){
+        if (id == null) {
             return false;
         }
         return id.equals(preference.getUserID());
@@ -334,44 +348,42 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
 
     /**
      * Returns the email of the user signed in
-     * @return
+     *
+     * @return userEmail
      */
-
     private String grabEmail() {
-
         SessionManagerInterface session = SessionManager.getSessionManager(this);
-
         boolean isLoggedIn = session.isLoggedIn();
 
-        if (isLoggedIn){
-            return  session.getKeyEmail();
+        if (isLoggedIn) {
+            return session.getKeyEmail();
         }
         return null;
     }
 
     /**
-     * returns text in jobtype
+     * Gets JobType
+     * return jobType
      */
-
-    private String grabJobType(){
+    private String grabJobType() {
         EditText jobTypeEdit = (EditText) findViewById(R.id.editTextSearchJobType);
         return jobTypeEdit.getText().toString();
     }
 
     /**
-     * returns text in payRate
+     * Gets Pay rate
+     * return payRate
      */
-
-    private String grabPayRate(){
+    private String grabPayRate() {
         EditText payRateEdit = (EditText) findViewById(R.id.editTextSearchPayRate);
         return payRateEdit.getText().toString();
     }
 
     /**
-     * returns text in duration
+     * Gets Duration
+     * return duration
      */
-
-    private String grabDuration(){
+    private String grabDuration() {
         EditText durationEdit = (EditText) findViewById(R.id.editTextSearchDuration);
         return durationEdit.getText().toString();
     }
@@ -382,6 +394,6 @@ public class AvailableJobsActivity extends FragmentActivity implements OnMapRead
      * @param messageId
      */
     protected void createToast(int messageId) {
-        Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(messageId), Toast.LENGTH_LONG).show();
     }
 }

@@ -28,7 +28,7 @@ import ca.dal.csci3130.quickcash.usermanagement.UserDAOAdapter;
 
 public class EmployerHomeActivity extends AppCompatActivity {
 
-    DAO dao;
+    private DAO dao;
     private TextView ratingTV;
     private TextView numOfRater;
     private SessionManagerInterface sessionManager;
@@ -51,7 +51,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employer_home);
 
-        sessionManager = SessionManager.getSessionManager(getApplicationContext());
+        sessionManager = SessionManager.getSessionManager(this);
 
         Button jobFormButton = findViewById(R.id.job_Form);
         Button logoutButton = findViewById(R.id.btn_logout_employer);
@@ -106,7 +106,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
      * Logout the user and move to login
      */
     public void logout() {
-        SessionManagerInterface session = SessionManager.getSessionManager(EmployerHomeActivity.this);
+        SessionManagerInterface session = SessionManager.getSessionManager(this);
         session.logoutUser();
 
         moveToLoginActivity();
@@ -116,7 +116,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
      * move to LoginActivity
      */
     private void moveToLoginActivity() {
-        Intent intent = new Intent(EmployerHomeActivity.this, LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -125,7 +125,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
      * move to JobFormActivity
      */
     private void moveToJobFormActivity() {
-        Intent intent = new Intent(getApplicationContext(), JobFormActivity.class);
+        Intent intent = new Intent(this, JobFormActivity.class);
         startActivity(intent);
     }
 
@@ -133,7 +133,7 @@ public class EmployerHomeActivity extends AppCompatActivity {
      * move to MyPostedJobsActivity
      */
     private void moveToMyJobsActivity() {
-        Intent intent = new Intent(getApplicationContext(), MyPostedJobsActivity.class);
+        Intent intent = new Intent(this, MyPostedJobsActivity.class);
         startActivity(intent);
     }
 }

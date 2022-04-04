@@ -2,11 +2,7 @@ package ca.dal.csci3130.quickcash;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.se.omapi.Session;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,13 +15,20 @@ import ca.dal.csci3130.quickcash.usermanagement.SignupActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * Called at the very start to check if a user is already logged in
+     */
     @Override
     protected void onStart() {
         super.onStart();
-
         checkSession();
     }
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +52,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Checks if session already exists and moves user to home page session exists
      */
-
     private void checkSession() {
         SessionManagerInterface session = SessionManager.getSessionManager(getApplicationContext());
-
         boolean isLoggedIn = session.isLoggedIn();
 
         if (isLoggedIn) {
@@ -65,19 +66,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Move to employee home page
+     */
     private void moveToEmployeePage() {
-
         Intent intentEmployee = new Intent(MainActivity.this, EmployeeHomeActivity.class);
         intentEmployee.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentEmployee);
-
     }
 
+    /**
+     * Move to employer home page
+     */
     private void moveToEmployerPage() {
-
         Intent intentEmployer = new Intent(MainActivity.this, EmployerHomeActivity.class);
         intentEmployer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intentEmployer);
-
     }
 }

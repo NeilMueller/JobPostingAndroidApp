@@ -6,11 +6,13 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import ca.dal.csci3130.quickcash.common.Constants;
 
+/**
+ * JobDAO used by JobDAOAdapter
+ */
 public class JobDAO {
     private final DatabaseReference databaseReference;
 
     public JobDAO() {
-        // FIREBASE_URL needs to be updated
         FirebaseDatabase db = FirebaseDatabase.getInstance(Constants.FIREBASE_URL);
         this.databaseReference = db.getReference(Job.class.getSimpleName());
     }
