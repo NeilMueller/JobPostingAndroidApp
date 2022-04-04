@@ -76,7 +76,6 @@ public class JobAdActivity extends AppCompatActivity {
         }
 
         findJob();
-        displayRating();
 
         apply = (Button) findViewById(R.id.apply);
         apply.setOnClickListener(v -> applyJob());
@@ -110,6 +109,8 @@ public class JobAdActivity extends AppCompatActivity {
                             apply.setEnabled(false);
                         }
                     }
+
+                    displayRating();
                 }
             }
 

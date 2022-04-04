@@ -51,9 +51,7 @@
             android:id="@+id/editTextSearchJobType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="96dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="105dp"
             android:layout_marginBottom="10dp"
             android:ems="10"
             android:hint="Job Type"
@@ -67,8 +65,6 @@
             android:id="@+id/editTextSearchPayRate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="96dp"
-            android:layout_marginEnd="105dp"
             android:layout_marginBottom="10dp"
             android:ems="10"
             android:hint="Minumum Pay ($/hr)"
@@ -78,22 +74,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextSearchJobType" />
 
+
         <EditText
             android:id="@+id/editTextSearchDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="96dp"
-            android:layout_marginEnd="105dp"
             android:layout_marginBottom="10dp"
             android:ems="10"
             android:hint="Maximum Duration (hrs)"
             android:inputType="number"
             app:layout_constraintBottom_toTopOf="@+id/buttonApplyFilter"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextSearchPayRate" />
-
 
         <Button
             android:id="@+id/buttonApplyFilter"
