@@ -66,7 +66,7 @@
         android:text="Applied Jobs"
         app:layout_constraintBottom_toTopOf="@+id/btn_logout_employee"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonToPref"
         app:layout_constraintVertical_bias="0.0" />
