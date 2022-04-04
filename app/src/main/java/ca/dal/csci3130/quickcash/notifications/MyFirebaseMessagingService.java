@@ -16,11 +16,22 @@ import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
+    /**
+     * Using FirebaseMessagingService which needs this method to observer token changes
+     *
+     * @param token
+     */
     @Override
-    public void onNewToken(@NonNull String token) {
+    public void onNewToken(@NonNull String token) { //NOSONAR
+        // Sonar excluded - reason: need this method to fulfill requirements of the notification service.
         super.onNewToken(token);
     }
 
+    /**
+     * Sends notification to people who have matching preferences
+     *
+     * @param message
+     */
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
@@ -44,7 +55,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("body", body);
         intent.putExtra("jobId", jobId);
         intent.putExtra("jobLocation", jobLocation);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 10, intent,  PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 10, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
 
         // Create a notification that will be displayed in the notification tray.
         NotificationCompat.Builder notificationBuilder =

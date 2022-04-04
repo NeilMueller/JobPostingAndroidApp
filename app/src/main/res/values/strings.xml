@@ -31,6 +31,16 @@
     <string name="movie">Movie</string>
     <string name="applied">Applied</string>
     <string name="toast_rating_applied">Rating Applied</string>
+    <string name="candidate_accepted">Candidate Accepted</string>
+    <string name="application_in_progress">Application In Progress</string>
+    <string name="selected">Selected</string>
+    <string name="another_candidate_selected">Another Candidate Selected</string>
+    <string name="closed">Closed</string>
+    <string name="job_completed">Job Completed and Closed</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="open">Open</string>
+    <string name="candidate_selected">Candidate Selected</string>
+    <string name="job_closed_payment_done">Payment Complete, Closing Job.</string>
 
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>

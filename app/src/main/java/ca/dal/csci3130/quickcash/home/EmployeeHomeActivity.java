@@ -2,8 +2,7 @@ package ca.dal.csci3130.quickcash.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.se.omapi.Session;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -17,41 +16,52 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import ca.dal.csci3130.quickcash.R;
-import ca.dal.csci3130.quickcash.common.AbstractDAO;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.jobmanagement.AppliedJobsActivity;
 import ca.dal.csci3130.quickcash.jobmanagement.AvailableJobsActivity;
-import ca.dal.csci3130.quickcash.jobmanagement.FeedbackDAO;
-import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.LoginActivity;
 import ca.dal.csci3130.quickcash.usermanagement.PreferenceActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 import ca.dal.csci3130.quickcash.usermanagement.User;
 import ca.dal.csci3130.quickcash.usermanagement.UserDAO;
+import ca.dal.csci3130.quickcash.usermanagement.UserDAOAdapter;
 
 public class EmployeeHomeActivity extends AppCompatActivity {
 
-    private Button availableJobs;
-    private Button preferencesButton;
-    private Button appliedJobsButton;
+    private DAO dao;
     private TextView ratingTV;
     private TextView numOfRater;
+    private SessionManagerInterface sessionManager;
 
+    /**
+     * Do nothing when pressed back from here to preserve login
+     */
     @Override
-    //Prevent user from using back button once logged in
-    public void onBackPressed () {
+    public void onBackPressed() {
+        //Prevent user from using back button once logged in
     }
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_home);
-        availableJobs = findViewById(R.id.btn_seeAvailableJobs);
-        preferencesButton = findViewById(R.id.buttonToPref);
-        appliedJobsButton = findViewById(R.id.btn_Applied_Jobs);
+
+        sessionManager = SessionManager.getSessionManager(getApplicationContext());
+
+        Button availableJobs = findViewById(R.id.btn_seeAvailableJobs);
+        Button preferencesButton = findViewById(R.id.buttonToPref);
+        Button appliedJobsButton = findViewById(R.id.btn_Applied_Jobs);
+        Button logoutButton = findViewById(R.id.btn_logout_employee);
         ratingTV = findViewById(R.id.ratingTV);
         numOfRater = findViewById(R.id.numOfRaterTV);
+        dao = new UserDAOAdapter(new UserDAO());
 
-        SessionManager sessionManager = new SessionManager(getApplicationContext());
         //Gets the name from the session
         String fullName = sessionManager.getKeyName();
         FirebaseMessaging.getInstance().subscribeToTopic("jobs");
@@ -62,90 +72,78 @@ public class EmployeeHomeActivity extends AppCompatActivity {
         TextView welcomeMessage = (TextView) findViewById(R.id.welcomeEmployee);
         welcomeMessage.setText(String.format("Welcome Employee, %s", fullName));
 
-        availableJobs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToAvailableJobsActivity();
-            }
-        });
-
-        preferencesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToPreferenceActivity();
-            }
-        });
-
-        appliedJobsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToAppliedJobsActivity();
-            }
-        });
-
-
+        logoutButton.setOnClickListener(view -> logout());
+        availableJobs.setOnClickListener(view -> moveToAvailableJobsActivity());
+        preferencesButton.setOnClickListener(view -> moveToPreferenceActivity());
+        appliedJobsButton.setOnClickListener(view -> moveToAppliedJobsActivity());
     }
 
-    protected void displayRating () {
+    /**
+     * Displays rating by getting it from the db
+     */
+    protected void displayRating() {
+        String email = sessionManager.getKeyEmail();
 
-
-        SessionManager sessionManager1 = new SessionManager(getApplicationContext());
-        String email = sessionManager1.getKeyEmail();
-
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User");
-        AbstractDAO userDAO = new UserDAO();
-        DatabaseReference ref = userDAO.getDatabaseReference();
+        DatabaseReference ref = dao.getDatabaseReference();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     User user = dataSnapshot.getValue(User.class);
-                    if (user != null && email.equals(user.getEmail())){
-                        ratingTV.setText("" + String.format("%.2f", user.getRating()) + "/5");
-                        numOfRater.setText("" + user.getNumberOfRatings());
+                    if (user != null && email.equals(user.getEmail())) {
+                        ratingTV.setText(String.format("%.2f", user.getRating()) + "/5");
+                        numOfRater.setText(String.valueOf(user.getNumberOfRatings()));
                     }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - displayRating (EmployeeHome):", error.getMessage());
             }
         });
     }
 
     /**
      * Deletes session and opens login screen
-     *
-     * @param view
      */
-
-    public void logout(View view) {
-        SessionManager session = new SessionManager(EmployeeHomeActivity.this);
+    public void logout() {
+        SessionManagerInterface session = SessionManager.getSessionManager(this);
         session.logoutUser();
 
         moveToLoginActivity();
     }
 
+    /**
+     * moves to LoginActivity
+     */
     private void moveToLoginActivity() {
-        Intent intent = new Intent(EmployeeHomeActivity.this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
+    /**
+     * moves to AvailableJobsActivity
+     */
     private void moveToAvailableJobsActivity() {
-        Intent intent = new Intent(EmployeeHomeActivity.this, AvailableJobsActivity.class);
+        Intent intent = new Intent(this, AvailableJobsActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * moves to PreferenceActivity
+     */
     private void moveToPreferenceActivity() {
-        Intent intent = new Intent(EmployeeHomeActivity.this, PreferenceActivity.class);
+        Intent intent = new Intent(this, PreferenceActivity.class);
         startActivity(intent);
     }
 
-    private void moveToAppliedJobsActivity(){
-        Intent intent = new Intent(EmployeeHomeActivity.this, AppliedJobsActivity.class);
+    /**
+     * moves to AppliedJobsActivity
+     */
+    private void moveToAppliedJobsActivity() {
+        Intent intent = new Intent(this, AppliedJobsActivity.class);
         startActivity(intent);
     }
-
 }

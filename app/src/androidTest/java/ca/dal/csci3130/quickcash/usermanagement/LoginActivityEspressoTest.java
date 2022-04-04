@@ -54,7 +54,10 @@ public class LoginActivityEspressoTest {
 
     @Before
     public void setup() throws InterruptedException {
-        Thread.sleep(1000);
+        // used if device takes time or takes time processing
+        // Note: Turn of animations in your test device for an optimal test run
+        // Link: https://lifehacker.com/disable-animations-on-android-to-improve-performance-1583554900
+        //Thread.sleep(1000);
         Intents.init();
 
         userObjectKey = databaseReference.push().getKey();
@@ -71,8 +74,10 @@ public class LoginActivityEspressoTest {
         fillFields("testEmployee@dal.ca", "TestEmployee@1");
         onView(withId(R.id.loginButtonCheckInfo)).perform(click());
 
-        // wait for 1 second to reach the employee home
-        Thread.sleep(1000);
+        // used if device takes time or takes time processing
+        // Note: Turn of animations in your test device for an optimal test run
+        // Link: https://lifehacker.com/disable-animations-on-android-to-improve-performance-1583554900
+        //Thread.sleep(1000);
 
         intended(hasComponent(EmployeeHomeActivity.class.getName()));
         onView(withId(R.id.welcomeEmployee)).check(matches(withText("Welcome Employee, Test Employee")));
@@ -107,8 +112,10 @@ public class LoginActivityEspressoTest {
         fillFields("testEmployer@dal.ca", "TestEmployer@1");
         onView(withId(R.id.loginButtonCheckInfo)).perform(click());
 
-        // wait for 1 second to reach the employee home
-        Thread.sleep(1000);
+        // used if device takes time or takes time processing
+        // Note: Turn of animations in your test device for an optimal test run
+        // Link: https://lifehacker.com/disable-animations-on-android-to-improve-performance-1583554900
+        //Thread.sleep(1000);
 
         intended(hasComponent(EmployerHomeActivity.class.getName()));
         onView(withId(R.id.welcomeEmployer)).check(matches(withText("Welcome Employer, Test Employer")));

@@ -2,8 +2,7 @@ package ca.dal.csci3130.quickcash.usermanagement;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Patterns;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -23,36 +22,40 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.regex.Pattern;
 
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.DAO;
 
 public class SignupActivity extends AppCompatActivity {
 
+    private DAO dao;
+
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        dao = new UserDAOAdapter(new UserDAO());
+
         //Existing user Redirect hyperlink
         TextView loginRedirect = (TextView) findViewById(R.id.existingUserRedirect);
-        loginRedirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
-                startActivity(intent);
-            }
+        loginRedirect.setOnClickListener(view -> {
+            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
 
         // logic for signup
         Button signUpButton = (Button) findViewById(R.id.signUpButton);
 
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                User newUser = getUserData();
-                if (newUser != null) {
-                    checkAndPush(newUser); // push to DB if data is valid
-                    Intent intent = new Intent(SignupActivity.this,LoginActivity.class);
-                    startActivity(intent);
-                }
+        signUpButton.setOnClickListener(view -> {
+            User newUser = getUserData();
+            if (newUser != null) {
+                checkAndPush(newUser); // push to DB if data is valid
+                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -63,16 +66,16 @@ public class SignupActivity extends AppCompatActivity {
      * @param user
      */
     protected void addUser(UserInterface user) {
-        UserDAO userDAO = new UserDAO();
-        userDAO.addUser(user);
+        dao.add(user);
     }
 
     /**
      * method to create Toast message upon error
+     *
      * @param messageId
      */
 
-    protected void createToast(int messageId){
+    protected void createToast(int messageId) {
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
     }
 
@@ -99,24 +102,19 @@ public class SignupActivity extends AppCompatActivity {
         boolean isEmployee = ((RadioButton) findViewById(userTypeRadioGroup.getCheckedRadioButtonId()))
                 .getText().toString().equals("Employee");
 
+        boolean validJob = !isEmpty(firstName, lastName, email, phone, password, confirmPassword)
+                && isValidEmail(email)
+                && isPasswordValid(password)
+                && passwordMatcher(confirmPassword, password)
+                && isPhoneValid(phone);
+
         // validate all data
-        if (!isEmpty(firstName, lastName, email, phone, password, confirmPassword)) {
-            if (isValidEmail(email)) {
-                if (isPasswordValid(password)) {
-                    if (passwordMatcher(confirmPassword, password)) {
-                        if (isPhoneValid(phone)) {
-                            password = encryptUserPassword(password);
-                            return new User(firstName, lastName, email, phone, password, isEmployee);
-                        }
-                    }
-                }
-
-            }
-
+        if (validJob) {
+            password = encryptUserPassword(password);
+            return new User(firstName, lastName, email, phone, password, isEmployee);
         }
 
         return null;
-
     }
 
 
@@ -165,7 +163,8 @@ public class SignupActivity extends AppCompatActivity {
      * @return true or false
      */
     protected boolean isPasswordValid(String password) {
-        final String passwordPattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
+        // old pattern: ^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$
+        final String passwordPattern = "^(?=[^A-Z]*+[A-Z])(?=[^a-z]*+[a-z])(?=[^0-9]*+[0-9])(?=[^#?!@$%^&*-]*+[#?!@$%^&*-]).{8,}$"; //NOSONAR
         boolean passwordPatternMatches = Pattern.compile(passwordPattern).matcher(password).matches();
         if (!passwordPatternMatches) {
             createToast(R.string.toast_invalid_password);
@@ -214,10 +213,9 @@ public class SignupActivity extends AppCompatActivity {
      * @param newUser
      */
     private void checkAndPush(User newUser) {
-        UserDAO databaseReference = new UserDAO();
-        DatabaseReference dataBase = databaseReference.getDatabaseReference();
+        DatabaseReference dataBase = dao.getDatabaseReference();
 
-        dataBase.addListenerForSingleValueEvent( new ValueEventListener() {
+        dataBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean newAccount = true;
@@ -239,7 +237,7 @@ public class SignupActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - checkAndPush(SignUp):", error.getMessage());
             }
         });
 
@@ -254,36 +252,33 @@ public class SignupActivity extends AppCompatActivity {
      */
     protected String encryptUserPassword(String password) {
         // ET5: encrypt user password here
-        String result = "";
+        StringBuilder result = new StringBuilder("");
         int key = 3;
-        for(int x = 0; x< password.length(); x++){
+        for (int x = 0; x < password.length(); x++) {
             char letter = password.charAt(x);
-            if(Character.isLowerCase(letter)){
-                char new_letter = (char)(letter+key);
+            if (Character.isLowerCase(letter)) {
+                char newLetter = (char) (letter + key);
 
-                if(new_letter > 'z'){
-                    result+= (char)(letter -(26-key));
+                if (newLetter > 'z') {
+                    result.append((char) (letter - (26 - key)));
 
-                }else{
-                    result += new_letter;}
+                } else {
+                    result.append(newLetter);
+                }
+            } else if (Character.isUpperCase(letter)) {
+                char newLetter = (char) (letter + key);
 
-            }
-            else if(Character.isUpperCase(letter)){
-                char new_letter = (char)(letter+key);
+                if (newLetter > 'Z') {
+                    result.append((char) (letter - (26 - key)));
 
-                if(new_letter > 'Z'){
-                    result+= (char)(letter - (26-key));
-
-                }else{
-                    result += new_letter;}
-
-            }
-            else{
-                result +=letter;
+                } else {
+                    result.append(newLetter);
+                }
+            } else {
+                result.append(letter);
             }
 
         }
-        return result;
+        return String.valueOf(result);
     }
-
 }

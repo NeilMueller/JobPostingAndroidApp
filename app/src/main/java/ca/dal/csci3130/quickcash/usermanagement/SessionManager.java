@@ -5,31 +5,31 @@ import android.content.SharedPreferences;
 
 public class SessionManager implements SessionManagerInterface {
 
-    private static SharedPreferences pref;
+    static final String SHARE_PREF_NAME = "session";
+    private static SessionManager sessionManager;
+    private final SharedPreferences pref;
     SharedPreferences.Editor editor;
-    String SHARE_PREF_NAME = "session";
 
-    public SessionManager(Context context) {
-
+    // private constructor
+    private SessionManager(Context context) {
         pref = context.getSharedPreferences(SHARE_PREF_NAME, Context.MODE_PRIVATE);
         editor = pref.edit();
-
     }
 
+    // Singleton
+    public static SessionManagerInterface getSessionManager(Context context) {
+        if (sessionManager == null) {
+            sessionManager = new SessionManager(context);
+        }
+        return sessionManager;
+    }
 
     @Override
     public void createLoginSession(String email, String password, String name, boolean isEmployee) {
-
         editor.putString("email", email).commit();
         editor.putString("password", password).commit();
         editor.putString("name", name).commit();
         editor.putBoolean("isEmployee", isEmployee).commit();
-
-    }
-
-    @Override
-    public void checkLogin() {
-
     }
 
     @Override
@@ -39,28 +39,21 @@ public class SessionManager implements SessionManagerInterface {
 
     @Override
     public boolean isLoggedIn() {
-        if(getKeyEmail().equals("") || getKeyName().equals("")){
-            return false;
-        }
-
-        return true;
+        return !getKeyEmail().equals("") && !getKeyName().equals("");
     }
 
     @Override
     public String getKeyName() {
-        String name = pref.getString("name","");
-        return name;
+        return pref.getString("name", "");
     }
 
     @Override
     public String getKeyEmail() {
-        String email = pref.getString("email","");
-        return email;
+        return pref.getString("email", "");
     }
 
     @Override
     public boolean getIsEmployee() {
-        boolean isEmployee = pref.getBoolean("isEmployee", false);
-        return isEmployee;
+        return pref.getBoolean("isEmployee", false);
     }
 }

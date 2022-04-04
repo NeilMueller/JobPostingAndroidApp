@@ -3,15 +3,13 @@ package ca.dal.csci3130.quickcash.jobmanagement;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -28,7 +26,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.CancellationTokenSource;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,26 +41,37 @@ import java.util.Random;
 
 import ca.dal.csci3130.quickcash.BuildConfig;
 import ca.dal.csci3130.quickcash.R;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
 import ca.dal.csci3130.quickcash.usermanagement.SessionManager;
+import ca.dal.csci3130.quickcash.usermanagement.SessionManagerInterface;
 
 public class JobFormActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    private static final Integer REQUEST_CODE = 123;
+    private static final String PUSH_NOTIFICATION_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
+    private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private DAO dao;
     private FusedLocationProviderClient fusedLocationClient;
     private SupportMapFragment mapFragment;
-    private static final Integer REQUEST_CODE = 123;
     private LatLng jobLocation;
-    private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-    String employerID;
+    private Random random;
+    private String employerID;
     private RequestQueue requestQueue;
-    private static final String PUSH_NOTIFICATION_ENDPOINT = "https://fcm.googleapis.com/fcm/send";
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestQueue = Volley.newRequestQueue(this);
         setContentView(R.layout.activity_job_form);
+
+        random = new Random();
+        dao = new JobDAOAdapter(new JobDAO());
 
         // Obtain the SupportMapFragment
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -90,11 +98,12 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
     /**
      * This method is called when the map is ready
+     *
      * @param googleMap
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        GoogleMap mMap = googleMap;
 
         // if location was not retrievable for some reason, set to default - Dalhousie University
         LatLng location = jobLocation == null ? new LatLng(44.636585, -63.5938442) : jobLocation;
@@ -107,27 +116,27 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
         // After the map is set up, continue with normal flow
 
         Button postButton = (Button) findViewById(R.id.post);
-        postButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Job newJob = getJobData();
-                if (newJob != null) {
-                    checkAndPushJob(newJob);
-                    Intent intent = new Intent(JobFormActivity.this, EmployerHomeActivity.class);
-                    startActivity(intent);
-                }
+        postButton.setOnClickListener(view -> {
+            Job newJob = getJobData();
+            if (newJob != null) {
+                checkAndPushJob(newJob);
+                Intent intent = new Intent(JobFormActivity.this, EmployerHomeActivity.class);
+                startActivity(intent);
             }
         });
     }
 
     /**
-     * This method is called when the user accepts or denies the asked permissions
      * @param requestCode
      * @param permissions
      * @param grantResults
+     * @deprecated Check out registerForActivityResult()
+     * Link: https://developer.android.com/reference/androidx/fragment/app/Fragment
+     * This method is called when the user accepts or denies the asked permissions
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    @Deprecated
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) { //NOSONAR
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         // if request_code has not changed, the process of asking the permission was successful
@@ -151,22 +160,19 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
      * Checkout the first solution here: https://stackoverflow.com/questions/2279647/how-to-emulate-gps-location-in-the-android-emulator
      */
     protected void getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         //This error is a android studio bug, the permissions are added
         fusedLocationClient
                 .getCurrentLocation(100, cancellationTokenSource.getToken()) // 100 is PRIORITY_HIGH_ACCURACY
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // if location is not null, set it to job location
-                        if (location != null) {
-                            jobLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            // get the map ready
-                            mapFragment.getMapAsync(JobFormActivity.this);
-                        }
+                .addOnSuccessListener(location -> {
+                    // if location is not null, set it to job location
+                    if (location != null) {
+                        jobLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        // get the map ready
+                        mapFragment.getMapAsync(JobFormActivity.this);
                     }
                 });
     }
@@ -174,6 +180,7 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
     /**
      * Gets all the job data from the form and returns a job object or throws appropriate toasts
      * according to the error and returns null
+     *
      * @return Job OR null
      */
     protected Job getJobData() {
@@ -184,12 +191,11 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
         String durationString = ((EditText) findViewById(R.id.Duration)).getText().toString();
         String payRateString = ((EditText) findViewById(R.id.payRate)).getText().toString();
 
-        if(isNumeric(durationString, payRateString)) {
+        if (isNumeric(durationString, payRateString)) {
             int duration = durationString.equals("") ? 0 : Integer.parseInt(durationString);
             double payRate = payRateString.equals("") ? 0 : Double.parseDouble(payRateString);
 
             if (!isEmpty(jobTitle, jobType, jobDescription, duration, payRate)) {
-                Random random = new Random();
                 int num = random.nextInt(999999);
 
                 String numString = String.format("%06d", num);
@@ -197,7 +203,15 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
                 String jobID = jobType.substring(0, 2) + numString + durationString;
 
-                return new Job(jobTitle, jobType, jobDescription, employerID, duration, payRate, jobID, jobLocation.latitude, jobLocation.longitude);
+                Map<String, String> jobData = new HashMap<>();
+                jobData.put("jobTitle", jobTitle);
+                jobData.put("jobType", jobType);
+                jobData.put("jobDescription", jobDescription);
+                jobData.put("jobID", jobID);
+                jobData.put("selectedApplicant", "");
+                jobData.put("employerId", employerID);
+
+                return new Job(jobData, duration, payRate, jobLocation, new ArrayList<>());
             }
         }
 
@@ -206,14 +220,16 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
     /**
      * method to create Toast message upon error
+     *
      * @param messageId
      */
-    protected void createToast(int messageId){
+    protected void createToast(int messageId) {
         Toast.makeText(getApplicationContext(), getString(messageId), Toast.LENGTH_LONG).show();
     }
 
     /**
      * Checks if any of the field are empty
+     *
      * @param jobTitle
      * @param jobType
      * @param jobDescription
@@ -233,22 +249,22 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
     /**
      * checks if duration and pay rate are numeric or not
+     *
      * @param duration
      * @param payRate
      * @return
      */
-    protected boolean isNumeric(String duration, String payRate){
-        try{
-            if(!duration.equals("")) {
+    protected boolean isNumeric(String duration, String payRate) {
+        try {
+            if (!duration.equals("")) {
                 Double.parseDouble(duration);
-                if(!payRate.equals("")){
+                if (!payRate.equals("")) {
                     Double.parseDouble(payRate);
                 }
             }
 
             return true;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             createToast(R.string.duration_pay_rate_numeric);
             return false;
         }
@@ -257,13 +273,13 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
     /**
      * method to validate if the jobID is already in the data base
      * if not in the data base it adds a new job to the data base
+     *
      * @param newJob
      */
     private void checkAndPushJob(Job newJob) {
-        JobDAO databaseReference = new JobDAO();
-        DatabaseReference dataBase = databaseReference.getDatabaseReference();
+        DatabaseReference dataBase = dao.getDatabaseReference();
 
-        dataBase.addListenerForSingleValueEvent( new ValueEventListener() {
+        dataBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean newPosting = true;
@@ -286,48 +302,49 @@ public class JobFormActivity extends FragmentActivity implements OnMapReadyCallb
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                final String errorRead = error.getMessage();
+                Log.d("Database Error - checkAndPushJob(JobForm):", error.getMessage());
             }
         });
     }
 
     /**
      * adds the job to db
+     *
      * @param job
      */
     protected void addJob(JobInterface job) {
-        JobDAO jobDAO = new JobDAO();
-        jobDAO.addJob(job);
+        dao.add(job);
     }
 
     /**
      * Returns the email of the user signed in
+     *
      * @return
      */
-
     private String grabEmail() {
-
-        SessionManager session = new SessionManager(JobFormActivity.this);
-
+        SessionManagerInterface session = SessionManager.getSessionManager(JobFormActivity.this);
         boolean isLoggedIn = session.isLoggedIn();
 
-        if (isLoggedIn){
-            return  session.getKeyEmail();
+        if (isLoggedIn) {
+            return session.getKeyEmail();
         }
         return null;
     }
 
-    //Notification Code
+    /**
+     * Sends the notification for this new job to all those who are subscribed
+     * @param newJob
+     */
     private void sendNotification(Job newJob) {
 
         try {
             final JSONObject notificationJSONBody = new JSONObject();
-            notificationJSONBody.put("title", "New \""+newJob.getJobTitle()+ "\" Job Available!");
-            notificationJSONBody.put("body", "A new "+newJob.getJobType()+ "job was created near you!");
+            notificationJSONBody.put("title", "New \"" + newJob.getJobTitle() + "\" Job Available!");
+            notificationJSONBody.put("body", "A new " + newJob.getJobType() + "job was created near you!");
 
             final JSONObject dataJSONBody = new JSONObject();
-            dataJSONBody.put("jobId", "Job ID: "+newJob.getJobID());
-            dataJSONBody.put("jobLocation", "Location: "+newJob.getLatitude() +","+newJob.getLongitude());
+            dataJSONBody.put("jobId", "Job ID: " + newJob.getJobID());
+            dataJSONBody.put("jobLocation", "Location: " + newJob.getLatitude() + "," + newJob.getLongitude());
 
 
             final JSONObject pushNotificationJSONBody = new JSONObject();

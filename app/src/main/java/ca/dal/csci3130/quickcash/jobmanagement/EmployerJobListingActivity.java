@@ -1,18 +1,15 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,19 +17,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import ca.dal.csci3130.quickcash.R;
-import ca.dal.csci3130.quickcash.home.EmployerHomeActivity;
+import ca.dal.csci3130.quickcash.common.DAO;
 import ca.dal.csci3130.quickcash.paymentmanagement.PayPalPaymentActivity;
 import ca.dal.csci3130.quickcash.usermanagement.User;
-import ca.dal.csci3130.quickcash.jobmanagement.FeedbackActivity;
 
 public class EmployerJobListingActivity extends AppCompatActivity {
 
-    String jobID;
+    private String jobID;
     private TextView jobTitle;
     private TextView jobDesc;
     private TextView jobType;
@@ -42,12 +36,22 @@ public class EmployerJobListingActivity extends AppCompatActivity {
     private TextView status;
     private Button paymentBtn;
     private Button rateEmployeeBtn;
-    private ArrayList<String> applicants;
+    private List<String> applicants;
     private ListView applicantListView;
+    private DAO dao;
+    private double totalPay;
 
+    /**
+     * Called on activity load
+     *
+     * @param savedInstanceState
+     */
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employer_job_listing);
+
+        dao = new JobDAOAdapter(new JobDAO());
 
         jobTitle = findViewById(R.id.jobAdTitle_emp);
         jobDesc = findViewById(R.id.jobAdDescription);
@@ -61,6 +65,7 @@ public class EmployerJobListingActivity extends AppCompatActivity {
         paymentBtn.setEnabled(false);
         rateEmployeeBtn = findViewById(R.id.btn_rate_employee);
         rateEmployeeBtn.setEnabled(false);
+        totalPay = 0;
 
         // Grab job id
         Bundle extras = getIntent().getExtras();
@@ -70,56 +75,45 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
         fillFields();
 
-        paymentBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closeJobStatus();
-                moveToPayPalPaymentActivity();
-            }
-        });
-
-        rateEmployeeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                moveToFeedbackActivity();
-            }
-        });
-
+        paymentBtn.setOnClickListener(v -> moveToPayPalPaymentActivity());
+        rateEmployeeBtn.setOnClickListener(view -> moveToFeedbackActivity());
     }
 
+    /**
+     * Get the requested job from db and fill fields in the UI
+     */
     private void fillFields() {
         // query the database and find the job by its ID
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
+        DatabaseReference ref = dao.getDatabaseReference();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     Job newJob = snapshot1.getValue(Job.class);
                     if (newJob != null && newJob.getJobID().matches(jobID)) {
-                        jobTitle.setText("" + newJob.getJobTitle());
-                        jobDesc.setText("" + newJob.getDescription());
-                        jobType.setText("" + newJob.getJobType());
-                        jobDuration.setText("" + newJob.getDuration());
-                        jobPayRate.setText("" + newJob.getPayRate());
-                        candidate.setText("" + newJob.getSelectedApplicant());
+                        jobTitle.setText(newJob.getJobTitle());
+                        jobDesc.setText(newJob.getDescription());
+                        jobType.setText(newJob.getJobType());
+                        jobDuration.setText(String.valueOf(newJob.getDuration()));
+                        jobPayRate.setText(String.valueOf(newJob.getPayRate()));
+                        candidate.setText(newJob.getSelectedApplicant());
                         applicants = newJob.getApplicants();
+                        totalPay = newJob.getPayRate() * newJob.getDuration();
                         showApplicants(applicants);
-                        //Set JobStatus Filed
-                        if (newJob.getJobStatusOpen()) {
-                            status.setText("Open");
+
+                        if (newJob.acceptingApplications()) {
+                            status.setText(R.string.open);
                             rateEmployeeBtn.setEnabled(false);
-                        } else {
-                            status.setText("CLOSED");
-                            rateEmployeeBtn.setEnabled(true);
-                        }
-                        //Enable/Disable Payment Button
-                        if(newJob.getSelectedApplicant().contains("@")) {
-                            paymentBtn.setEnabled(true);
-                            rateEmployeeBtn.setEnabled(true);
-                        }
-                        if(!newJob.getJobStatusOpen()) {
                             paymentBtn.setEnabled(false);
-                            rateEmployeeBtn.setEnabled(false);
+                        } else {
+                            status.setText(R.string.candidate_selected);
+                            paymentBtn.setEnabled(true);
+                        }
+
+                        if (!newJob.getJobStatusOpen()) {
+                            status.setText(R.string.closed);
+                            rateEmployeeBtn.setEnabled(true);
+                            paymentBtn.setEnabled(false);
                         }
                     }
                 }
@@ -127,52 +121,59 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - fillFields (EmployerJobListingActivity)", error.getMessage());
             }
         });
     }
 
-    public void showApplicants(ArrayList<String> applicants) {
+    /**
+     * Show Applicants in the UI
+     *
+     * @param applicants
+     */
+    public void showApplicants(List<String> applicants) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(EmployerJobListingActivity.this,
                 android.R.layout.simple_list_item_1, applicants);
         applicantListView.setAdapter(adapter);
         makeApplicantsClickable(adapter);
     }
 
-    public void makeApplicantsClickable(ArrayAdapter adapter) {
-        applicantListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // after the employer clicks on the applicant, take them to an activity showing
-                // info about the applicant, with a button showing to accept them for the job
+    /**
+     * Clicking on applicants should open their profile - rating and email
+     *
+     * @param adapter
+     */
+    public void makeApplicantsClickable(ArrayAdapter<String> adapter) {
+        applicantListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            // after the employer clicks on the applicant, take them to an activity showing
+            // info about the applicant, with a button showing to accept them for the job
 
-                // first, find the user by their email.
-                String userEmail = adapter.getItem(i).toString().trim();
-//                Toast.makeText(getApplicationContext(), userEmail, Toast.LENGTH_LONG).show();
-                showApplicantInfo(userEmail);
-//                String employeeName = user.getFirstName() + " " + user.getLastName();
-
-            }
+            // first, find the user by their email.
+            String userEmail = adapter.getItem(i).trim();
+            showApplicantInfo(userEmail);
         });
     }
 
+    /**
+     * Get the applicant's details from the database
+     *
+     * @param userEmail
+     */
     public void showApplicantInfo(String userEmail) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User");
-        final User[] user = {null};
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot snapshot1 : snapshot.getChildren()) {
-                    user[0] = snapshot1.getValue(User.class);
-                    if(user[0] != null && user[0].getEmail().matches(userEmail)) {
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                    User user = snapshot1.getValue(User.class);
+                    if (user != null && user.getEmail().matches(userEmail)) {
                         // after we have found the user, start the applicant info intent
-                        String employeeName = user[0].getFirstName() + " " + user[0].getLastName();
-                        Intent intent = new Intent(getApplicationContext(),
-                                ApplicantInfoActivity.class);
+                        String employeeName = user.getFirstName() + " " + user.getLastName();
+                        Intent intent = new Intent(EmployerJobListingActivity.this, ApplicantInfoActivity.class);
                         intent.putExtra("EmpName", employeeName);
-                        intent.putExtra("EmpEmail", user[0].getEmail());
+                        intent.putExtra("EmpEmail", user.getEmail());
                         intent.putExtra("JobID", jobID);
-                        intent.putExtra("Rating", user[0].getRating());
+                        intent.putExtra("Rating", user.getRating());
                         startActivity(intent);
                     }
                 }
@@ -180,41 +181,26 @@ public class EmployerJobListingActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - showApplicantInfo (EmployerJobListingActivity)", error.getMessage());
             }
         });
     }
 
+    /**
+     * Move to paypal activity
+     */
     private void moveToPayPalPaymentActivity() {
         Intent intent = new Intent(EmployerJobListingActivity.this, PayPalPaymentActivity.class);
+        intent.putExtra("jobId", jobID);
+        if(totalPay != 0){
+            intent.putExtra("totalPay", totalPay);
+        }
         startActivity(intent);
     }
 
-    private void closeJobStatus() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Job");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                    Job newJob = snapshot1.getValue(Job.class);
-                    if (newJob != null && newJob.getJobID().matches(jobID)) {
-                        DatabaseReference jobRef = snapshot1.getRef();
-                        Map<String, Object> jobUpdate = new HashMap<>();
-                        jobUpdate.put("jobStatusOpen", false);
-                        jobRef.updateChildren(jobUpdate);
-                        Toast.makeText(getApplicationContext(), "Job Closed, Moving to Payment",
-                                Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
+    /**
+     * Move to Feedback Activity
+     */
     private void moveToFeedbackActivity() {
         Intent intent = new Intent(EmployerJobListingActivity.this, FeedbackActivity.class);
         intent.putExtra("userID", candidate.getText().toString());

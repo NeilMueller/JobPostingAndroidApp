@@ -6,24 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".usermanagement.PreferenceActivity">
 
-    <EditText
-        android:id="@+id/editTextPayRate"
+    <TextView
+        android:id="@+id/updatePreferenceHeading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Update Preferences"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
+
+    <EditText
+        android:id="@+id/editTextPayRate"
+        android:layout_width="269dp"
+        android:layout_height="50dp"
         android:layout_marginStart="101dp"
         android:layout_marginEnd="102dp"
         android:ems="10"
-        android:hint="Pay Rate ($/hr)"
+        android:hint="Minimum Pay Rate ($/hr)"
         android:inputType="numberDecimal"
         app:layout_constraintBottom_toTopOf="@+id/editTextDuration"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextJobType" />
 
     <EditText
         android:id="@+id/editTextJobType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="272dp"
+        android:layout_height="46dp"
         android:layout_marginStart="101dp"
         android:layout_marginTop="100dp"
         android:layout_marginEnd="101dp"
@@ -39,16 +53,16 @@
 
     <EditText
         android:id="@+id/editTextDuration"
-        android:layout_width="214dp"
-        android:layout_height="43dp"
+        android:layout_width="271dp"
+        android:layout_height="51dp"
         android:layout_marginStart="101dp"
         android:layout_marginEnd="102dp"
         android:ems="10"
-        android:hint="Duration (hours)"
+        android:hint="Maximum Duration (hours)"
         android:inputType="number"
         app:layout_constraintBottom_toTopOf="@+id/buttonUpdatePref"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextPayRate"
         app:layout_constraintVertical_bias="0.701" />

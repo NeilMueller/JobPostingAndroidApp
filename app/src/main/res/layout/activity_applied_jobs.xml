@@ -24,15 +24,15 @@
 
     <ListView
         android:id="@+id/lv_applied_jobs"
-        android:layout_width="370dp"
-        android:layout_height="544dp"
+        android:layout_width="375dp"
+        android:layout_height="519dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="34dp"
         android:layout_marginEnd="21dp"
         android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/btn_Employee_Home"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />

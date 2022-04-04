@@ -1,15 +1,15 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,12 +25,12 @@ import ca.dal.csci3130.quickcash.R;
 
 public class ApplicantInfoActivity extends AppCompatActivity {
 
+    private String empEmail;
+    private String jobID;
+    private String finalJobID;
+    private String finalEmpEmail;
+    private double rating;
     private String empName;
-    String empEmail;
-    String JobID;
-    String finalJobID;
-    String finalEmpEmail;
-    double rating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +43,10 @@ public class ApplicantInfoActivity extends AppCompatActivity {
 
         // when we accept an applicant, the applicant should appear as the jobs "selected applicant"
         // and the job should not accept any more applications
-        finalJobID = JobID.trim();
+        finalJobID = jobID.trim();
         finalEmpEmail = empEmail;
 
-        acceptApplicantButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                acceptCandidate();
-            }
-        });
+        acceptApplicantButton.setOnClickListener(view -> acceptCandidate());
     }
 
     private void acceptCandidate() {
@@ -65,12 +60,9 @@ public class ApplicantInfoActivity extends AppCompatActivity {
                         DatabaseReference jobRef = snapshot1.getRef();
                         Map<String, Object> jobUpdate = new HashMap<>();
                         jobUpdate.put("selectedApplicant", finalEmpEmail);
-                        ArrayList<String> emptyArrayList = new ArrayList<>();
-                        emptyArrayList.add("");
-                        jobUpdate.put("applicants", emptyArrayList);
+                        jobUpdate.put("applicants", new ArrayList<>());
                         jobRef.updateChildren(jobUpdate);
-                        Toast.makeText(getApplicationContext(), "Candidate accepted",
-                                Toast.LENGTH_LONG).show();
+                        createToast(R.string.candidate_accepted);
                         moveToJobListing();
                     }
                 }
@@ -78,7 +70,7 @@ public class ApplicantInfoActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.d("Database Error - acceptCandidate (ApplicantInfo):", error.getMessage());
             }
         });
     }
@@ -92,7 +84,7 @@ public class ApplicantInfoActivity extends AppCompatActivity {
         if (extras != null) {
             empName = extras.getString("EmpName");
             empEmail = extras.getString("EmpEmail");
-            JobID = extras.getString("JobID");
+            jobID = extras.getString("JobID");
             rating = extras.getDouble("Rating");
         }
         empNameTextView.setText(empName);
@@ -100,9 +92,18 @@ public class ApplicantInfoActivity extends AppCompatActivity {
         ratingRatingBar.setRating((float) rating);
     }
 
-    private void moveToJobListing(){
-        Intent intent = new Intent(getApplicationContext(), EmployerJobListingActivity.class);
-        intent.putExtra("JobID", JobID);
+    private void moveToJobListing() {
+        Intent intent = new Intent(this, EmployerJobListingActivity.class);
+        intent.putExtra("JobID", jobID);
         startActivity(intent);
+    }
+
+    /**
+     * method to create Toast message upon error
+     *
+     * @param messageId
+     */
+    protected void createToast(int messageId) {
+        Toast.makeText(this, getString(messageId), Toast.LENGTH_LONG).show();
     }
 }

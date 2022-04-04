@@ -6,27 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".home.EmployerHomeActivity">
 
+
     <Button
         android:id="@+id/btn_logout_employer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="76dp"
         android:text="Logout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:onClick="logout"/>
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/welcomeEmployer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/btn_logout_employer"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.075" />
 
     <Button
         android:id="@+id/job_Form"
@@ -37,23 +41,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/welcomeEmployer"
-        app:layout_constraintVertical_bias="0.201" />
-
+        app:layout_constraintVertical_bias="0.434" />
 
     <Button
         android:id="@+id/btnMyPostedJobs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="115dp"
         android:layout_marginTop="33dp"
-        android:layout_marginEnd="115dp"
         android:layout_marginBottom="29dp"
         android:text="View Posted Jobs"
         app:layout_constraintBottom_toTopOf="@+id/btn_logout_employer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/job_Form" />
-
+        app:layout_constraintTop_toBottomOf="@+id/job_Form"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/ratingTV"

@@ -1,10 +1,15 @@
 package ca.dal.csci3130.quickcash.jobmanagement;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import ca.dal.csci3130.quickcash.usermanagement.User;
-
-public class Job implements JobInterface{
+/**
+ * Job Object to save a job with all its details
+ */
+public class Job implements JobInterface {
 
     private String jobTitle;
     private String jobType;
@@ -13,30 +18,37 @@ public class Job implements JobInterface{
     private int jobDuration;
     private double payRate;
     private String jobID;
-    private double latitude, longitude;
-    private ArrayList<String> applicants;
+    private double latitude;
+    private double longitude;
+    private List<String> applicants;
     private String selectedApplicant;
     private boolean jobStatusOpen;
 
-    public Job(String jobTitle, String jobType, String jobDescription, String employerID,
-               int jobDuration, double payRate, String jobID, double latitude, double longitude) {
-        this.jobTitle = jobTitle;
-        this.jobType = jobType;
-        this.jobDescription = jobDescription;
-        this.employerID = employerID;
+    // constructor
+    public Job(Map<String, String> jobData,
+               int jobDuration,
+               double payRate,
+               LatLng jobLocation,
+               List<String> applicants) {
+        this.jobTitle = jobData.get("jobTitle");
+        this.jobType = jobData.get("jobType");
+        this.jobDescription = jobData.get("jobDescription");
+        this.employerID = jobData.get("employerId");
+        this.jobID = jobData.get("jobID");
+        this.selectedApplicant = jobData.get("selectedApplicant");
         this.jobDuration = jobDuration;
         this.payRate = payRate;
-        this.jobID = jobID;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        applicants = new ArrayList<>();
-        applicants.add("");
-        selectedApplicant = "";
+        this.latitude = jobLocation.latitude;
+        this.longitude = jobLocation.longitude;
+        this.applicants = applicants;
         this.jobStatusOpen = true;
     }
 
-    public Job(){
+    // Empty Constructor
+    public Job() {
     }
+
+    // getters and setters for all data points
 
     @Override
     public String getJobTitle() {
@@ -99,7 +111,7 @@ public class Job implements JobInterface{
     }
 
     @Override
-    public double getLatitude(){
+    public double getLatitude() {
         return this.latitude;
     }
 
@@ -119,12 +131,12 @@ public class Job implements JobInterface{
     }
 
     @Override
-    public ArrayList<String> getApplicants() {
-        return applicants;
+    public List<String> getApplicants() {
+        return applicants == null ? new ArrayList<>() : applicants;
     }
 
     @Override
-    public void setApplicants(ArrayList<String> applicants) {
+    public void setApplicants(List<String> applicants) {
         this.applicants = applicants;
     }
 
@@ -149,23 +161,27 @@ public class Job implements JobInterface{
     }
 
     @Override
-    public boolean getJobStatusOpen() { return jobStatusOpen; }
+    public boolean getJobStatusOpen() {
+        return this.jobStatusOpen;
+    }
 
     @Override
-    public void setJobStatusOpen(boolean jobStatusOpen) { this.jobStatusOpen = jobStatusOpen; }
+    public void setJobStatusOpen(boolean jobStatusOpen) {
+        this.jobStatusOpen = jobStatusOpen;
+    }
 
     @Override
-    public String getListedInfo(){
-
+    public String getListedInfo() {
         String info = "Job Type: " + jobType;
-        info = info + "\nDuration: " + String.valueOf(jobDuration) + " hrs";
-        info = info + "\nPayrate: " + String.valueOf(payRate) + " $";
+        info = info + "\nDuration: " + jobDuration + " hrs";
+        info = info + "\nPayrate: " + payRate + " $";
         info = info + "\nSelected Applicant: " + selectedApplicant;
         info = info + "\nJob ID: " + jobID;
         return info;
     }
 
+    @Override
     public boolean acceptingApplications() {
-        return selectedApplicant.isEmpty();
+        return selectedApplicant == null || selectedApplicant.isEmpty();
     }
 }
